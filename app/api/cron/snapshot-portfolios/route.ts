@@ -80,7 +80,6 @@ export async function POST(request: Request) {
         const totalPnl = totalValue - totalCost
         const pnlPercentage = totalCost > 0 ? (totalPnl / totalCost) * 100 : 0
 
-        // Check if snapshot already exists for today
         const { data: existingSnapshot } = await supabase
           .from("portfolio_snapshots")
           .select("id")
@@ -89,12 +88,11 @@ export async function POST(request: Request) {
           .single()
 
         if (existingSnapshot) {
-          console.log(`[v0] Snapshot already exists for user ${userId} on ${today}`)
+          console.log(`[v0] Snapshot already exists for user ${userId} on ${today}, skipping`)
           continue
         }
 
-        // Create portfolio snapshot
-        const { data: snapshot, error: snapshotError } = await supabase
+        const { error: snapshotError } = await supabase
           .from("portfolio_snapshots")
           .insert({
             user_id: userId,
@@ -104,28 +102,14 @@ export async function POST(request: Request) {
             pnl_percentage: pnlPercentage,
             snapshot_date: today,
           })
-          .select()
-          .single()
 
         if (snapshotError) {
           console.error(`[v0] Error creating snapshot for user ${userId}:`, snapshotError)
           continue
         }
 
-        // Create holding snapshots
-        const { error: holdingsSnapshotError } = await supabase.from("holding_snapshots").insert(
-          holdingSnapshots.map((h) => ({
-            portfolio_snapshot_id: snapshot.id,
-            ...h,
-          })),
-        )
-
-        if (holdingsSnapshotError) {
-          console.error(`[v0] Error creating holding snapshots for user ${userId}:`, holdingsSnapshotError)
-        } else {
-          snapshotsCreated++
-          console.log(`[v0] Created snapshot for user ${userId}: $${totalValue.toFixed(2)}`)
-        }
+        snapshotsCreated++
+        console.log(`[v0] Created snapshot for user ${userId}: $${totalValue.toFixed(2)}`)
       } catch (error) {
         console.error(`[v0] Error processing user ${userId}:`, error)
       }

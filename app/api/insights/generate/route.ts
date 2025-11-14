@@ -16,15 +16,14 @@ export async function POST() {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
     }
 
-    // Check Pro status
     const { data: subscription } = await supabase
-      .from("subscriptions")
-      .select("plan, status")
+      .from("user_subscriptions")
+      .select("plan_type, status")
       .eq("user_id", user.id)
       .eq("status", "active")
       .single()
 
-    if (!subscription || subscription.plan !== "pro") {
+    if (!subscription || subscription.plan_type !== "pro") {
       return NextResponse.json({ error: "Pro subscription required" }, { status: 403 })
     }
 
@@ -78,13 +77,28 @@ export async function POST() {
       totalProfitLossPercentage,
     )
 
-    // Save insights to database
-    await supabase.from("portfolio_insights").insert({
+    const { error: insertError } = await supabase.from("insights_history").insert({
       user_id: user.id,
       insights: insights,
       metrics: metrics,
       generated_at: new Date().toISOString(),
     })
+
+    if (insertError) {
+      console.error("[v0] Error saving insights:", insertError)
+    }
+
+    const { data: allInsights } = await supabase
+      .from("insights_history")
+      .select("id, generated_at")
+      .eq("user_id", user.id)
+      .order("generated_at", { ascending: false })
+
+    if (allInsights && allInsights.length > 30) {
+      const idsToDelete = allInsights.slice(30).map((i) => i.id)
+      await supabase.from("insights_history").delete().in("id", idsToDelete)
+      console.log(`[v0] Cleaned up ${idsToDelete.length} old insights for user ${user.id}`)
+    }
 
     return NextResponse.json({ insights, metrics })
   } catch (error) {

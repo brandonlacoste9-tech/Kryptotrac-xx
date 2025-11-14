@@ -68,6 +68,8 @@ export async function getMultipleCoinPrices(coinIds: string[]): Promise<CoinPric
   }
 }
 
+export const fetchCoinPrices = getMultipleCoinPrices
+
 export async function getTrendingCoins(): Promise<CoinPrice[]> {
   try {
     const response = await fetch(

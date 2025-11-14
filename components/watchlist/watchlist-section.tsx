@@ -43,6 +43,8 @@ export function WatchlistSection() {
   useEffect(() => {
     if (watchlist.length > 0) {
       loadCoins()
+      const interval = setInterval(loadCoins, 30000)
+      return () => clearInterval(interval)
     } else {
       setLoading(false)
     }
@@ -100,14 +102,32 @@ export function WatchlistSection() {
   }
 
   async function addToWatchlist(coinId: string) {
+    if (watchlist.includes(coinId)) {
+      return
+    }
+
     const newWatchlist = [...watchlist, coinId]
     setWatchlist(newWatchlist)
 
     if (user) {
-      await supabase.from("user_watchlists").insert({
-        user_id: user.id,
-        coin_id: coinId,
-      })
+      const { error } = await supabase
+        .from("user_watchlists")
+        .upsert(
+          {
+            user_id: user.id,
+            coin_id: coinId,
+          },
+          {
+            onConflict: "user_id,coin_id",
+            ignoreDuplicates: true,
+          }
+        )
+
+      if (error) {
+        console.error("[v0] Error adding to watchlist:", error)
+        // Revert on error
+        setWatchlist(watchlist)
+      }
     } else {
       localStorage.setItem("watchlist", JSON.stringify(newWatchlist))
     }

@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react"
 import { createBrowserClient } from "@/lib/supabase/client"
 import { Button } from "@/components/ui/button"
-import { Plus, Bell, Trash2 } from "lucide-react"
+import { Plus, Bell, Trash2 } from 'lucide-react'
 import { AddAlertDialog } from "./add-alert-dialog"
 import { Skeleton } from "@/components/ui/skeleton"
 import Link from "next/link"
@@ -13,7 +13,7 @@ type Alert = {
   coin_id: string
   coin_name: string
   coin_symbol: string
-  threshold_price: number
+  target_price: number
   condition: "above" | "below"
   is_triggered: boolean
   created_at: string
@@ -29,7 +29,7 @@ export function AlertsContainer({ userId, isPro }: { userId: string; isPro: bool
 
   async function loadAlerts() {
     const { data, error } = await supabase
-      .from("alerts")
+      .from("price_alerts")
       .select("*")
       .eq("user_id", userId)
       .order("created_at", { ascending: false })
@@ -45,7 +45,7 @@ export function AlertsContainer({ userId, isPro }: { userId: string; isPro: bool
   }, [])
 
   async function deleteAlert(id: string) {
-    await supabase.from("alerts").delete().eq("id", id)
+    await supabase.from("price_alerts").delete().eq("id", id)
     setAlerts(alerts.filter((a) => a.id !== id))
   }
 
@@ -113,7 +113,7 @@ export function AlertsContainer({ userId, isPro }: { userId: string; isPro: bool
                     {alert.coin_name} ({alert.coin_symbol.toUpperCase()})
                   </div>
                   <div className="text-sm text-white/60">
-                    Alert when price goes {alert.condition} ${alert.threshold_price.toLocaleString()}
+                    Alert when price goes {alert.condition} ${alert.target_price.toLocaleString()}
                   </div>
                   {alert.is_triggered && <div className="text-xs text-green-500 mt-1">✓ Alert triggered</div>}
                 </div>

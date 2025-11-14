@@ -1,5 +1,5 @@
 import { createServerClient } from "@/lib/supabase/server"
-import { redirect } from "next/navigation"
+import { redirect } from 'next/navigation'
 import { AlertsContainer } from "@/components/alerts/alerts-container"
 
 export default async function AlertsPage() {
@@ -13,7 +13,7 @@ export default async function AlertsPage() {
   }
 
   const { data: subscription } = await supabase
-    .from("subscriptions")
+    .from("user_subscriptions")
     .select("tier")
     .eq("user_id", user.id)
     .eq("status", "active")

@@ -4,6 +4,8 @@ import { MarketOverview } from "@/components/market/market-overview"
 import { AffiliateBanner } from "@/components/affiliates/affiliate-banner"
 import { WatchlistSection } from "@/components/watchlist/watchlist-section"
 import { HeroWithFire } from "@/components/hero/hero-with-fire"
+import { Testimonials } from "@/components/landing/testimonials"
+import { TrustBanner } from "@/components/trust/trust-banner"
 
 export default async function HomePage() {
   const supabase = await createServerClient()
@@ -27,7 +29,11 @@ export default async function HomePage() {
     <div className="container mx-auto p-6 space-y-8">
       <HeroWithFire />
 
+      <TrustBanner />
+
       <MarketOverview />
+
+      <Testimonials />
 
       <AffiliateBanner />
     </div>

@@ -41,6 +41,8 @@ export function PortfolioSection() {
   useEffect(() => {
     if (user) {
       loadHoldings()
+      const interval = setInterval(loadHoldings, 30000)
+      return () => clearInterval(interval)
     }
   }, [user])
 

@@ -1,5 +1,5 @@
 import type { Metadata } from "next"
-import { redirect } from "next/navigation"
+import { redirect } from 'next/navigation'
 import { createServerClient } from "@/lib/supabase/server"
 import { UpgradeContainer } from "@/components/upgrade/upgrade-container"
 
@@ -20,7 +20,7 @@ export default async function UpgradePage() {
 
   // Check if already Pro
   const { data: subscription } = await supabase
-    .from("subscriptions")
+    .from("user_subscriptions")
     .select("*")
     .eq("user_id", user.id)
     .eq("status", "active")

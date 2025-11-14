@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { Share2, Download, Copy, Check } from "lucide-react"
+import { Share2, Download, Copy, Check } from 'lucide-react'
 import { Button } from "@/components/ui/button"
 import {
   Dialog,
@@ -53,8 +53,9 @@ export function PortfolioShareCard({
 
       const { imageUrl } = await response.json()
 
-      // Copy to clipboard
-      await navigator.clipboard.writeText(`Check out my crypto portfolio on KryptoTrac! 📈\n${imageUrl}`)
+      await navigator.clipboard.writeText(
+        `Check out my crypto portfolio on KryptoTrac! 📈 #KryptoTrac\n\n${imageUrl}`
+      )
 
       setCopied(true)
       setTimeout(() => setCopied(false), 3000)

@@ -1,10 +1,11 @@
 import type React from "react"
 import type { Metadata, Viewport } from "next"
-import { Geist, Geist_Mono } from "next/font/google"
+import { Geist, Geist_Mono } from 'next/font/google'
 import { Analytics } from "@vercel/analytics/next"
 import "./globals.css"
 import { Header } from "@/components/layout/header"
 import { Footer } from "@/components/layout/footer"
+import { FeedbackPrompt } from "@/components/feedback/feedback-prompt"
 import Script from "next/script"
 
 const _geist = Geist({ subsets: ["latin"] })
@@ -50,6 +51,7 @@ export default function RootLayout({
       <body className="bg-black text-white antialiased">
         <Header />
         {children}
+        <FeedbackPrompt />
         <Footer />
         <Analytics />
         <Script id="sw-register" strategy="afterInteractive">

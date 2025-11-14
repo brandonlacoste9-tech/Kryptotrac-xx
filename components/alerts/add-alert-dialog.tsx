@@ -10,7 +10,7 @@ import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { searchCoins } from "@/lib/coingecko"
 import { createBrowserClient } from "@/lib/supabase/client"
-import { Loader2 } from "lucide-react"
+import { Loader2 } from 'lucide-react'
 
 type SearchResult = {
   id: string
@@ -63,12 +63,12 @@ export function AddAlertDialog({
 
     setSaving(true)
     try {
-      await supabase.from("alerts").insert({
+      await supabase.from("price_alerts").insert({
         user_id: userId,
         coin_id: selectedCoin.id,
         coin_name: selectedCoin.name,
         coin_symbol: selectedCoin.symbol,
-        threshold_price: Number.parseFloat(threshold),
+        target_price: Number.parseFloat(threshold),
         condition,
         is_triggered: false,
       })

@@ -5,7 +5,7 @@ import { useEffect, useState } from "react"
 import { createBrowserClient } from "@/lib/supabase/client"
 import type { User } from "@supabase/supabase-js"
 import { ProBadge } from "@/components/ui/pro-badge"
-import { Settings } from "lucide-react"
+import { Settings } from 'lucide-react'
 
 export function Header() {
   const [user, setUser] = useState<User | null>(null)
@@ -93,6 +93,9 @@ export function Header() {
               <Link href="/alerts" className="text-sm font-medium text-white/80 hover:text-red-400 transition-colors">
                 Alerts
               </Link>
+              <Link href="/about" className="text-sm font-medium text-white/80 hover:text-red-400 transition-colors">
+                About
+              </Link>
               {!isPro && (
                 <Link
                   href="/pricing"
@@ -114,6 +117,9 @@ export function Header() {
             </>
           ) : (
             <>
+              <Link href="/about" className="text-sm font-medium text-white/80 hover:text-red-400 transition-colors">
+                About
+              </Link>
               <Link href="/pricing" className="text-sm font-medium text-white/80 hover:text-red-400 transition-colors">
                 Pricing
               </Link>
