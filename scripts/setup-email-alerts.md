@@ -83,4 +83,4 @@ Both emails use a dark theme with red accents matching the KryptoTrac brand.
 - **Wrong email address**: Ensure users table has correct email in Supabase
 \`\`\`
 
-```typescript file="" isHidden
+\`\`\`typescript file="" isHidden

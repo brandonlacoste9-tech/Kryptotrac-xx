@@ -26,15 +26,15 @@ Kryptotrac-xx is a modern crypto tracker platform built with TypeScript and Next
 
 ### Installation
 
-```bash
+\`\`\`bash
 pnpm install
-```
+\`\`\`
 
 ### Running Locally
 
-```bash
+\`\`\`bash
 pnpm dev
-```
+\`\`\`
 
 Open [http://localhost:3000](http://localhost:3000) to view in your browser.
 
