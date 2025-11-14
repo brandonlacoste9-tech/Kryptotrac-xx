@@ -2,20 +2,47 @@ import type React from "react"
 import type { Metadata, Viewport } from "next"
 import { Geist, Geist_Mono } from 'next/font/google'
 import { Analytics } from "@vercel/analytics/next"
+import { SpeedInsights } from "@vercel/speed-insights/next"
 import "./globals.css"
 import { Header } from "@/components/layout/header"
 import { Footer } from "@/components/layout/footer"
 import { FeedbackPrompt } from "@/components/feedback/feedback-prompt"
+import { ErrorBoundary } from "@/components/error/error-boundary"
 import Script from "next/script"
 
 const _geist = Geist({ subsets: ["latin"] })
 const _geistMono = Geist_Mono({ subsets: ["latin"] })
 
 export const metadata: Metadata = {
-  title: "KryptoTrac - Track Your Crypto Portfolio",
-  description: "Real-time crypto portfolio tracking with P&L analytics and price alerts",
+  title: "KryptoTrac - Track Your Crypto Portfolio with Real-Time Insights",
+  description: "Canadian-friendly crypto portfolio tracker with real-time price alerts, P&L analytics, and AI-powered insights. Track Bitcoin, Ethereum, and your favorite cryptocurrencies.",
   generator: "v0.app",
   manifest: "/manifest.json",
+  keywords: ["crypto", "portfolio", "tracker", "bitcoin", "ethereum", "cryptocurrency", "canada", "price alerts", "analytics"],
+  authors: [{ name: "KryptoTrac" }],
+  openGraph: {
+    type: "website",
+    locale: "en_CA",
+    url: "https://kryptotrac.com",
+    siteName: "KryptoTrac",
+    title: "KryptoTrac - Track Your Crypto Portfolio",
+    description: "Canadian-friendly crypto portfolio tracker with real-time price alerts and AI-powered insights.",
+    images: [
+      {
+        url: "/og-image.jpg",
+        width: 1200,
+        height: 630,
+        alt: "KryptoTrac - Track Your Crypto Portfolio",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "KryptoTrac - Track Your Crypto Portfolio",
+    description: "Canadian-friendly crypto portfolio tracker with real-time price alerts and AI insights.",
+    images: ["/og-image.jpg"],
+    creator: "@kryptotrac",
+  },
   icons: {
     icon: [
       { url: "/icon-192.jpg", sizes: "192x192", type: "image/png" },
@@ -49,11 +76,14 @@ export default function RootLayout({
         <meta name="mobile-web-app-capable" content="yes" />
       </head>
       <body className="bg-black text-white antialiased">
-        <Header />
-        {children}
-        <FeedbackPrompt />
-        <Footer />
+        <ErrorBoundary>
+          <Header />
+          {children}
+          <FeedbackPrompt />
+          <Footer />
+        </ErrorBoundary>
         <Analytics />
+        <SpeedInsights />
         <Script id="sw-register" strategy="afterInteractive">
           {`
             if ('serviceWorker' in navigator) {
