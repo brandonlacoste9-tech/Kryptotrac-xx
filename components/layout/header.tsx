@@ -1,32 +1,137 @@
-import { TrendingUp, Bell, Settings } from "lucide-react"
-import { Button } from "@/components/ui/button"
+"use client"
+
 import Link from "next/link"
+import { useEffect, useState } from "react"
+import { createBrowserClient } from "@/lib/supabase/client"
+import type { User } from "@supabase/supabase-js"
+import { ProBadge } from "@/components/ui/pro-badge"
+import { Settings } from "lucide-react"
 
 export function Header() {
-  return (
-    <header className="border-b border-border bg-card/50 backdrop-blur-sm sticky top-0 z-50">
-      <div className="container mx-auto px-4 py-4">
-        <div className="flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center">
-              <TrendingUp className="w-5 h-5 text-primary-foreground" />
-            </div>
-            <h1 className="text-xl font-bold">KryptoTrac</h1>
-          </Link>
+  const [user, setUser] = useState<User | null>(null)
+  const [isPro, setIsPro] = useState(false)
+  const [scrolled, setScrolled] = useState(false)
 
-          <nav className="flex items-center gap-2">
-            <Button variant="ghost" size="icon" asChild>
-              <Link href="/alerts">
-                <Bell className="w-5 h-5" />
-                <span className="sr-only">Alerts</span>
+  useEffect(() => {
+    const supabase = createBrowserClient()
+
+    supabase.auth.getUser().then(({ data }) => {
+      setUser(data.user)
+
+      if (data.user) {
+        supabase
+          .from("subscriptions")
+          .select("status")
+          .eq("user_id", data.user.id)
+          .eq("status", "active")
+          .single()
+          .then(({ data: sub }) => {
+            setIsPro(!!sub)
+          })
+      }
+    })
+
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUser(session?.user ?? null)
+
+      if (session?.user) {
+        supabase
+          .from("subscriptions")
+          .select("status")
+          .eq("user_id", session.user.id)
+          .eq("status", "active")
+          .single()
+          .then(({ data: sub }) => {
+            setIsPro(!!sub)
+          })
+      } else {
+        setIsPro(false)
+      }
+    })
+
+    const handleScroll = () => {
+      setScrolled(window.scrollY > 20)
+    }
+
+    window.addEventListener("scroll", handleScroll)
+
+    return () => {
+      subscription.unsubscribe()
+      window.removeEventListener("scroll", handleScroll)
+    }
+  }, [])
+
+  const handleSignOut = async () => {
+    const supabase = createBrowserClient()
+    await supabase.auth.signOut()
+  }
+
+  return (
+    <header
+      className={`border-b border-red-500/20 sticky top-0 z-50 transition-all duration-300 ${
+        scrolled ? "bg-black/95 backdrop-blur-md shadow-lg shadow-black/50" : "bg-black/80 backdrop-blur-sm"
+      }`}
+    >
+      <div className="container mx-auto px-6 py-4 flex items-center justify-between">
+        <Link href="/" className="flex items-center gap-3 group">
+          <div className="text-2xl font-bold bg-gradient-to-r from-red-500 via-red-400 to-white bg-clip-text text-transparent">
+            ⚡ KryptoTrac
+          </div>
+        </Link>
+
+        <nav className="flex items-center gap-6">
+          {user ? (
+            <>
+              <Link href="/" className="text-sm font-medium text-white/80 hover:text-red-400 transition-colors">
+                Portfolio
               </Link>
-            </Button>
-            <Button variant="ghost" size="icon">
-              <Settings className="w-5 h-5" />
-              <span className="sr-only">Settings</span>
-            </Button>
-          </nav>
-        </div>
+              <Link href="/market" className="text-sm font-medium text-white/80 hover:text-red-400 transition-colors">
+                Market
+              </Link>
+              <Link href="/alerts" className="text-sm font-medium text-white/80 hover:text-red-400 transition-colors">
+                Alerts
+              </Link>
+              {!isPro && (
+                <Link
+                  href="/pricing"
+                  className="text-sm font-medium text-white/80 hover:text-red-400 transition-colors"
+                >
+                  Pricing
+                </Link>
+              )}
+              {isPro && <ProBadge />}
+              <Link href="/settings" className="text-white/80 hover:text-red-400 transition-colors" title="Settings">
+                <Settings className="w-5 h-5" />
+              </Link>
+              <button
+                onClick={handleSignOut}
+                className="text-sm font-medium text-white/80 hover:text-red-400 transition-colors"
+              >
+                Sign Out
+              </button>
+            </>
+          ) : (
+            <>
+              <Link href="/pricing" className="text-sm font-medium text-white/80 hover:text-red-400 transition-colors">
+                Pricing
+              </Link>
+              <Link
+                href="/auth/login"
+                className="text-sm font-medium text-white/80 hover:text-red-400 transition-colors"
+              >
+                Sign In
+              </Link>
+              <Link
+                href="/auth/signup"
+                className="inline-flex h-9 items-center justify-center rounded-md bg-gradient-to-r from-red-600 to-red-500 px-6 text-sm font-medium text-white shadow-lg shadow-red-500/50 hover:shadow-red-500/70 transition-all"
+              >
+                Get Started
+              </Link>
+            </>
+          )}
+        </nav>
       </div>
     </header>
   )

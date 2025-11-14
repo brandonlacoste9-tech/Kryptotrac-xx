@@ -1,23 +1,35 @@
-import { WatchlistContainer } from "@/components/watchlist/watchlist-container"
-import { AffiliateSidebar } from "@/components/affiliates/affiliate-sidebar"
-import { Header } from "@/components/layout/header"
-import { DisclaimerBanner } from "@/components/layout/disclaimer-banner"
+import { createServerClient } from "@/lib/supabase/server"
+import { PortfolioContainer } from "@/components/portfolio/portfolio-container"
+import { MarketOverview } from "@/components/market/market-overview"
+import { AffiliateBanner } from "@/components/affiliates/affiliate-banner"
+import { WatchlistSection } from "@/components/watchlist/watchlist-section"
+import { HeroWithFire } from "@/components/hero/hero-with-fire"
 
-export default function HomePage() {
+export default async function HomePage() {
+  const supabase = await createServerClient()
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
+
+  // If logged in, show portfolio as home
+  if (user) {
+    return (
+      <div className="container mx-auto p-6 space-y-8">
+        <WatchlistSection />
+        <PortfolioContainer />
+        <AffiliateBanner />
+      </div>
+    )
+  }
+
+  // If not logged in, show market overview
   return (
-    <div className="min-h-screen flex flex-col">
-      <Header />
-      <DisclaimerBanner />
-      <main className="flex-1 container mx-auto px-4 py-6 lg:py-8">
-        <div className="flex flex-col lg:flex-row gap-6">
-          <div className="flex-1">
-            <WatchlistContainer />
-          </div>
-          <aside className="lg:w-80">
-            <AffiliateSidebar />
-          </aside>
-        </div>
-      </main>
+    <div className="container mx-auto p-6 space-y-8">
+      <HeroWithFire />
+
+      <MarketOverview />
+
+      <AffiliateBanner />
     </div>
   )
 }

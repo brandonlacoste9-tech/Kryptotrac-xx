@@ -1,29 +1,36 @@
+import { createServerClient } from "@/lib/supabase/server"
+import { redirect } from "next/navigation"
 import { AlertsContainer } from "@/components/alerts/alerts-container"
-import { Header } from "@/components/layout/header"
-import { Button } from "@/components/ui/button"
-import { ArrowLeft } from "lucide-react"
-import Link from "next/link"
 
-export const metadata = {
-  title: "Price Alerts - KryptoTrac",
-  description: "Manage your cryptocurrency price alerts",
-}
+export default async function AlertsPage() {
+  const supabase = await createServerClient()
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
 
-export default function AlertsPage() {
+  if (!user) {
+    redirect("/auth/login")
+  }
+
+  const { data: subscription } = await supabase
+    .from("subscriptions")
+    .select("tier")
+    .eq("user_id", user.id)
+    .eq("status", "active")
+    .single()
+
+  const isPro = subscription?.tier === "pro"
+
   return (
-    <div className="min-h-screen flex flex-col">
-      <Header />
-      <main className="flex-1 container mx-auto px-4 py-6 lg:py-8 max-w-4xl">
-        <div className="mb-6">
-          <Button variant="ghost" asChild>
-            <Link href="/">
-              <ArrowLeft className="w-4 h-4 mr-2" />
-              Back to Watchlist
-            </Link>
-          </Button>
-        </div>
-        <AlertsContainer />
-      </main>
+    <div className="container mx-auto p-6 space-y-6">
+      <div className="space-y-2">
+        <h1 className="text-4xl font-bold bg-gradient-to-r from-red-500 to-white bg-clip-text text-transparent">
+          Price Alerts
+        </h1>
+        <p className="text-white/60">Get notified via email when prices hit your targets</p>
+      </div>
+
+      <AlertsContainer userId={user.id} isPro={isPro} />
     </div>
   )
 }
