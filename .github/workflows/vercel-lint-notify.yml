@@ -9,6 +9,9 @@ on:
 jobs:
   lint-and-notify:
     runs-on: ubuntu-latest
+    # Explicit permissions for security
+    permissions:
+      contents: read
     # allow job.status to be set for the notify step
     outputs:
       job-status: ${{ job.status }}
