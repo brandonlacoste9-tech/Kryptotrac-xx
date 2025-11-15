@@ -5,12 +5,6 @@ import { Check, Zap, Shield, CreditCard, Star } from 'lucide-react'
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import Link from "next/link"
-import { createServerClient } from "@/lib/supabase/server"
-
-export const metadata: Metadata = {
-  title: "KryptoTrac Pro - Pricing",
-  description: "Upgrade to KryptoTrac Pro for unlimited alerts and advanced analytics",
-}
 
 export default function PricingPage() {
   const [billingCycle, setBillingCycle] = useState<"monthly" | "yearly">("monthly")
