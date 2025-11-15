@@ -127,21 +127,24 @@ export function HeroWithFire() {
           KryptoTrac
         </h1>
       </div>
-      <p className="relative text-xl md:text-2xl text-neutral-300 font-light" style={{ zIndex: 2 }}>
-        Track your crypto portfolio with real-time insights
+      <h2 className="relative text-3xl md:text-5xl font-bold text-white mb-4" style={{ zIndex: 2 }}>
+        Crypto moves fast. Now you do too.
+      </h2>
+      <p className="relative text-lg md:text-xl text-neutral-300 font-light max-w-3xl mx-auto" style={{ zIndex: 2 }}>
+        Kryptotrac gives you the signal, not the noise – fast alerts, clean tracking, and simple insights for the next wave of crypto kings.
       </p>
       <div className="relative flex gap-4 justify-center pt-6" style={{ zIndex: 2 }}>
         <a
-          href="/auth/signup"
+          href="/dashboard"
           className="inline-flex h-12 items-center justify-center rounded-md bg-gradient-to-r from-red-600 to-red-500 px-10 text-base font-semibold text-white shadow-lg shadow-red-500/50 hover:shadow-red-500/80 hover:from-red-500 hover:to-red-600 transition-all duration-200"
         >
-          Get Started
+          Launch app
         </a>
         <a
-          href="/auth/login"
+          href="/pricing"
           className="inline-flex h-12 items-center justify-center rounded-md border border-white/20 bg-black/50 backdrop-blur px-10 text-base font-medium text-white hover:bg-white/10 hover:border-white/30 transition-all duration-200"
         >
-          Sign In
+          See pricing
         </a>
       </div>
     </div>
