@@ -1,9 +1,8 @@
 "use server"
 import { createServerClient } from "@/lib/supabase/server"
 import { stripe } from "@/lib/stripe"
-import { PRODUCTS } from "@/lib/products"
 
-export async function createCheckoutSession(productId: string) {
+export async function createCheckoutSession(plan: "starter" | "pro" | "elite", billingCycle: "monthly" | "yearly" = "monthly") {
   try {
     const supabase = await createServerClient()
     const {
@@ -14,24 +13,40 @@ export async function createCheckoutSession(productId: string) {
       return { error: "Not authenticated" }
     }
 
-    const product = PRODUCTS.find((p) => p.id === productId)
-    if (!product) {
-      return { error: "Product not found" }
+    const pricing = {
+      starter: { monthly: 500, yearly: 5000, name: "KryptoTrac Starter" },
+      pro: { monthly: 1000, yearly: 10000, name: "KryptoTrac Pro" },
+      elite: { monthly: 2000, yearly: 20000, name: "KryptoTrac Elite" },
     }
+
+    const selectedPlan = pricing[plan]
+    const amount = billingCycle === "yearly" ? selectedPlan.yearly : selectedPlan.monthly
 
     const session = await stripe.checkout.sessions.create({
       customer_email: user.email,
       line_items: [
         {
-          price: product.priceId,
+          price_data: {
+            currency: "cad",
+            product_data: {
+              name: selectedPlan.name,
+              description: `${plan.charAt(0).toUpperCase() + plan.slice(1)} plan with ${billingCycle} billing`,
+            },
+            unit_amount: amount,
+            recurring: {
+              interval: billingCycle === "yearly" ? "year" : "month",
+            },
+          },
           quantity: 1,
         },
       ],
       mode: "subscription",
-      success_url: `${process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000"}/upgrade/success?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000"}/upgrade`,
+      success_url: `${process.env.NEXT_PUBLIC_DEV_SUPABASE_REDIRECT_URL || process.env.NEXT_PUBLIC_SUPABASE_URL}/dashboard?success=true`,
+      cancel_url: `${process.env.NEXT_PUBLIC_DEV_SUPABASE_REDIRECT_URL || process.env.NEXT_PUBLIC_SUPABASE_URL}/pricing`,
       metadata: {
         user_id: user.id,
+        plan,
+        billing_cycle: billingCycle,
       },
     })
 
@@ -53,9 +68,8 @@ export async function createPortalSession() {
       return { error: "Not authenticated" }
     }
 
-    // Get customer ID from subscription
     const { data: subscription } = await supabase
-      .from("subscriptions")
+      .from("user_subscriptions")
       .select("stripe_customer_id")
       .eq("user_id", user.id)
       .single()
@@ -66,7 +80,7 @@ export async function createPortalSession() {
 
     const session = await stripe.billingPortal.sessions.create({
       customer: subscription.stripe_customer_id,
-      return_url: `${process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000"}/portfolio`,
+      return_url: `${process.env.NEXT_PUBLIC_DEV_SUPABASE_REDIRECT_URL || process.env.NEXT_PUBLIC_SUPABASE_URL}/dashboard`,
     })
 
     return { url: session.url }

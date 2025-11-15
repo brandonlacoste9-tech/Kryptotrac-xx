@@ -8,6 +8,7 @@ import { Header } from "@/components/layout/header"
 import { Footer } from "@/components/layout/footer"
 import { FeedbackPrompt } from "@/components/feedback/feedback-prompt"
 import { ErrorBoundary } from "@/components/error/error-boundary"
+import { AtlasDock } from "@/components/atlas/atlas-dock"
 import Script from "next/script"
 
 const _geist = Geist({ subsets: ["latin"] })
@@ -80,6 +81,7 @@ export default function RootLayout({
           <Header />
           {children}
           <FeedbackPrompt />
+          <AtlasDock />
           <Footer />
         </ErrorBoundary>
         <Analytics />

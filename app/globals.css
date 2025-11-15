@@ -327,3 +327,51 @@ body::before {
 .testimonial-fade-in {
   animation: fadeIn 0.5s ease-out;
 }
+
+/* Added BB persona glowing bee cursor effect */
+/* Glowing bee cursor for BB persona pages */
+.bb-cursor {
+  cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="%23fbbf24" stroke-width="2"><path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"/></svg>') 12 12, auto;
+}
+
+.bb-cursor:hover {
+  filter: drop-shadow(0 0 8px #fbbf24);
+}
+
+/* BB buzzing idle animation */
+@keyframes bbBuzz {
+  0%, 100% { transform: translate(0, 0); }
+  25% { transform: translate(1px, -1px); }
+  50% { transform: translate(-1px, 1px); }
+  75% { transform: translate(1px, 1px); }
+}
+
+.bb-hover:hover {
+  animation: bbBuzz 0.3s infinite;
+}
+
+/* Added bee trail particle effect for BB dock button */
+@keyframes beeTrail {
+  0% {
+    opacity: 1;
+    transform: scale(1) translate(0, 0);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(0.3) translate(-20px, -20px);
+  }
+}
+
+.bee-trail {
+  position: relative;
+}
+
+.bee-trail::after {
+  content: "✨";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  animation: beeTrail 1s ease-out infinite;
+  pointer-events: none;
+}

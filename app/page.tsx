@@ -32,11 +32,11 @@ export default async function HomePage() {
 
       <TrustBanner />
 
-      <CanadianNotice />
-
       <MarketOverview />
 
       <Testimonials />
+
+      <CanadianNotice />
 
       <AffiliateBanner />
     </div>

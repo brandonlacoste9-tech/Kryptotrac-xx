@@ -20,7 +20,7 @@ export function Header() {
 
       if (data.user) {
         supabase
-          .from("subscriptions")
+          .from("user_subscriptions")
           .select("status")
           .eq("user_id", data.user.id)
           .eq("status", "active")
@@ -38,7 +38,7 @@ export function Header() {
 
       if (session?.user) {
         supabase
-          .from("subscriptions")
+          .from("user_subscriptions")
           .select("status")
           .eq("user_id", session.user.id)
           .eq("status", "active")
@@ -92,6 +92,9 @@ export function Header() {
               </Link>
               <Link href="/alerts" className="text-sm font-medium text-white/80 hover:text-red-400 transition-colors">
                 Alerts
+              </Link>
+              <Link href="/referrals" className="text-sm font-medium text-white/80 hover:text-red-400 transition-colors">
+                Referrals
               </Link>
               <Link href="/about" className="text-sm font-medium text-white/80 hover:text-red-400 transition-colors">
                 About

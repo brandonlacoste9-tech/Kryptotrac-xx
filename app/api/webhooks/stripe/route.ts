@@ -32,15 +32,22 @@ export async function POST(req: NextRequest) {
           break
         }
 
-        // Create subscription record
-        await supabase.from("subscriptions").insert({
+        await supabase.from("user_subscriptions").upsert({
           user_id: userId,
           stripe_customer_id: session.customer as string,
           stripe_subscription_id: session.subscription as string,
           status: "active",
-          plan: "pro",
+          plan_type: "pro",
+          current_period_start: new Date().toISOString(),
           current_period_end: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
+        }, {
+          onConflict: 'user_id'
         })
+
+        await supabase
+          .from("profiles")
+          .update({ plan_type: "pro" })
+          .eq("id", userId)
 
         console.log("[v0] Subscription created for user:", userId)
         break
@@ -50,9 +57,10 @@ export async function POST(req: NextRequest) {
         const subscription = event.data.object as Stripe.Subscription
 
         await supabase
-          .from("subscriptions")
+          .from("user_subscriptions")
           .update({
             status: subscription.status,
+            current_period_start: new Date(subscription.current_period_start * 1000).toISOString(),
             current_period_end: new Date(subscription.current_period_end * 1000).toISOString(),
           })
           .eq("stripe_subscription_id", subscription.id)
@@ -64,12 +72,23 @@ export async function POST(req: NextRequest) {
       case "customer.subscription.deleted": {
         const subscription = event.data.object as Stripe.Subscription
 
-        await supabase
-          .from("subscriptions")
-          .update({
-            status: "canceled",
-          })
+        const { data: subData } = await supabase
+          .from("user_subscriptions")
+          .select("user_id")
           .eq("stripe_subscription_id", subscription.id)
+          .single()
+
+        if (subData) {
+          await supabase
+            .from("user_subscriptions")
+            .update({ status: "canceled" })
+            .eq("stripe_subscription_id", subscription.id)
+
+          await supabase
+            .from("profiles")
+            .update({ plan_type: "free" })
+            .eq("id", subData.user_id)
+        }
 
         console.log("[v0] Subscription canceled:", subscription.id)
         break

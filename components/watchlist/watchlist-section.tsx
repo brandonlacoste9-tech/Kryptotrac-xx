@@ -6,6 +6,7 @@ import { Plus, Star, StarOff, TrendingUp, TrendingDown } from 'lucide-react'
 import { Button } from "@/components/ui/button"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
+import { TableLoadingSkeleton } from "@/components/ui/table-loading-skeleton"
 
 interface Coin {
   id: string
@@ -149,7 +150,17 @@ export function WatchlistSection() {
   }
 
   if (loading) {
-    return <div className="text-white/60">Loading watchlist...</div>
+    return (
+      <div className="space-y-4">
+        <div className="flex items-center justify-between">
+          <h2 className="text-2xl font-bold text-white flex items-center gap-2">
+            <Star className="w-6 h-6 text-red-500" />
+            My Watchlist
+          </h2>
+        </div>
+        <TableLoadingSkeleton rows={4} />
+      </div>
+    )
   }
 
   return (

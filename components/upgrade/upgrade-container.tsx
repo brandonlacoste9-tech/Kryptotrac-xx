@@ -3,9 +3,9 @@
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
-import { Check, Loader2, Zap } from "lucide-react"
+import { Check, Loader2, Zap } from 'lucide-react'
 import { createCheckoutSession } from "@/app/actions/stripe"
-import { useRouter } from "next/navigation"
+import { useRouter } from 'next/navigation'
 
 interface UpgradeContainerProps {
   userEmail: string
@@ -13,12 +13,14 @@ interface UpgradeContainerProps {
 
 export function UpgradeContainer({ userEmail }: UpgradeContainerProps) {
   const [loading, setLoading] = useState(false)
+  const [selectedPlan, setSelectedPlan] = useState<"starter" | "pro" | "elite">("pro")
+  const [billingCycle, setBillingCycle] = useState<"monthly" | "yearly">("monthly")
   const router = useRouter()
 
   const handleUpgrade = async () => {
     setLoading(true)
     try {
-      const { url, error } = await createCheckoutSession("pro")
+      const { url, error } = await createCheckoutSession(selectedPlan, billingCycle)
 
       if (error) {
         console.error("[v0] Checkout error:", error)
@@ -36,6 +38,16 @@ export function UpgradeContainer({ userEmail }: UpgradeContainerProps) {
       setLoading(false)
     }
   }
+
+  const plans = {
+    starter: { name: "Starter", price: { monthly: 5, yearly: 50 }, color: "blue" },
+    pro: { name: "Pro", price: { monthly: 10, yearly: 100 }, color: "red" },
+    elite: { name: "Elite", price: { monthly: 20, yearly: 200 }, color: "purple" },
+  }
+
+  const currentPrice = billingCycle === "yearly" 
+    ? plans[selectedPlan].price.yearly 
+    : plans[selectedPlan].price.monthly
 
   const proFeatures = [
     "Unlimited price alerts",
@@ -71,9 +83,9 @@ export function UpgradeContainer({ userEmail }: UpgradeContainerProps) {
           <div className="text-center mb-8">
             <div className="flex items-baseline justify-center gap-2 mb-2">
               <span className="text-6xl font-bold bg-gradient-to-r from-red-400 to-red-600 bg-clip-text text-transparent">
-                $9
+                ${currentPrice}
               </span>
-              <span className="text-2xl text-gray-400">/month</span>
+              <span className="text-2xl text-gray-400">{billingCycle === "yearly" ? "/year" : "/month"}</span>
             </div>
             <p className="text-sm text-gray-400">Cancel anytime, no questions asked</p>
           </div>
@@ -109,7 +121,7 @@ export function UpgradeContainer({ userEmail }: UpgradeContainerProps) {
             )}
           </Button>
 
-          <p className="text-center text-sm text-gray-400 mt-6">Billed monthly to {userEmail}</p>
+          <p className="text-center text-sm text-gray-400 mt-6">Billed {billingCycle}ly to {userEmail}</p>
         </Card>
       </div>
     </div>

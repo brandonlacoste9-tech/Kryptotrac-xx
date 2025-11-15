@@ -4,7 +4,7 @@ import type React from "react"
 
 import { useState } from "react"
 import { createBrowserClient } from "@/lib/supabase/client"
-import { useRouter } from "next/navigation"
+import { useRouter, useSearchParams } from 'next/navigation'
 import Link from "next/link"
 
 export default function SignupPage() {
@@ -14,6 +14,7 @@ export default function SignupPage() {
   const [error, setError] = useState("")
   const [success, setSuccess] = useState(false)
   const router = useRouter()
+  const searchParams = useSearchParams()
 
   async function handleSignup(e: React.FormEvent) {
     e.preventDefault()
@@ -21,11 +22,12 @@ export default function SignupPage() {
     setError("")
 
     const supabase = createBrowserClient()
+
     const { data, error: signUpError } = await supabase.auth.signUp({
       email,
       password,
       options: {
-        emailRedirectTo: process.env.NEXT_PUBLIC_DEV_SUPABASE_REDIRECT_URL || window.location.origin,
+        emailRedirectTo: process.env.NEXT_PUBLIC_DEV_SUPABASE_REDIRECT_URL || `${window.location.origin}/dashboard`,
       },
     })
 
@@ -41,7 +43,7 @@ export default function SignupPage() {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ email: data.user.email }),
-        }).catch((err) => console.error("Failed to send welcome email:", err))
+        }).catch((err) => console.error("[v0] Failed to send welcome email:", err))
       }
     }
   }

@@ -4,7 +4,7 @@ import type React from "react"
 
 import { useState } from "react"
 import { createBrowserClient } from "@/lib/supabase/client"
-import { useRouter } from "next/navigation"
+import { useRouter } from 'next/navigation'
 import Link from "next/link"
 
 export default function LoginPage() {
@@ -29,7 +29,7 @@ export default function LoginPage() {
       setError(signInError.message)
       setLoading(false)
     } else {
-      router.push("/")
+      router.push("/dashboard")
       router.refresh()
     }
   }
