@@ -11,6 +11,8 @@ jobs:
   validate-mcp:
     name: Validate MCP Server Tools
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     
     steps:
       - name: Checkout repository
