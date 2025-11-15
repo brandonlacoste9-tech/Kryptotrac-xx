@@ -5,12 +5,6 @@ import { Check, Zap, Shield, CreditCard, Star } from 'lucide-react'
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import Link from "next/link"
-import { createServerClient } from "@/lib/supabase/server"
-
-export const metadata: Metadata = {
-  title: "KryptoTrac Pro - Pricing",
-  description: "Upgrade to KryptoTrac Pro for unlimited alerts and advanced analytics",
-}
 
 export default function PricingPage() {
   const [billingCycle, setBillingCycle] = useState<"monthly" | "yearly">("monthly")
@@ -19,69 +13,44 @@ export default function PricingPage() {
     free: {
       name: "Free",
       price: { monthly: 0, yearly: 0 },
-      description: "No card required",
-      tagline: "Perfect for getting started",
+      description: "Get started",
+      tagline: "Get started",
       cta: "Start Free",
       ctaVariant: "outline" as const,
       features: [
         "Track up to 5 coins",
-        "3 price alerts",
-        "Basic market dashboard",
-        "Real-time price updates",
-        "Community support",
-      ],
-    },
-    starter: {
-      name: "Starter",
-      price: { monthly: 5, yearly: 50 },
-      description: "Perfect for new traders",
-      tagline: "Perfect for new traders looking for smarter alerts",
-      cta: "Unlock Starter",
-      ctaVariant: "default" as const,
-      features: [
-        "Track 10 coins",
-        "10 price alerts",
-        "Portfolio tracking",
-        "Email notifications",
-        "Priority updates",
-        "7-day price history",
+        "Basic HeatPulse alerts",
+        "Portfolio overview",
+        "Light insights",
       ],
     },
     pro: {
       name: "Pro",
-      price: { monthly: 10, yearly: 100 },
-      description: "Most popular",
-      tagline: "Most popular — smarter AI alerts and full analytics",
+      price: { monthly: 7.99, yearly: 79.99 },
+      description: "For active traders",
+      tagline: "For active traders",
       cta: "Go Pro",
       ctaVariant: "pro" as const,
       popular: true,
       features: [
-        "Everything in Starter",
         "Unlimited coins & alerts",
-        "AI-generated insights",
-        "Full portfolio analytics",
-        "Historical performance",
-        "Priority support",
-        "Ad-free experience",
-        "Export portfolio data",
+        "Priority HeatPulse detection",
+        "Crypto Pulse trend feed",
+        "Deeper performance insights",
       ],
     },
-    elite: {
-      name: "Elite",
-      price: { monthly: 20, yearly: 200 },
-      description: "For serious traders",
-      tagline: "For serious traders who want real alpha",
-      cta: "Upgrade to Elite",
+    proPlus: {
+      name: "Pro+",
+      price: { monthly: 12.99, yearly: 129.99 },
+      description: "For the grinders",
+      tagline: "For the grinders",
+      cta: "Upgrade to Pro+",
       ctaVariant: "elite" as const,
       features: [
-        "Everything in Pro",
-        "Auto wallet import",
-        "Tax-ready reports (CAD)",
-        "Whale tracking",
-        "Real-time signals",
-        "API access",
-        "Dedicated support",
-        "Early feature access",
+        "All Pro features",
+        "Multi-wallet support",
+        "Early access to new features",
+        "Advanced analytics (future-ready)",
       ],
     },
   }
@@ -108,10 +77,10 @@ export default function PricingPage() {
             Start for free • No credit card required • Takes 10 seconds
           </div>
           <h1 className="text-5xl font-bold mb-4 bg-gradient-to-r from-red-500 to-red-700 bg-clip-text text-transparent">
-            Choose Your Plan
+            Simple pricing for fast movers.
           </h1>
           <p className="text-gray-400 text-lg max-w-2xl mx-auto">
-            Kryptotrac gives you real crypto intelligence WITHOUT forcing you to pay first
+            Start free, upgrade when you need more firepower.
           </p>
         </div>
 
@@ -143,7 +112,7 @@ export default function PricingPage() {
           </div>
         </div>
 
-        <div className="grid lg:grid-cols-4 md:grid-cols-2 gap-6 mb-16">
+        <div className="grid lg:grid-cols-3 md:grid-cols-2 gap-6 mb-16 max-w-5xl mx-auto">
           {Object.entries(tiers).map(([key, tier]) => {
             const tierKey = key as keyof typeof tiers
             const price = getPrice(tierKey)
