@@ -1,0 +1,6 @@
+{
+  "name": "@kryptotrac/orbitalprop",
+  "version": "0.1.0",
+  "main": "src/orbital-prop.js",
+  "license": "MIT"
+}
