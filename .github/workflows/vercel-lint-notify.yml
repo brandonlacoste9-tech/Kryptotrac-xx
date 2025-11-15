@@ -1,0 +1,59 @@
+name: Vercel Lint Notify
+
+# Trigger on pushes to main (adjust branch list as needed)
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  lint-and-notify:
+    runs-on: ubuntu-latest
+    # Explicit permissions for security
+    permissions:
+      contents: read
+    # allow job.status to be set for the notify step
+    outputs:
+      job-status: ${{ job.status }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Use Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install dependencies
+        run: |
+          npm ci
+
+      - name: Run lint
+        id: run-lint
+        run: |
+          # run linter and capture exit code so the job can still notify Vercel
+          set -o pipefail
+          npm run lint
+
+      - name: Show lint result (for logs)
+        if: ${{ always() }}
+        run: |
+          echo "Lint step finished. Exit code: $?"
+
+      - name: 'Notify Vercel (status)'
+        if: ${{ always() }}
+        uses: vercel/repository-dispatch/actions/status@v1
+        with:
+          # Short descriptive name that will show up in Vercel UI
+          name: 'Vercel - v0-kryptotrac: lint'
+          # Job status available from GitHub; passes "success" / "failure" / "cancelled"
+          status: ${{ job.status }}
+          # Optional: pass a short message (visible in Vercel)
+          message: "Lint completed on GitHub Actions — job status: ${{ job.status }}"
+          # Optional fields for better integration (placeholders)
+          vercel-project-name: 'v0-kryptotrac'
+        env:
+          # The action expects a token in the environment or as an input.
+          # Create this secret in your repo settings: VERCEL_TOKEN
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
