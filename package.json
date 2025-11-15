@@ -6,9 +6,7 @@
     "build": "next build",
     "dev": "next dev",
     "lint": "eslint .",
-    "start": "next start",
-    "mcp:dev": "node scripts/kryptotrac-mcp.js",
-    "test:mcp": "node tests/mcp/test-mcp-server.js"
+    "start": "next start"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.10.0",
