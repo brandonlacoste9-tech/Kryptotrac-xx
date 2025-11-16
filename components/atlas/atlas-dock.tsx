@@ -1,10 +1,11 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { Textarea } from "@/components/ui/textarea"
-import { Sparkles, X, Minimize2, Maximize2 } from 'lucide-react'
+import { Sparkles, X, Minimize2, Maximize2, Bell } from 'lucide-react'
+import { haptics } from '@/lib/haptics'
 
 export function AtlasDock() {
   const [isOpen, setIsOpen] = useState(false)
@@ -12,6 +13,32 @@ export function AtlasDock() {
   const [query, setQuery] = useState("")
   const [loading, setLoading] = useState(false)
   const [response, setResponse] = useState("")
+  const [unreadTips, setUnreadTips] = useState(0)
+  const [activeTip, setActiveTip] = useState<any>(null)
+
+  useEffect(() => {
+    const checkTips = async () => {
+      try {
+        const res = await fetch('/api/bb/tips')
+        const data = await res.json()
+        if (data.tips && data.tips.length > 0) {
+          setUnreadTips(data.tips.length)
+          // Show latest tip
+          const latestTip = data.tips[0]
+          setActiveTip(latestTip)
+          // Trigger haptic
+          haptics.bbTip()
+        }
+      } catch (error) {
+        console.error('[BB Dock] Failed to check tips:', error)
+      }
+    }
+
+    checkTips()
+    const interval = setInterval(checkTips, 5 * 60 * 1000) // Check every 5 minutes
+
+    return () => clearInterval(interval)
+  }, [])
 
   const handleSubmit = async () => {
     if (!query.trim()) return
@@ -35,14 +62,33 @@ export function AtlasDock() {
     }
   }
 
+  const markTipAsRead = async (tipId: string) => {
+    try {
+      await fetch('/api/bb/tips', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ tipId }),
+      })
+      setUnreadTips((prev) => Math.max(0, prev - 1))
+      setActiveTip(null)
+    } catch (error) {
+      console.error('[BB Dock] Failed to mark tip as read:', error)
+    }
+  }
+
   if (!isOpen) {
     return (
       <button
         onClick={() => setIsOpen(true)}
-        className="fixed bottom-6 right-6 p-4 rounded-full bg-gradient-to-br from-orange-500 to-red-500 text-white shadow-lg hover:shadow-xl transition-all hover:scale-110 z-50 bee-trail bb-hover"
+        className="fixed bottom-6 right-6 p-4 rounded-full bg-gradient-to-br from-orange-500 to-red-500 text-white shadow-lg hover:shadow-xl transition-all hover:scale-110 z-50 bee-trail bb-hover relative"
         aria-label="Open BB Assistant"
       >
         <Sparkles className="w-6 h-6" />
+        {unreadTips > 0 && (
+          <span className="absolute -top-1 -right-1 bg-yellow-400 text-black text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center animate-pulse">
+            {unreadTips}
+          </span>
+        )}
       </button>
     )
   }
@@ -53,6 +99,12 @@ export function AtlasDock() {
         <div className="flex items-center gap-2">
           <Sparkles className="w-5 h-5" />
           <span className="font-semibold">BB</span>
+          {unreadTips > 0 && (
+            <span className="flex items-center gap-1 text-xs bg-yellow-400 text-black px-2 py-0.5 rounded-full font-bold">
+              <Bell className="w-3 h-3" />
+              {unreadTips}
+            </span>
+          )}
         </div>
         <div className="flex items-center gap-1">
           <Button
@@ -76,6 +128,29 @@ export function AtlasDock() {
 
       {!isMinimized && (
         <div className="p-4 space-y-3 max-h-[500px] overflow-y-auto">
+          {activeTip && (
+            <div className="p-3 rounded-lg bg-yellow-50 border-2 border-yellow-400 text-sm relative">
+              <div className="flex items-start justify-between gap-2">
+                <div className="flex-1">
+                  <p className="font-semibold text-yellow-900 mb-1 flex items-center gap-1">
+                    <Bell className="w-3 h-3" />
+                    BB noticed something 👀
+                  </p>
+                  <p className="text-yellow-800 whitespace-pre-wrap">{activeTip.message}</p>
+                  <p className="text-xs text-yellow-700 mt-2 italic">{activeTip.disclaimer}</p>
+                </div>
+                <Button
+                  size="sm"
+                  variant="ghost"
+                  className="h-6 w-6 p-0"
+                  onClick={() => markTipAsRead(activeTip.id)}
+                >
+                  <X className="w-4 h-4" />
+                </Button>
+              </div>
+            </div>
+          )}
+
           <Textarea
             placeholder="Ask BB anything..."
             value={query}

@@ -6,7 +6,7 @@ import { WatchlistSection } from "@/components/watchlist/watchlist-section"
 import { HeroWithFire } from "@/components/hero/hero-with-fire"
 import { Testimonials } from "@/components/landing/testimonials"
 import { TrustBanner } from "@/components/trust/trust-banner"
-import { CanadianNotice } from "@/components/canadian/canadian-notice"
+import { GlobalNotice } from "@/components/canadian/canadian-notice"
 
 export default async function HomePage() {
   const supabase = await createServerClient()
@@ -36,7 +36,7 @@ export default async function HomePage() {
 
       <Testimonials />
 
-      <CanadianNotice />
+      <GlobalNotice />
 
       <AffiliateBanner />
     </div>

@@ -16,18 +16,18 @@ const _geistMono = Geist_Mono({ subsets: ["latin"] })
 
 export const metadata: Metadata = {
   title: "KryptoTrac - Track Your Crypto Portfolio with Real-Time Insights",
-  description: "Canadian-friendly crypto portfolio tracker with real-time price alerts, P&L analytics, and AI-powered insights. Track Bitcoin, Ethereum, and your favorite cryptocurrencies.",
+  description: "Privacy-first crypto portfolio tracker with real-time price alerts, P&L analytics, and AI-powered insights. Track Bitcoin, Ethereum, and your favorite cryptocurrencies worldwide.",
   generator: "v0.app",
   manifest: "/manifest.json",
-  keywords: ["crypto", "portfolio", "tracker", "bitcoin", "ethereum", "cryptocurrency", "canada", "price alerts", "analytics"],
+  keywords: ["crypto", "portfolio", "tracker", "bitcoin", "ethereum", "cryptocurrency", "price alerts", "analytics", "AI", "BB"],
   authors: [{ name: "KryptoTrac" }],
   openGraph: {
     type: "website",
-    locale: "en_CA",
+    locale: "en_US",
     url: "https://kryptotrac.com",
     siteName: "KryptoTrac",
     title: "KryptoTrac - Track Your Crypto Portfolio",
-    description: "Canadian-friendly crypto portfolio tracker with real-time price alerts and AI-powered insights.",
+    description: "Privacy-first crypto portfolio tracker with real-time price alerts and AI-powered insights for investors worldwide.",
     images: [
       {
         url: "/og-image.jpg",
@@ -40,7 +40,7 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: "KryptoTrac - Track Your Crypto Portfolio",
-    description: "Canadian-friendly crypto portfolio tracker with real-time price alerts and AI insights.",
+    description: "Privacy-first crypto portfolio tracker with real-time price alerts and AI insights for investors worldwide.",
     images: ["/og-image.jpg"],
     creator: "@kryptotrac",
   },

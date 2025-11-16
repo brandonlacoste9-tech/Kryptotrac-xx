@@ -1,4 +1,4 @@
-import { Shield, Lock, Eye, Globe } from 'lucide-react'
+import { Shield, Lock, Eye, Users } from 'lucide-react'
 
 export function TrustBanner() {
   return (
@@ -31,10 +31,10 @@ export function TrustBanner() {
 
           <div className="flex flex-col items-center text-center gap-2">
             <div className="w-12 h-12 rounded-full bg-red-500/10 flex items-center justify-center">
-              <Globe className="w-6 h-6 text-red-500" />
+              <Users className="w-6 h-6 text-red-500" />
             </div>
-            <p className="text-sm font-medium text-white">Canadian-Friendly</p>
-            <p className="text-xs text-gray-400">Built for CAD investors</p>
+            <p className="text-sm font-medium text-white">Global Community</p>
+            <p className="text-xs text-gray-400">Join investors worldwide</p>
           </div>
         </div>
       </div>
