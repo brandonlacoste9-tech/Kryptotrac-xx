@@ -79,13 +79,19 @@ export function AtlasDock() {
   if (!isOpen) {
     return (
       <button
-        onClick={() => setIsOpen(true)}
-        className="fixed bottom-6 right-6 p-4 rounded-full bg-gradient-to-br from-orange-500 to-red-500 text-white shadow-lg hover:shadow-xl transition-all hover:scale-110 z-50 bee-trail bb-hover relative"
+        onClick={() => {
+          setIsOpen(true)
+          haptics.bbWelcome()
+        }}
+        className="fixed bottom-6 right-6 w-16 h-16 rounded-lg bg-gradient-to-br from-yellow-500 via-orange-500 to-red-500 text-white shadow-lg hover:shadow-xl transition-all hover:scale-110 z-50 bee-trail bb-hover relative flex items-center justify-center group"
+        style={{
+          clipPath: "polygon(30% 0%, 70% 0%, 100% 30%, 100% 70%, 70% 100%, 30% 100%, 0% 70%, 0% 30%)"
+        }}
         aria-label="Open BB Assistant"
       >
-        <Sparkles className="w-6 h-6" />
+        <span className="text-3xl group-hover:scale-110 transition-transform">🍯</span>
         {unreadTips > 0 && (
-          <span className="absolute -top-1 -right-1 bg-yellow-400 text-black text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center animate-pulse">
+          <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center animate-pulse ring-2 ring-black">
             {unreadTips}
           </span>
         )}
@@ -94,13 +100,24 @@ export function AtlasDock() {
   }
 
   return (
-    <Card className="fixed bottom-6 right-6 w-96 max-w-[calc(100vw-3rem)] shadow-2xl z-50 overflow-hidden bb-cursor">
-      <div className="bg-gradient-to-r from-orange-500 to-red-500 p-3 flex items-center justify-between text-white">
+    <Card className="fixed bottom-6 right-6 w-96 max-w-[calc(100vw-3rem)] shadow-2xl z-50 overflow-hidden bb-cursor border-2 border-yellow-500/30 relative">
+      <div 
+        className="absolute inset-0 opacity-5 pointer-events-none"
+        style={{
+          backgroundImage: `
+            repeating-linear-gradient(60deg, transparent, transparent 35px, rgba(255, 140, 0, 0.1) 35px, rgba(255, 140, 0, 0.1) 70px),
+            repeating-linear-gradient(120deg, transparent, transparent 35px, rgba(255, 140, 0, 0.1) 35px, rgba(255, 140, 0, 0.1) 70px),
+            repeating-linear-gradient(0deg, transparent, transparent 35px, rgba(255, 140, 0, 0.1) 35px, rgba(255, 140, 0, 0.1) 70px)
+          `
+        }}
+      />
+
+      <div className="bg-gradient-to-r from-yellow-500 via-orange-500 to-red-500 p-3 flex items-center justify-between text-white relative z-10">
         <div className="flex items-center gap-2">
-          <Sparkles className="w-5 h-5" />
+          <span className="text-xl">🐝</span>
           <span className="font-semibold">BB</span>
           {unreadTips > 0 && (
-            <span className="flex items-center gap-1 text-xs bg-yellow-400 text-black px-2 py-0.5 rounded-full font-bold">
+            <span className="flex items-center gap-1 text-xs bg-white/20 text-white px-2 py-0.5 rounded-full font-bold backdrop-blur-sm">
               <Bell className="w-3 h-3" />
               {unreadTips}
             </span>

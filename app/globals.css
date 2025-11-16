@@ -133,6 +133,16 @@
   border-color: rgb(var(--color-border));
 }
 
+/* Added BB bee cursor for entire site */
+body {
+  cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="%23fbbf24" stroke="%23000" stroke-width="1"><circle cx="12" cy="8" r="3"/><ellipse cx="12" cy="14" rx="4" ry="6"/><line x1="8" y1="12" x2="6" y2="10" stroke-width="2"/><line x1="16" y1="12" x2="18" y2="10" stroke-width="2"/></svg>') 8 8, auto;
+}
+
+/* Buttons and links get pointer on hover */
+button:hover, a:hover, [role="button"]:hover {
+  cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="%23fbbf24" stroke="%23000" stroke-width="1"><circle cx="12" cy="8" r="3"/><ellipse cx="12" cy="14" rx="4" ry="6"/><line x1="8" y1="12" x2="6" y2="10" stroke-width="2"/><line x1="16" y1="12" x2="18" y2="10" stroke-width="2"/></svg>') 9 9, pointer;
+}
+
 body {
   color: rgb(var(--color-foreground));
   background: #000000;
@@ -331,7 +341,7 @@ body::before {
 /* Added BB persona glowing bee cursor effect */
 /* Glowing bee cursor for BB persona pages */
 .bb-cursor {
-  cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="%23fbbf24" stroke-width="2"><path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"/></svg>') 12 12, auto;
+  cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="%23fbbf24" stroke="%23000" stroke-width="1"><circle cx="12" cy="8" r="3"/><ellipse cx="12" cy="14" rx="4" ry="6"/><line x1="8" y1="12" x2="6" y2="10" stroke-width="2"/><line x1="16" y1="12" x2="18" y2="10" stroke-width="2"/></svg>') 8 8, auto;
 }
 
 .bb-cursor:hover {
@@ -351,14 +361,15 @@ body::before {
 }
 
 /* Added bee trail particle effect for BB dock button */
+/* Updated bee trail to be more subtle sparkle */
 @keyframes beeTrail {
   0% {
-    opacity: 1;
+    opacity: 0.8;
     transform: scale(1) translate(0, 0);
   }
   100% {
     opacity: 0;
-    transform: scale(0.3) translate(-20px, -20px);
+    transform: scale(0.2) translate(-15px, -15px);
   }
 }
 
@@ -372,6 +383,7 @@ body::before {
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  animation: beeTrail 1s ease-out infinite;
+  animation: beeTrail 1.2s ease-out infinite;
   pointer-events: none;
+  font-size: 12px;
 }

@@ -89,4 +89,21 @@ export const haptics = {
       navigator.vibrate([50, 30, 100])
     }
   },
+
+  // BB welcome buzz (friendly greeting pattern)
+  bbWelcome: () => {
+    if (typeof navigator !== 'undefined' && navigator.vibrate) {
+      navigator.vibrate([30, 20, 30, 20, 50])
+    }
+  },
+}
+
+export function triggerHaptic(duration1: number, pause?: number, duration2?: number) {
+  if (typeof navigator !== 'undefined' && navigator.vibrate) {
+    if (pause !== undefined && duration2 !== undefined) {
+      navigator.vibrate([duration1, pause, duration2])
+    } else {
+      navigator.vibrate(duration1)
+    }
+  }
 }

@@ -15,8 +15,8 @@ const _geist = Geist({ subsets: ["latin"] })
 const _geistMono = Geist_Mono({ subsets: ["latin"] })
 
 export const metadata: Metadata = {
-  title: "KryptoTrac - Track Your Crypto Portfolio with Real-Time Insights",
-  description: "Privacy-first crypto portfolio tracker with real-time price alerts, P&L analytics, and AI-powered insights. Track Bitcoin, Ethereum, and your favorite cryptocurrencies worldwide.",
+  title: "KryptoTrac - The only crypto assistant that speaks YOUR language",
+  description: "BB is your AI crypto buddy who watches markets 24/7 and speaks 100+ languages. Get proactive tips, portfolio tracking, and insights. Starting at $9/month.",
   generator: "v0.app",
   manifest: "/manifest.json",
   keywords: ["crypto", "portfolio", "tracker", "bitcoin", "ethereum", "cryptocurrency", "price alerts", "analytics", "AI", "BB"],
@@ -26,8 +26,8 @@ export const metadata: Metadata = {
     locale: "en_US",
     url: "https://kryptotrac.com",
     siteName: "KryptoTrac",
-    title: "KryptoTrac - Track Your Crypto Portfolio",
-    description: "Privacy-first crypto portfolio tracker with real-time price alerts and AI-powered insights for investors worldwide.",
+    title: "KryptoTrac - BB: Your AI Crypto Buddy in 100+ Languages",
+    description: "Meet BB, the AI crypto assistant that speaks your language. Proactive tips, portfolio tracking, and market insights. $9/month for what competitors charge $29-49.",
     images: [
       {
         url: "/og-image.jpg",
@@ -39,8 +39,8 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "KryptoTrac - Track Your Crypto Portfolio",
-    description: "Privacy-first crypto portfolio tracker with real-time price alerts and AI insights for investors worldwide.",
+    title: "KryptoTrac - BB: Your AI Crypto Buddy",
+    description: "AI crypto assistant in 100+ languages. Proactive tips & portfolio tracking. $9/month.",
     images: ["/og-image.jpg"],
     creator: "@kryptotrac",
   },

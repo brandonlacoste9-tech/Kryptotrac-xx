@@ -49,14 +49,14 @@ export default function PricingPage() {
     },
     pro: {
       name: "Pro",
-      price: { monthly: 10, yearly: 100 },
+      price: { monthly: 9, yearly: 90 },
       description: "Most popular",
       tagline: "Most popular — smarter AI alerts and full analytics",
       cta: "Go Pro",
       ctaVariant: "pro" as const,
       popular: true,
       features: [
-        "Everything in Starter",
+        "Everything in Free",
         "Unlimited coins & alerts",
         "AI-generated insights",
         "Full portfolio analytics",
@@ -68,7 +68,7 @@ export default function PricingPage() {
     },
     elite: {
       name: "Elite",
-      price: { monthly: 20, yearly: 200 },
+      price: { monthly: 19, yearly: 190 },
       description: "For serious traders",
       tagline: "For serious traders who want real alpha",
       cta: "Upgrade to Elite",
@@ -76,7 +76,7 @@ export default function PricingPage() {
       features: [
         "Everything in Pro",
         "Auto wallet import",
-        "Tax-ready reports (CAD)",
+        "Tax-ready reports",
         "Whale tracking",
         "Real-time signals",
         "API access",
