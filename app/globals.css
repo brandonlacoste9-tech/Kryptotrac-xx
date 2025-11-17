@@ -139,11 +139,7 @@ body {
   cursor: default;
 }
 
-/* Fixed cursor to be transparent instead of none, preserving clickability */
-body.with-orb,
-body.with-orb * {
-  cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="1" height="1"><rect width="1" height="1" fill="transparent"/></svg>') 0 0, auto !important;
-}
+/* Default cursor behavior */
 
 /* Hide any 3rd-party bee widgets */
 /* Removed: .bee-widget, .beehive-widget, [data-beehive] display:none rules */

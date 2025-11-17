@@ -83,10 +83,7 @@ export function AtlasDock() {
           setIsOpen(true)
           haptics.bbWelcome()
         }}
-        className="fixed bottom-6 right-6 w-16 h-16 rounded-lg bg-gradient-to-br from-red-600 via-red-500 to-orange-500 text-white shadow-lg hover:shadow-xl transition-all hover:scale-110 z-50 relative flex items-center justify-center group focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 focus:ring-offset-black"
-        style={{
-          clipPath: "polygon(30% 0%, 70% 0%, 100% 30%, 100% 70%, 70% 100%, 30% 100%, 0% 70%, 0% 30%)"
-        }}
+        className="fixed bottom-6 right-6 w-16 h-16 rounded-full bg-gradient-to-br from-red-600 via-red-500 to-orange-500 text-white shadow-lg hover:shadow-xl transition-all hover:scale-110 z-50 relative flex items-center justify-center group focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 focus:ring-offset-black"
         aria-label="Open BB Assistant"
       >
         <img 
