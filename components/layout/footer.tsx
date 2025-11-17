@@ -31,7 +31,7 @@ export async function Footer() {
 
           <div className="flex flex-col items-center gap-4">
             <a
-              href="https://v0.dev/chat/ref/BLNPBF"
+              href="https://v0.dev/r/BLNPBF"
               target="_blank"
               rel="noopener noreferrer"
               className="group relative z-10 flex items-center gap-3 rounded-full border border-border/40 bg-background/50 px-4 py-2 transition-all hover:border-primary/50 hover:bg-background/80 cursor-pointer"

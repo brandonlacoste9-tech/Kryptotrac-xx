@@ -30,7 +30,7 @@ export function ChatWidget() {
       const data = await res.json()
       setResponse(data.error || data.response)
     } catch (error) {
-      setResponse("Failed to reach BB. Try again.")
+      setResponse("Failed to reach ATLAS. Try again.")
     } finally {
       setLoading(false)
     }
@@ -44,7 +44,7 @@ export function ChatWidget() {
           haptics.bbWelcome()
         }}
         className="fixed bottom-6 right-6 w-16 h-16 rounded-full bg-gradient-to-br from-red-600 via-red-500 to-orange-500 text-white shadow-lg hover:shadow-xl transition-all hover:scale-110 z-50 flex items-center justify-center group focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 focus:ring-offset-black"
-        aria-label="Open KryptoTrac chat"
+        aria-label="Open ATLAS chat"
       >
         <img 
           src="/images/kryptotrac-logo.svg" 
@@ -60,11 +60,11 @@ export function ChatWidget() {
   }
 
   return (
-    <Card className="fixed bottom-6 right-6 w-96 max-w-[calc(100vw-3rem)] shadow-2xl z-50 overflow-hidden border-2 border-red-500/30">
+    <Card className="fixed bottom-6 right-6 w-96 max-w-[calc(100vw-3rem)] shadow-2xl z-50 overflow-hidden border-2 border-red-500/30 bg-black">
       <div className="bg-gradient-to-r from-red-600 via-red-500 to-orange-500 p-3 flex items-center justify-between text-white">
         <div className="flex items-center gap-2">
           <img src="/images/kryptotrac-logo.svg" alt="" className="w-6 h-6" />
-          <span className="font-semibold">KryptoTrac Chat</span>
+          <span className="font-semibold">Ask ATLAS</span>
         </div>
         <div className="flex items-center gap-1">
           <Button
@@ -87,12 +87,12 @@ export function ChatWidget() {
       </div>
 
       {!isMinimized && (
-        <div className="p-4 space-y-3 max-h-[500px] overflow-y-auto bg-background">
+        <div className="p-4 space-y-3 max-h-[500px] overflow-y-auto bg-black">
           <Textarea
-            placeholder="Ask BB anything..."
+            placeholder="Ask ATLAS anything..."
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            className="min-h-[80px]"
+            className="min-h-[80px] bg-zinc-900 border-zinc-800"
             onKeyDown={(e) => {
               if (e.key === "Enter" && !e.shiftKey) {
                 e.preventDefault()
@@ -105,19 +105,19 @@ export function ChatWidget() {
             {loading ? (
               <span className="flex items-center gap-2">
                 <span className="animate-spin">⚡</span>
-                BB is thinking...
+                ATLAS is thinking...
               </span>
-            ) : "Ask BB"}
+            ) : "Ask ATLAS"}
           </Button>
 
           {response && (
-            <div className="p-3 rounded-lg bg-muted text-sm border border-red-500/20">
+            <div className="p-3 rounded-lg bg-zinc-900 text-sm border border-red-500/20">
               <p className="whitespace-pre-wrap">{response}</p>
             </div>
           )}
 
           <p className="text-xs text-center text-muted-foreground">
-            Quick BB assistance. <a href="/atlas" className="underline hover:text-red-500">Open full BB</a>
+            Quick ATLAS chat. <a href="/atlas" className="underline hover:text-red-500">Open full ATLAS</a>
           </p>
         </div>
       )}
