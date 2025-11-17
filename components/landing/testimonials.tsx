@@ -8,7 +8,6 @@ const testimonials = [
   {
     name: "Alex M.",
     role: "Day Trader",
-    location: "Toronto, ON",
     content: "KryptoTrac is the cleanest crypto tracker I've used. The real-time alerts saved me from a bad trade last week. Worth every penny of Pro.",
     rating: 5,
     avatar: "AM"
@@ -16,7 +15,6 @@ const testimonials = [
   {
     name: "Sarah K.",
     role: "Long-term Holder",
-    location: "Vancouver, BC",
     content: "Finally, a tracker that respects my privacy and doesn't sell my data. The portfolio analytics help me stay disciplined.",
     rating: 5,
     avatar: "SK"
@@ -24,7 +22,6 @@ const testimonials = [
   {
     name: "Jordan L.",
     role: "Crypto Beginner",
-    location: "Montreal, QC",
     content: "I was overwhelmed by other platforms. KryptoTrac makes it simple to track my coins without the noise. The free tier is perfect for learning.",
     rating: 5,
     avatar: "JL"
@@ -47,7 +44,7 @@ export function Testimonials() {
       <div className="max-w-6xl mx-auto">
         <div className="text-center mb-12">
           <h2 className="text-3xl md:text-4xl font-bold mb-4 bg-gradient-to-r from-red-500 to-orange-500 bg-clip-text text-transparent">
-            Trusted by Canadian Crypto Investors
+            Trusted by Crypto Investors Worldwide
           </h2>
           <p className="text-gray-400 text-lg">Real feedback from real users</p>
         </div>
@@ -69,7 +66,7 @@ export function Testimonials() {
                 </div>
                 <div>
                   <p className="font-semibold text-white">{testimonial.name}</p>
-                  <p className="text-sm text-gray-400">{testimonial.role} · {testimonial.location}</p>
+                  <p className="text-sm text-gray-400">{testimonial.role}</p>
                 </div>
               </div>
             </Card>
@@ -98,7 +95,7 @@ export function Testimonials() {
                 </div>
                 <div>
                   <p className="font-semibold text-white">{testimonial.name}</p>
-                  <p className="text-sm text-gray-400">{testimonial.role} · {testimonial.location}</p>
+                  <p className="text-sm text-gray-400">{testimonial.role}</p>
                 </div>
               </div>
             </Card>

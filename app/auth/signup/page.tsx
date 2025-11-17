@@ -2,12 +2,12 @@
 
 import type React from "react"
 
-import { useState } from "react"
+import { useState, Suspense } from "react"
 import { createBrowserClient } from "@/lib/supabase/client"
 import { useRouter, useSearchParams } from 'next/navigation'
 import Link from "next/link"
 
-export default function SignupPage() {
+function SignupForm() {
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [loading, setLoading] = useState(false)
@@ -15,6 +15,8 @@ export default function SignupPage() {
   const [success, setSuccess] = useState(false)
   const router = useRouter()
   const searchParams = useSearchParams()
+  
+  const refCode = searchParams.get('ref')
 
   async function handleSignup(e: React.FormEvent) {
     e.preventDefault()
@@ -28,6 +30,9 @@ export default function SignupPage() {
       password,
       options: {
         emailRedirectTo: process.env.NEXT_PUBLIC_DEV_SUPABASE_REDIRECT_URL || `${window.location.origin}/dashboard`,
+        data: {
+          referred_by: refCode || null
+        }
       },
     })
 
@@ -44,6 +49,17 @@ export default function SignupPage() {
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ email: data.user.email }),
         }).catch((err) => console.error("[v0] Failed to send welcome email:", err))
+        
+        if (refCode) {
+          fetch("/api/referrals/process-signup", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ 
+              userId: data.user.id,
+              refCode 
+            }),
+          }).catch((err) => console.error("[v0] Failed to process referral:", err))
+        }
       }
     }
   }
@@ -56,6 +72,11 @@ export default function SignupPage() {
             <div className="text-5xl">✉️</div>
             <h1 className="text-2xl font-bold text-white">Check your email</h1>
             <p className="text-white/60">We've sent you a confirmation link. Click it to activate your account.</p>
+            {refCode && (
+              <div className="p-4 bg-green-500/10 border border-green-500/20 rounded-lg">
+                <p className="text-green-400 font-medium">Bonus: You'll get $5 credits when you confirm your email!</p>
+              </div>
+            )}
             <Link href="/auth/login" className="inline-block text-red-400 hover:text-red-300">
               Back to sign in
             </Link>
@@ -72,6 +93,11 @@ export default function SignupPage() {
           <div className="text-center space-y-2">
             <h1 className="text-3xl font-bold text-white">Get Started</h1>
             <p className="text-white/60">Create your KryptoTrac account</p>
+            {refCode && (
+              <div className="p-3 bg-orange-500/10 border border-orange-500/20 rounded-lg mt-4">
+                <p className="text-orange-400 text-sm font-medium">You'll get $5 free credits on signup!</p>
+              </div>
+            )}
           </div>
 
           <form onSubmit={handleSignup} className="space-y-4">
@@ -123,5 +149,29 @@ export default function SignupPage() {
         </div>
       </div>
     </div>
+  )
+}
+
+export default function SignupPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen flex items-center justify-center p-6">
+        <div className="w-full max-w-md">
+          <div className="glass-card p-8 space-y-6">
+            <div className="text-center space-y-2">
+              <div className="h-8 w-48 mx-auto bg-white/5 rounded animate-pulse" />
+              <div className="h-4 w-64 mx-auto bg-white/5 rounded animate-pulse" />
+            </div>
+            <div className="space-y-4">
+              <div className="h-10 bg-white/5 rounded animate-pulse" />
+              <div className="h-10 bg-white/5 rounded animate-pulse" />
+              <div className="h-12 bg-white/5 rounded animate-pulse" />
+            </div>
+          </div>
+        </div>
+      </div>
+    }>
+      <SignupForm />
+    </Suspense>
   )
 }

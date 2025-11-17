@@ -1,10 +1,29 @@
 import { DataSourceBadge, PrivacyBadge } from "@/components/trust/data-source-badge"
+import { Gift } from 'lucide-react'
+import { createServerClient } from "@/lib/supabase/server"
+import Link from "next/link"
 
-export function Footer() {
+export async function Footer() {
+  const supabase = await createServerClient()
+  const { data: { user } } = await supabase.auth.getUser()
+
   return (
     <footer className="border-t border-border/40 mt-16 bg-background/50 backdrop-blur-sm">
       <div className="container mx-auto px-6 py-8">
         <div className="flex flex-col items-center justify-center gap-6">
+          {user && (
+            <Link
+              href="/referrals"
+              className="group flex items-center gap-3 rounded-full border-2 border-orange-500/30 bg-gradient-to-r from-orange-500/10 to-red-600/10 px-6 py-3 transition-all hover:border-orange-500/50 hover:shadow-lg hover:shadow-orange-500/20"
+            >
+              <Gift className="w-5 h-5 text-orange-400 group-hover:scale-110 transition-transform" />
+              <div className="flex items-center gap-2">
+                <span className="font-semibold text-white">Refer & Earn</span>
+                <span className="text-xs text-orange-400">Up to $200/month</span>
+              </div>
+            </Link>
+          )}
+
           <div className="flex flex-wrap items-center justify-center gap-4">
             <DataSourceBadge />
             <PrivacyBadge />

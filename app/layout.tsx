@@ -9,25 +9,27 @@ import { Footer } from "@/components/layout/footer"
 import { FeedbackPrompt } from "@/components/feedback/feedback-prompt"
 import { ErrorBoundary } from "@/components/error/error-boundary"
 import { AtlasDock } from "@/components/atlas/atlas-dock"
+import { ChatWidget } from "@/components/ChatWidget"
+import { CustomCursor } from "@/components/CustomCursor"
 import Script from "next/script"
 
 const _geist = Geist({ subsets: ["latin"] })
 const _geistMono = Geist_Mono({ subsets: ["latin"] })
 
 export const metadata: Metadata = {
-  title: "KryptoTrac - Track Your Crypto Portfolio with Real-Time Insights",
-  description: "Canadian-friendly crypto portfolio tracker with real-time price alerts, P&L analytics, and AI-powered insights. Track Bitcoin, Ethereum, and your favorite cryptocurrencies.",
+  title: "KryptoTrac - The only crypto assistant that speaks YOUR language",
+  description: "BB is your AI crypto buddy who watches markets 24/7 and speaks 100+ languages. Get proactive tips, portfolio tracking, and insights. Starting at $9/month.",
   generator: "v0.app",
   manifest: "/manifest.json",
-  keywords: ["crypto", "portfolio", "tracker", "bitcoin", "ethereum", "cryptocurrency", "canada", "price alerts", "analytics"],
+  keywords: ["crypto", "portfolio", "tracker", "bitcoin", "ethereum", "cryptocurrency", "price alerts", "analytics", "AI", "BB"],
   authors: [{ name: "KryptoTrac" }],
   openGraph: {
     type: "website",
-    locale: "en_CA",
+    locale: "en_US",
     url: "https://kryptotrac.com",
     siteName: "KryptoTrac",
-    title: "KryptoTrac - Track Your Crypto Portfolio",
-    description: "Canadian-friendly crypto portfolio tracker with real-time price alerts and AI-powered insights.",
+    title: "KryptoTrac - BB: Your AI Crypto Buddy in 100+ Languages",
+    description: "Meet BB, the AI crypto assistant that speaks your language. Proactive tips, portfolio tracking, and market insights. $9/month for what competitors charge $29-49.",
     images: [
       {
         url: "/og-image.jpg",
@@ -39,8 +41,8 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "KryptoTrac - Track Your Crypto Portfolio",
-    description: "Canadian-friendly crypto portfolio tracker with real-time price alerts and AI insights.",
+    title: "KryptoTrac - BB: Your AI Crypto Buddy",
+    description: "AI crypto assistant in 100+ languages. Proactive tips & portfolio tracking. $9/month.",
     images: ["/og-image.jpg"],
     creator: "@kryptotrac",
   },
@@ -78,10 +80,11 @@ export default function RootLayout({
       </head>
       <body className="bg-black text-white antialiased">
         <ErrorBoundary>
+          <CustomCursor />
           <Header />
           {children}
           <FeedbackPrompt />
-          <AtlasDock />
+          <ChatWidget />
           <Footer />
         </ErrorBoundary>
         <Analytics />

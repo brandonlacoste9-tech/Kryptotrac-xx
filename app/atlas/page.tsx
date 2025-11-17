@@ -6,6 +6,7 @@ import { Textarea } from "@/components/ui/textarea"
 import { Card } from "@/components/ui/card"
 import { Sparkles, MessageSquare, TrendingUp, Shield, Send } from 'lucide-react'
 import { useToast } from "@/hooks/use-toast"
+import { haptics } from "@/lib/haptics"
 
 const modes = [
   { value: "friend", label: "Chill", icon: MessageSquare, color: "text-blue-500" },
@@ -30,6 +31,8 @@ export default function AtlasPage() {
   const handleSubmit = async () => {
     if (!query.trim()) return
 
+    haptics.bbTyping()
+
     setLoading(true)
     setResponse("")
     setVibe(null)
@@ -47,6 +50,7 @@ export default function AtlasPage() {
 
       if (!res.ok) {
         setResponse(`Error: ${data.error}`)
+        haptics.error()
         return
       }
 
@@ -56,8 +60,11 @@ export default function AtlasPage() {
       if (data.xDraft) {
         setXDraft(data.xDraft)
       }
+
+      haptics.bbFinished()
     } catch (error) {
       setResponse("Failed to get response from ATLAS. Please try again.")
+      haptics.error()
     } finally {
       setLoading(false)
     }
@@ -82,9 +89,11 @@ export default function AtlasPage() {
           description: data.error || "Could not post to X",
           variant: "destructive",
         })
+        haptics.error()
         return
       }
 
+      haptics.success()
       toast({
         title: "Posted to X!",
         description: "Your ATLAS insight has been shared.",
@@ -96,6 +105,7 @@ export default function AtlasPage() {
         description: "Failed to post to X. Please try again.",
         variant: "destructive",
       })
+      haptics.error()
     } finally {
       setPostingToX(false)
     }

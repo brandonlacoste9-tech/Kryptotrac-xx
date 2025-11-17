@@ -1,0 +1,46 @@
+.custom-cursor {
+  position: fixed;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(239, 68, 68, 0.8) 0%, rgba(239, 68, 68, 0.3) 50%, transparent 100%);
+  pointer-events: none;
+  z-index: 9999;
+  box-shadow: 0 0 20px rgba(239, 68, 68, 0.6), 0 0 40px rgba(239, 68, 68, 0.3);
+  animation: glow 2s ease-in-out infinite;
+  will-change: transform;
+  top: 0;
+  left: 0;
+}
+
+@keyframes glow {
+  0%, 100% {
+    box-shadow: 0 0 20px rgba(239, 68, 68, 0.6), 0 0 40px rgba(239, 68, 68, 0.3);
+    transform: scale(1);
+  }
+  50% {
+    box-shadow: 0 0 30px rgba(239, 68, 68, 0.8), 0 0 60px rgba(239, 68, 68, 0.5);
+    transform: scale(1.1);
+  }
+}
+
+/* Hide on touch devices */
+@media (pointer: coarse) {
+  .custom-cursor {
+    display: none;
+  }
+}
+
+/* Hide OS cursor when orb is active */
+:global(body.with-orb) {
+  cursor: none !important;
+}
+
+:global(body.with-orb *) {
+  cursor: none !important;
+}
+
+/* Preserve cursor for keyboard navigation */
+:global(body.with-orb :focus) {
+  cursor: auto !important;
+}
