@@ -4,7 +4,7 @@ import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { Textarea } from "@/components/ui/textarea"
-import { Sparkles, X, Minimize2, Maximize2, Bell } from 'lucide-react'
+import { X, Minimize2, Maximize2, Bell } from 'lucide-react'
 import { haptics } from '@/lib/haptics'
 
 export function AtlasDock() {
@@ -83,13 +83,21 @@ export function AtlasDock() {
           setIsOpen(true)
           haptics.bbWelcome()
         }}
-        className="fixed bottom-6 right-6 w-16 h-16 rounded-lg bg-gradient-to-br from-yellow-500 via-orange-500 to-red-500 text-white shadow-lg hover:shadow-xl transition-all hover:scale-110 z-50 bee-trail bb-hover relative flex items-center justify-center group"
+        className="fixed bottom-6 right-6 w-16 h-16 rounded-lg bg-gradient-to-br from-red-600 via-red-500 to-orange-500 text-white shadow-lg hover:shadow-xl transition-all hover:scale-110 z-50 relative flex items-center justify-center group focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 focus:ring-offset-black"
         style={{
           clipPath: "polygon(30% 0%, 70% 0%, 100% 30%, 100% 70%, 70% 100%, 30% 100%, 0% 70%, 0% 30%)"
         }}
         aria-label="Open BB Assistant"
       >
-        <span className="text-3xl group-hover:scale-110 transition-transform">🍯</span>
+        <img 
+          src="/images/kryptotrac-logo.svg" 
+          alt="KryptoTrac" 
+          className="w-8 h-8 group-hover:scale-110 transition-transform"
+          onError={(e) => {
+            e.currentTarget.style.display = 'none'
+            e.currentTarget.parentElement!.innerHTML = '<span class="text-2xl">K</span>'
+          }}
+        />
         {unreadTips > 0 && (
           <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center animate-pulse ring-2 ring-black">
             {unreadTips}
@@ -100,22 +108,18 @@ export function AtlasDock() {
   }
 
   return (
-    <Card className="fixed bottom-6 right-6 w-96 max-w-[calc(100vw-3rem)] shadow-2xl z-50 overflow-hidden bb-cursor border-2 border-yellow-500/30 relative">
-      <div 
-        className="absolute inset-0 opacity-5 pointer-events-none"
-        style={{
-          backgroundImage: `
-            repeating-linear-gradient(60deg, transparent, transparent 35px, rgba(255, 140, 0, 0.1) 35px, rgba(255, 140, 0, 0.1) 70px),
-            repeating-linear-gradient(120deg, transparent, transparent 35px, rgba(255, 140, 0, 0.1) 35px, rgba(255, 140, 0, 0.1) 70px),
-            repeating-linear-gradient(0deg, transparent, transparent 35px, rgba(255, 140, 0, 0.1) 35px, rgba(255, 140, 0, 0.1) 70px)
-          `
-        }}
-      />
-
-      <div className="bg-gradient-to-r from-yellow-500 via-orange-500 to-red-500 p-3 flex items-center justify-between text-white relative z-10">
+    <Card className="fixed bottom-6 right-6 w-96 max-w-[calc(100vw-3rem)] shadow-2xl z-50 overflow-hidden border-2 border-red-500/30 relative">
+      <div className="bg-gradient-to-r from-red-600 via-red-500 to-orange-500 p-3 flex items-center justify-between text-white relative z-10">
         <div className="flex items-center gap-2">
-          <span className="text-xl">🐝</span>
-          <span className="font-semibold">BB</span>
+          <img 
+            src="/images/kryptotrac-logo.svg" 
+            alt="KryptoTrac" 
+            className="w-6 h-6"
+            onError={(e) => {
+              e.currentTarget.style.display = 'none'
+            }}
+          />
+          <span className="font-semibold">BB Assistant</span>
           {unreadTips > 0 && (
             <span className="flex items-center gap-1 text-xs bg-white/20 text-white px-2 py-0.5 rounded-full font-bold backdrop-blur-sm">
               <Bell className="w-3 h-3" />
@@ -144,17 +148,19 @@ export function AtlasDock() {
       </div>
 
       {!isMinimized && (
-        <div className="p-4 space-y-3 max-h-[500px] overflow-y-auto">
+        <div className="p-4 space-y-3 max-h-[500px] overflow-y-auto bg-background">
           {activeTip && (
-            <div className="p-3 rounded-lg bg-yellow-50 border-2 border-yellow-400 text-sm relative">
+            <div className="p-3 rounded-lg bg-red-50 dark:bg-red-950/20 border-2 border-red-400 dark:border-red-600 text-sm relative">
               <div className="flex items-start justify-between gap-2">
                 <div className="flex-1">
-                  <p className="font-semibold text-yellow-900 mb-1 flex items-center gap-1">
+                  <p className="font-semibold text-red-900 dark:text-red-100 mb-1 flex items-center gap-1">
                     <Bell className="w-3 h-3" />
-                    BB noticed something 👀
+                    BB noticed something
                   </p>
-                  <p className="text-yellow-800 whitespace-pre-wrap">{activeTip.message}</p>
-                  <p className="text-xs text-yellow-700 mt-2 italic">{activeTip.disclaimer}</p>
+                  <p className="text-red-800 dark:text-red-200 whitespace-pre-wrap">{activeTip.message}</p>
+                  {activeTip.disclaimer && (
+                    <p className="text-xs text-red-700 dark:text-red-300 mt-2 italic">{activeTip.disclaimer}</p>
+                  )}
                 </div>
                 <Button
                   size="sm"
@@ -181,18 +187,23 @@ export function AtlasDock() {
             }}
           />
 
-          <Button onClick={handleSubmit} disabled={loading || !query.trim()} className="w-full" size="sm">
-            {loading ? "BB is thinking..." : "Ask BB"}
+          <Button onClick={handleSubmit} disabled={loading || !query.trim()} className="w-full bg-red-600 hover:bg-red-700" size="sm">
+            {loading ? (
+              <span className="flex items-center gap-2">
+                <span className="animate-spin">⚡</span>
+                BB is thinking...
+              </span>
+            ) : "Ask BB"}
           </Button>
 
           {response && (
-            <div className="p-3 rounded-lg bg-muted text-sm">
+            <div className="p-3 rounded-lg bg-muted text-sm border border-red-500/20">
               <p className="whitespace-pre-wrap">{response}</p>
             </div>
           )}
 
           <p className="text-xs text-center text-muted-foreground">
-            Quick BB assistance. <a href="/atlas" className="underline">Open full BB</a>
+            Quick BB assistance. <a href="/atlas" className="underline hover:text-red-500">Open full BB</a>
           </p>
         </div>
       )}

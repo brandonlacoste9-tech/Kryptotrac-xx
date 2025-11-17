@@ -4,7 +4,7 @@ import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { Textarea } from "@/components/ui/textarea"
-import { X, Minimize2, Maximize2, Bell } from 'lucide-react'
+import { X, Minimize2, Maximize2 } from 'lucide-react'
 import { haptics } from '@/lib/haptics'
 
 export function ChatWidget() {
@@ -43,13 +43,17 @@ export function ChatWidget() {
           setIsOpen(true)
           haptics.bbWelcome()
         }}
-        className="fixed bottom-6 right-6 w-16 h-16 rounded-full bg-gradient-to-br from-red-600 to-orange-500 text-white shadow-lg hover:shadow-xl transition-all hover:scale-110 z-50 flex items-center justify-center group focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-black"
+        className="fixed bottom-6 right-6 w-16 h-16 rounded-full bg-gradient-to-br from-red-600 via-red-500 to-orange-500 text-white shadow-lg hover:shadow-xl transition-all hover:scale-110 z-50 flex items-center justify-center group focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 focus:ring-offset-black"
         aria-label="Open KryptoTrac chat"
       >
         <img 
           src="/images/kryptotrac-logo.svg" 
           alt="KryptoTrac" 
           className="w-10 h-10 group-hover:scale-110 transition-transform"
+          onError={(e) => {
+            e.currentTarget.style.display = 'none'
+            e.currentTarget.parentElement!.innerHTML = '<span class="text-2xl">K</span>'
+          }}
         />
       </button>
     )
@@ -57,7 +61,7 @@ export function ChatWidget() {
 
   return (
     <Card className="fixed bottom-6 right-6 w-96 max-w-[calc(100vw-3rem)] shadow-2xl z-50 overflow-hidden border-2 border-red-500/30">
-      <div className="bg-gradient-to-r from-red-600 to-orange-500 p-3 flex items-center justify-between text-white">
+      <div className="bg-gradient-to-r from-red-600 via-red-500 to-orange-500 p-3 flex items-center justify-between text-white">
         <div className="flex items-center gap-2">
           <img src="/images/kryptotrac-logo.svg" alt="" className="w-6 h-6" />
           <span className="font-semibold">KryptoTrac Chat</span>
@@ -97,18 +101,23 @@ export function ChatWidget() {
             }}
           />
 
-          <Button onClick={handleSubmit} disabled={loading || !query.trim()} className="w-full" size="sm">
-            {loading ? "BB is thinking..." : "Ask BB"}
+          <Button onClick={handleSubmit} disabled={loading || !query.trim()} className="w-full bg-red-600 hover:bg-red-700" size="sm">
+            {loading ? (
+              <span className="flex items-center gap-2">
+                <span className="animate-spin">⚡</span>
+                BB is thinking...
+              </span>
+            ) : "Ask BB"}
           </Button>
 
           {response && (
-            <div className="p-3 rounded-lg bg-muted text-sm">
+            <div className="p-3 rounded-lg bg-muted text-sm border border-red-500/20">
               <p className="whitespace-pre-wrap">{response}</p>
             </div>
           )}
 
           <p className="text-xs text-center text-muted-foreground">
-            Quick BB assistance. <a href="/atlas" className="underline">Open full BB</a>
+            Quick BB assistance. <a href="/atlas" className="underline hover:text-red-500">Open full BB</a>
           </p>
         </div>
       )}

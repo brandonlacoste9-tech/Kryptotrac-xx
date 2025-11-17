@@ -1,5 +1,3 @@
-import crypto from "crypto"
-
 export type XPostPayload = {
   text: string
 }
@@ -65,11 +63,10 @@ export async function fetchCryptoFeedForSymbols(
   }))
 }
 
-// Minimal posting stub – safe for dev/testing
 export async function postToX(payload: XPostPayload): Promise<{ id: string | null; ok: boolean }> {
   console.log("[X POST - STUB]", payload.text)
   return {
-    id: crypto.randomUUID(),
+    id: globalThis.crypto.randomUUID(),
     ok: true,
   }
 }
