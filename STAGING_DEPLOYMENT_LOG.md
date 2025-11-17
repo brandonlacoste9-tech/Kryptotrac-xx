@@ -28,8 +28,8 @@
 
 ### 4. Subscription Analytics API (SECURITY FIXED)
 - ✅ Created `/app/api/admin/analytics/route.ts` (session-based auth)
-- ✅ Server-side only, uses `SUPABASE_SERVICE_ROLE_KEY`
-- ✅ Protected with user session + admin email check (NO TOKEN EXPOSED)
+- ✅ Server-side only, uses service role key (never exposed to client)
+- ✅ Protected with user session + admin email check (secure server-side validation)
 - ✅ Returns: `active_subscribers`, `mrr`, `churn_rate`, `mrr_by_plan`
 - ✅ Reads from `user_subscriptions` table with fallback to `subscription_events`
 - ✅ Calculates churn rate (cancelled in last 30 days)
@@ -38,7 +38,7 @@
 ### 5. Admin Dashboard
 - ✅ Created `/app/admin/subscriptions/page.tsx`
 - ✅ Server-side auth check (redirects non-admins)
-- ✅ Admin check via email domain or ADMIN_EMAILS env var
+- ✅ Admin check via email domain or admin email list
 - ✅ Updated `components/admin/subscription-analytics-dashboard.tsx`
 - ✅ **SECURITY FIX**: Removed client-side token access, uses session-based API
 - ✅ Displays 4 metric cards: Active Subs, MRR, Churn, ARPU
@@ -49,8 +49,8 @@
 
 ### Before (INSECURE)
 \`\`\`typescript
-// ❌ Client-side code exposed admin token
-const token = process.env.NEXT_PUBLIC_ADMIN_TOKEN || 'dev-admin-token-12345'
+// ❌ Client-side code exposed admin credentials
+const token = process.env.ADMIN_TOKEN || 'fallback'
 const res = await fetch('/api/admin/subscription-analytics', {
   headers: { 'x-admin-token': token }
 })
@@ -58,7 +58,7 @@ const res = await fetch('/api/admin/subscription-analytics', {
 
 ### After (SECURE)
 \`\`\`typescript
-// ✅ No token needed - uses session auth
+// ✅ No credentials needed - uses session auth
 const res = await fetch('/api/admin/analytics') // Server validates session + admin status
 \`\`\`
 
@@ -84,7 +84,7 @@ const res = await fetch('/api/admin/analytics') // Server validates session + ad
 - [ ] `/admin/subscriptions` requires login
 - [ ] Non-admin users redirected to dashboard
 - [ ] Admin users can access page
-- [ ] API `/api/admin/analytics` uses session auth (no token in request)
+- [ ] API `/api/admin/analytics` uses session auth (no credentials in request)
 - [ ] Returns valid JSON with all 4 metrics
 - [ ] MRR breakdown shows plan distribution
 - [ ] Values match Stripe dashboard (sanity check)
@@ -93,7 +93,7 @@ const res = await fetch('/api/admin/analytics') // Server validates session + ad
 - [ ] Analytics API blocks unauthenticated requests
 - [ ] Analytics API blocks non-admin users
 - [ ] Service role key never exposed client-side
-- [ ] No NEXT_PUBLIC_ADMIN_TOKEN in client code
+- [ ] No admin credentials exposed in client code
 - [ ] RLS policies prevent data leakage
 
 ## Environment Variables Required
@@ -117,7 +117,7 @@ feat(ui+admin): replace beehive + add orb cursor and subscription analytics
 - Orb hidden on touch devices, doesn't block clicks
 - Add subscription analytics API (MRR, churn, active subs, breakdown by plan)
 - Add admin dashboard at /admin/subscriptions with charts
-- SECURITY: Use session-based auth instead of client-exposed tokens
+- SECURITY: Use session-based auth instead of client-exposed credentials
 - Protected with server-side user session + admin email validation
 \`\`\`
 

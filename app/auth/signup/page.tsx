@@ -2,12 +2,12 @@
 
 import type React from "react"
 
-import { useState } from "react"
+import { useState, Suspense } from "react"
 import { createBrowserClient } from "@/lib/supabase/client"
 import { useRouter, useSearchParams } from 'next/navigation'
 import Link from "next/link"
 
-export default function SignupPage() {
+function SignupForm() {
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [loading, setLoading] = useState(false)
@@ -44,7 +44,6 @@ export default function SignupPage() {
       setLoading(false)
 
       if (data.user) {
-        // Send welcome email
         fetch("/api/auth/welcome", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -150,5 +149,29 @@ export default function SignupPage() {
         </div>
       </div>
     </div>
+  )
+}
+
+export default function SignupPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen flex items-center justify-center p-6">
+        <div className="w-full max-w-md">
+          <div className="glass-card p-8 space-y-6">
+            <div className="text-center space-y-2">
+              <div className="h-8 w-48 mx-auto bg-white/5 rounded animate-pulse" />
+              <div className="h-4 w-64 mx-auto bg-white/5 rounded animate-pulse" />
+            </div>
+            <div className="space-y-4">
+              <div className="h-10 bg-white/5 rounded animate-pulse" />
+              <div className="h-10 bg-white/5 rounded animate-pulse" />
+              <div className="h-12 bg-white/5 rounded animate-pulse" />
+            </div>
+          </div>
+        </div>
+      </div>
+    }>
+      <SignupForm />
+    </Suspense>
   )
 }
