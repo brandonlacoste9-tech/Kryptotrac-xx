@@ -20,7 +20,7 @@ export default async function DashboardPage() {
   }
 
   const { data: userData } = await supabase
-    .from('users')
+    .from('profiles')
     .select('onboarding_completed')
     .eq('id', user.id)
     .single()

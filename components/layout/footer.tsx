@@ -34,7 +34,7 @@ export async function Footer() {
               href="https://v0.dev/chat/ref/BLNPBF"
               target="_blank"
               rel="noopener noreferrer"
-              className="group flex items-center gap-3 rounded-full border border-border/40 bg-background/50 px-4 py-2 transition-all hover:border-primary/50 hover:bg-background/80"
+              className="group relative z-10 flex items-center gap-3 rounded-full border border-border/40 bg-background/50 px-4 py-2 transition-all hover:border-primary/50 hover:bg-background/80 cursor-pointer"
             >
               <svg className="h-5 w-5 text-foreground" viewBox="0 0 24 24" fill="none">
                 <path

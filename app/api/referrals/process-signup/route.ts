@@ -7,9 +7,8 @@ export async function POST(request: Request) {
     
     const supabase = await createServerClient()
     
-    // Find referrer by referral code
     const { data: referrer } = await supabase
-      .from('users')
+      .from('profiles')
       .select('id')
       .eq('referral_code', refCode)
       .single()

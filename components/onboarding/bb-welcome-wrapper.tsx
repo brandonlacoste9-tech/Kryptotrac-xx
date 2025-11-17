@@ -10,7 +10,7 @@ export function BBWelcomeWrapper() {
     
     if (user) {
       await supabase
-        .from('users')
+        .from('profiles')
         .update({ onboarding_completed: true })
         .eq('id', user.id)
     }
