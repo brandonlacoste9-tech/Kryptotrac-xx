@@ -177,19 +177,18 @@ export async function getTrendingCoins(): Promise<CoinPrice[]> {
 
   try {
     const response = await fetch(
-      `${COINGECKO_API}/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=10&page=1&sparkline=true&price_change_percentage=24h`,
+      `${COINGECKO_API}/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=10&page=1&sparkline=true&price_change_percentage=24h`
     )
 
-    if (!response.ok) {
-      setCache(cacheKey, FALLBACK_TOP_COINS)
-      return FALLBACK_TOP_COINS
+    if (response.ok) {
+      const data = await response.json()
+      setCache(cacheKey, data)
+      return data
     }
-
-    const data = await response.json()
-    setCache(cacheKey, data)
-    return data
-  } catch (error) {
-    setCache(cacheKey, FALLBACK_TOP_COINS)
-    return FALLBACK_TOP_COINS
+  } catch {
+    // Silently swallow all errors including 429
   }
+
+  setCache(cacheKey, FALLBACK_TOP_COINS)
+  return FALLBACK_TOP_COINS
 }

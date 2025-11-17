@@ -25,7 +25,7 @@ export function MarketOverview() {
         setCoins(data)
         setError(null)
       } catch (err) {
-        console.log("[v0] Market data loaded with fallback")
+        // Should never reach here since getTrendingCoins always returns data
         setError(null)
       } finally {
         setLoading(false)

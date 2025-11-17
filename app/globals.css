@@ -133,9 +133,17 @@
   border-color: rgb(var(--color-border));
 }
 
-/* Added BB bee cursor for entire site */
+/* Remove bee cursor, replace with orb when active */
 body {
-  cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="%23fbbf24" stroke="%23000" stroke-width="1"><circle cx="12" cy="8" r="3"/><ellipse cx="12" cy="14" rx="4" ry="6"/><line x1="8" y1="12" x2="6" y2="10" stroke-width="2"/><line x1="16" y1="12" x2="18" y2="10" stroke-width="2"/></svg>') 8 8, auto;
+  /* Removed bee cursor SVG */
+  cursor: default;
+}
+
+/* Hide any 3rd-party bee widgets */
+.bee-widget,
+.beehive-widget,
+[data-beehive] {
+  display: none !important;
 }
 
 /* Buttons and links get pointer on hover */
@@ -338,52 +346,5 @@ body::before {
   animation: fadeIn 0.5s ease-out;
 }
 
-/* Added BB persona glowing bee cursor effect */
-/* Glowing bee cursor for BB persona pages */
-.bb-cursor {
-  cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="%23fbbf24" stroke="%23000" stroke-width="1"><circle cx="12" cy="8" r="3"/><ellipse cx="12" cy="14" rx="4" ry="6"/><line x1="8" y1="12" x2="6" y2="10" stroke-width="2"/><line x1="16" y1="12" x2="18" y2="10" stroke-width="2"/></svg>') 8 8, auto;
-}
-
-.bb-cursor:hover {
-  filter: drop-shadow(0 0 8px #fbbf24);
-}
-
-/* BB buzzing idle animation */
-@keyframes bbBuzz {
-  0%, 100% { transform: translate(0, 0); }
-  25% { transform: translate(1px, -1px); }
-  50% { transform: translate(-1px, 1px); }
-  75% { transform: translate(1px, 1px); }
-}
-
-.bb-hover:hover {
-  animation: bbBuzz 0.3s infinite;
-}
-
-/* Added bee trail particle effect for BB dock button */
-/* Updated bee trail to be more subtle sparkle */
-@keyframes beeTrail {
-  0% {
-    opacity: 0.8;
-    transform: scale(1) translate(0, 0);
-  }
-  100% {
-    opacity: 0;
-    transform: scale(0.2) translate(-15px, -15px);
-  }
-}
-
-.bee-trail {
-  position: relative;
-}
-
-.bee-trail::after {
-  content: "✨";
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  animation: beeTrail 1.2s ease-out infinite;
-  pointer-events: none;
-  font-size: 12px;
-}
+/* Remove BB persona glowing bee cursor effect sections */
+/* Removed .bb-cursor, .bb-hover, @keyframes bbBuzz, @keyframes beeTrail, .bee-trail */
