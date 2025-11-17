@@ -128,7 +128,7 @@ export function HeroWithFire() {
         </h1>
       </div>
       <p className="relative text-xl md:text-2xl text-neutral-300 font-light" style={{ zIndex: 2 }}>
-        Track your crypto portfolio with real-time insights
+        The only crypto assistant that speaks YOUR language
       </p>
       <div className="relative flex gap-4 justify-center pt-6" style={{ zIndex: 2 }}>
         <a

@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
 import { TableLoadingSkeleton } from "@/components/ui/table-loading-skeleton"
+import { haptics } from "@/lib/haptics"
 
 interface Coin {
   id: string
@@ -107,6 +108,8 @@ export function WatchlistSection() {
       return
     }
 
+    haptics.success()
+
     const newWatchlist = [...watchlist, coinId]
     setWatchlist(newWatchlist)
 
@@ -126,7 +129,7 @@ export function WatchlistSection() {
 
       if (error) {
         console.error("[v0] Error adding to watchlist:", error)
-        // Revert on error
+        haptics.error()
         setWatchlist(watchlist)
       }
     } else {
@@ -139,6 +142,8 @@ export function WatchlistSection() {
   }
 
   async function removeFromWatchlist(coinId: string) {
+    haptics.light()
+    
     const newWatchlist = watchlist.filter((id) => id !== coinId)
     setWatchlist(newWatchlist)
 

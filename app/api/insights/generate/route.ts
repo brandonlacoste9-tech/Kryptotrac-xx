@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server"
 import { createServerClient } from "@/lib/supabase/server"
-import { calculateRealMetrics } from "@/lib/analytics"
+import { calculateRealMetrics } from "@/lib/analytics-server"
 import { generatePortfolioInsights } from "@/lib/ai-insights"
 import { getCoinPrice } from "@/lib/coingecko"
 
