@@ -30,17 +30,3 @@
     display: none;
   }
 }
-
-/* Hide OS cursor when orb is active */
-:global(body.with-orb) {
-  cursor: none !important;
-}
-
-:global(body.with-orb *) {
-  cursor: none !important;
-}
-
-/* Preserve cursor for keyboard navigation */
-:global(body.with-orb :focus) {
-  cursor: auto !important;
-}
