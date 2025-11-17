@@ -181,7 +181,6 @@ export async function getTrendingCoins(): Promise<CoinPrice[]> {
     )
 
     if (!response.ok) {
-      console.log("[v0] CoinGecko API returned status:", response.status)
       setCache(cacheKey, FALLBACK_TOP_COINS)
       return FALLBACK_TOP_COINS
     }
@@ -190,7 +189,6 @@ export async function getTrendingCoins(): Promise<CoinPrice[]> {
     setCache(cacheKey, data)
     return data
   } catch (error) {
-    console.log("[v0] CoinGecko error - using fallback data")
     setCache(cacheKey, FALLBACK_TOP_COINS)
     return FALLBACK_TOP_COINS
   }
