@@ -25,15 +25,27 @@ function SignupForm() {
 
     const supabase = createBrowserClient()
 
+    console.log("[v0] Attempting signup with:", { email, hasRefCode: !!refCode })
+    
+    const redirectUrl = process.env.NEXT_PUBLIC_DEV_SUPABASE_REDIRECT_URL || `${window.location.origin}/dashboard`
+    console.log("[v0] Email redirect URL:", redirectUrl)
+
     const { data, error: signUpError } = await supabase.auth.signUp({
       email,
       password,
       options: {
-        emailRedirectTo: process.env.NEXT_PUBLIC_DEV_SUPABASE_REDIRECT_URL || `${window.location.origin}/dashboard`,
+        emailRedirectTo: redirectUrl,
         data: {
           referred_by: refCode || null
         }
       },
+    })
+
+    console.log("[v0] Signup result:", { 
+      success: !signUpError, 
+      userId: data.user?.id,
+      emailConfirmed: data.user?.email_confirmed_at,
+      error: signUpError?.message 
     })
 
     if (signUpError) {
@@ -48,7 +60,12 @@ function SignupForm() {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ email: data.user.email }),
-        }).catch((err) => console.error("[v0] Failed to send welcome email:", err))
+        })
+        .then(res => {
+          if (!res.ok) console.error("[v0] Welcome email failed:", res.statusText)
+          else console.log("[v0] Welcome email sent successfully")
+        })
+        .catch((err) => console.error("[v0] Failed to send welcome email:", err))
         
         if (refCode) {
           fetch("/api/referrals/process-signup", {
@@ -58,7 +75,12 @@ function SignupForm() {
               userId: data.user.id,
               refCode 
             }),
-          }).catch((err) => console.error("[v0] Failed to process referral:", err))
+          })
+          .then(res => {
+            if (!res.ok) console.error("[v0] Referral processing failed:", res.statusText)
+            else console.log("[v0] Referral processed successfully")
+          })
+          .catch((err) => console.error("[v0] Failed to process referral:", err))
         }
       }
     }

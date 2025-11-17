@@ -10,7 +10,7 @@ import { FeedbackPrompt } from "@/components/feedback/feedback-prompt"
 import { ErrorBoundary } from "@/components/error/error-boundary"
 import { AtlasDock } from "@/components/atlas/atlas-dock"
 import { ChatWidget } from "@/components/ChatWidget"
-import OrbCursor from "@/components/orb-cursor"
+import { CustomCursor } from "@/components/CustomCursor"
 import Script from "next/script"
 
 const _geist = Geist({ subsets: ["latin"] })
@@ -80,7 +80,7 @@ export default function RootLayout({
       </head>
       <body className="bg-black text-white antialiased">
         <ErrorBoundary>
-          <OrbCursor />
+          <CustomCursor />
           <Header />
           {children}
           <FeedbackPrompt />

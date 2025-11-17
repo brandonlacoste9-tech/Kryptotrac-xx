@@ -1,10 +1,3 @@
-"use client"
-
-import { useState } from "react"
-import { Check, Zap, Shield, CreditCard, Star } from 'lucide-react'
-import { Button } from "@/components/ui/button"
-import { Card } from "@/components/ui/card"
-import Link from "next/link"
 import { Metadata } from "next"
 import PricingClient from "./pricing-client"
 
