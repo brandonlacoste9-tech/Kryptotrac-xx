@@ -81,6 +81,22 @@ export default function LoginPage() {
             </button>
           </form>
 
+          <div className="relative">
+            <div className="absolute inset-0 flex items-center">
+              <div className="w-full border-t border-white/10"></div>
+            </div>
+            <div className="relative flex justify-center text-sm">
+              <span className="px-2 bg-black text-white/60">or</span>
+            </div>
+          </div>
+
+          <Link 
+            href="/auth/magic-link"
+            className="block w-full py-3 bg-white/5 border border-white/10 rounded-lg font-medium text-white text-center hover:bg-white/10 transition-all"
+          >
+            Sign in with Magic Link
+          </Link>
+
           <p className="text-center text-sm text-white/60">
             Don't have an account?{" "}
             <Link href="/auth/signup" className="text-red-400 hover:text-red-300">
