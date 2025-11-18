@@ -133,25 +133,23 @@
   border-color: rgb(var(--color-border));
 }
 
-/* Remove bee cursor, replace with orb when active */
+/* Remove custom cursor completely - causing disappearing mouse issue */
 body {
-  /* Removed bee cursor SVG */
-  cursor: default;
+  cursor: default !important;
 }
 
-/* Fixed cursor to be transparent instead of none, preserving clickability */
 body.with-orb,
 body.with-orb * {
-  cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="1" height="1"><rect width="1" height="1" fill="transparent"/></svg>') 0 0, auto !important;
+  cursor: default !important;
 }
 
 /* Hide any 3rd-party bee widgets */
 /* Removed: .bee-widget, .beehive-widget, [data-beehive] display:none rules */
 /* Removed: .bee-trail, .bb-hover, .bb-cursor classes */
 
-/* Simplified cursor to default pointer, removed custom bee SVG cursor */
+/* Restore normal pointer behavior */
 button:hover, a:hover, [role="button"]:hover {
-  cursor: pointer;
+  cursor: pointer !important;
 }
 
 body {
