@@ -3,6 +3,12 @@
  * 
  * Tests the actual API routes for payment processing
  * including checkout session creation and webhook handling.
+ * 
+ * NOTE: These tests call application API endpoints (HTTP requests)
+ * rather than Stripe SDK directly. This tests the complete integration
+ * including authentication, validation, and error handling.
+ * 
+ * For direct Stripe SDK testing, see tests/e2e/stripe.test.ts
  */
 
 describe('Stripe API Integration Tests', () => {

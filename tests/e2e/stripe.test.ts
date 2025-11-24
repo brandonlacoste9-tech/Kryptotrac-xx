@@ -17,14 +17,27 @@
  * IMPORTANT: Always use Stripe test mode keys for testing!
  * Test cards: https://stripe.com/docs/testing#cards
  * 
- * Note: This file imports Stripe directly for testing purposes.
- * In production, Stripe operations should only be called server-side.
+ * ARCHITECTURE NOTE:
+ * This test file intentionally imports Stripe SDK directly, which differs from
+ * the production pattern of using server-only imports. This is acceptable for
+ * E2E testing because:
+ * 
+ * 1. These tests run in Node.js test environment, not browser
+ * 2. We need direct Stripe API access to verify server-side behavior
+ * 3. Tests validate both direct API calls AND API endpoint behavior
+ * 4. Test environment is isolated and uses test keys only
+ * 
+ * For testing application endpoints (without direct SDK), see:
+ * - tests/integration/stripe-api.test.ts
+ * 
+ * Production code maintains server-only pattern via lib/stripe.ts
  */
 
-// Import Stripe SDK directly for test purposes
+// Import Stripe SDK directly for E2E test purposes
 import Stripe from 'stripe'
 
-// Initialize Stripe with test key
+// Initialize Stripe with test key for E2E testing
+// This is acceptable in test environment only - production uses lib/stripe.ts
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || '', {
   apiVersion: '2024-11-20.acacia',
 })
