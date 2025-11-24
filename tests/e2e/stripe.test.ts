@@ -16,10 +16,18 @@
  * 
  * IMPORTANT: Always use Stripe test mode keys for testing!
  * Test cards: https://stripe.com/docs/testing#cards
+ * 
+ * Note: This file imports Stripe directly for testing purposes.
+ * In production, Stripe operations should only be called server-side.
  */
 
-import { stripe } from '@/lib/stripe'
-import { createServerClient } from '@/lib/supabase/server'
+// Import Stripe SDK directly for test purposes
+import Stripe from 'stripe'
+
+// Initialize Stripe with test key
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || '', {
+  apiVersion: '2024-11-20.acacia',
+})
 
 // Stripe test card numbers
 const TEST_CARDS = {

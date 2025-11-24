@@ -17,8 +17,21 @@ const createJestConfig = nextJest({
 
 // Add any custom config to be passed to Jest
 const customJestConfig = {
-  // Test environment
-  testEnvironment: 'node', // Use 'jsdom' for client-side tests
+  // Use projects to define different environments for different test types
+  projects: [
+    {
+      displayName: 'node',
+      testEnvironment: 'node',
+      testMatch: ['**/tests/integration/**/*.test.ts'],
+      setupFilesAfterEnv: ['<rootDir>/jest.setup.js'],
+    },
+    {
+      displayName: 'jsdom',
+      testEnvironment: 'jsdom',
+      testMatch: ['**/tests/e2e/**/*.test.ts'],
+      setupFilesAfterEnv: ['<rootDir>/jest.setup.js'],
+    },
+  ],
 
   // Setup files
   setupFilesAfterEnv: ['<rootDir>/jest.setup.js'],

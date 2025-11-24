@@ -157,14 +157,15 @@ check_environment() {
         exit 1
     fi
     
-    # Check if using test mode for Stripe
-    if [[ "$STRIPE_SECRET_KEY" == sk_test_* ]]; then
+    # Check if using test mode for Stripe (without logging key details)
+    if [[ "$STRIPE_SECRET_KEY" =~ ^sk_test_ ]]; then
         print_success "Using Stripe test mode ✓"
-    elif [[ "$STRIPE_SECRET_KEY" == sk_live_* ]]; then
-        print_error "WARNING: Using Stripe LIVE mode! Switch to test mode for testing!"
+    elif [[ "$STRIPE_SECRET_KEY" =~ ^sk_live_ ]]; then
+        print_error "CRITICAL: Production Stripe key detected! Tests must use test mode only!"
+        print_error "Update STRIPE_SECRET_KEY in .env.local to use sk_test_* key"
         exit 1
     else
-        print_warning "Stripe key format not recognized"
+        print_warning "Unable to verify Stripe key mode (ensure key is set)"
     fi
     
     echo ""

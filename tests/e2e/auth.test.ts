@@ -108,18 +108,34 @@ describe('Authentication E2E Tests', () => {
   })
 
   describe('Login Flow', () => {
+    const LOGIN_TEST_EMAIL = 'login-test+' + Date.now() + '@example.com'
+
     beforeAll(async () => {
       // Ensure test user exists and is confirmed
       // In production, this would require email confirmation
       await supabase.auth.signUp({
-        email: 'login-test@example.com',
+        email: LOGIN_TEST_EMAIL,
         password: TEST_USER_PASSWORD,
       })
     })
 
+    afterAll(async () => {
+      // Cleanup: Delete test user
+      try {
+        await supabase.auth.signInWithPassword({
+          email: LOGIN_TEST_EMAIL,
+          password: TEST_USER_PASSWORD,
+        })
+        // Note: User deletion requires admin API or manual cleanup
+        console.log('Cleanup: Test user should be manually removed from Supabase dashboard')
+      } catch (error) {
+        // Ignore cleanup errors
+      }
+    })
+
     it('should successfully login with valid credentials', async () => {
       const { data, error } = await supabase.auth.signInWithPassword({
-        email: 'login-test@example.com',
+        email: LOGIN_TEST_EMAIL,
         password: TEST_USER_PASSWORD,
       })
 
@@ -132,7 +148,7 @@ describe('Authentication E2E Tests', () => {
 
     it('should fail login with incorrect password', async () => {
       const { data, error } = await supabase.auth.signInWithPassword({
-        email: 'login-test@example.com',
+        email: LOGIN_TEST_EMAIL,
         password: WRONG_PASSWORD,
       })
 
@@ -185,10 +201,17 @@ describe('Authentication E2E Tests', () => {
   })
 
   describe('Session Management', () => {
+    const SESSION_TEST_EMAIL = 'session-test+' + Date.now() + '@example.com'
+
     beforeAll(async () => {
-      // Login to establish session
+      // Create and login test user
+      await supabase.auth.signUp({
+        email: SESSION_TEST_EMAIL,
+        password: TEST_USER_PASSWORD,
+      })
+      
       await supabase.auth.signInWithPassword({
-        email: 'session-test@example.com',
+        email: SESSION_TEST_EMAIL,
         password: TEST_USER_PASSWORD,
       })
     })
@@ -226,10 +249,17 @@ describe('Authentication E2E Tests', () => {
   })
 
   describe('Logout Flow', () => {
+    const LOGOUT_TEST_EMAIL = 'logout-test+' + Date.now() + '@example.com'
+
     beforeAll(async () => {
-      // Login to have session to logout from
+      // Create and login test user
+      await supabase.auth.signUp({
+        email: LOGOUT_TEST_EMAIL,
+        password: TEST_USER_PASSWORD,
+      })
+      
       await supabase.auth.signInWithPassword({
-        email: 'logout-test@example.com',
+        email: LOGOUT_TEST_EMAIL,
         password: TEST_USER_PASSWORD,
       })
     })
