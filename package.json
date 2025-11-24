@@ -6,7 +6,18 @@
     "build": "next build",
     "dev": "next dev",
     "lint": "eslint .",
-    "start": "next start"
+    "start": "next start",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:all": "jest --coverage",
+    "test:login": "jest tests/e2e/auth.test.ts tests/integration/auth-api.test.ts",
+    "test:stripe": "jest tests/e2e/stripe.test.ts tests/integration/stripe-api.test.ts",
+    "test:e2e": "jest tests/e2e/",
+    "test:e2e:auth": "jest tests/e2e/auth.test.ts",
+    "test:e2e:stripe": "jest tests/e2e/stripe.test.ts",
+    "test:integration": "jest tests/integration/",
+    "test:integration:auth": "jest tests/integration/auth-api.test.ts",
+    "test:integration:stripe": "jest tests/integration/stripe-api.test.ts"
   },
   "dependencies": {
     "@emotion/is-prop-valid": "latest",

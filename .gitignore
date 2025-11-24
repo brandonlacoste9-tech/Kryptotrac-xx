@@ -1,0 +1,77 @@
+# Dependencies
+node_modules/
+.pnpm-store/
+/.pnp
+.pnp.js
+
+# Testing
+/coverage
+*.test.cache/
+
+# Next.js
+/.next/
+/out/
+.next
+
+# Production build
+/build
+/dist
+
+# Environment variables - NEVER COMMIT THESE
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+.env*.local
+
+# Keep .env.example (template only)
+!.env.example
+
+# Debug logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# OS files
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+*~
+
+# IDE/Editor
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+.code-workspace
+
+# Vercel
+.vercel
+
+# TypeScript
+*.tsbuildinfo
+next-env.d.ts
+
+# Temporary files
+/tmp/
+*.tmp
+*.bak
+*.cache
+
+# Secrets and Keys - Extra Protection
+*secret*
+*private*
+*.pem
+*.key
+*.cert
+*.crt
+serviceAccountKey.json
+
+# Test artifacts
+/test-results/
+/playwright-report/
+/playwright/.cache/
