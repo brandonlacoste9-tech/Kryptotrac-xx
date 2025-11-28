@@ -3,6 +3,8 @@
  * 
  * This file runs before each test file.
  * Use it to configure testing libraries and global test utilities.
+ * 
+ * Note: Uses CommonJS (require) to match jest.config.js
  */
 
 // Load environment variables for testing
