@@ -4,7 +4,7 @@ import { Shield, TrendingUp, Zap, Globe, Lock, DollarSign, Users, BarChart3 } fr
 
 export const metadata: Metadata = {
   title: 'About KryptoTrac - Your Privacy-First Crypto Portfolio Tracker',
-  description: 'Learn about KryptoTrac, how we keep your data private, and why we built a crypto tracker focused on Canadians and privacy-conscious users worldwide.'
+  description: 'Learn about KryptoTrac, how we keep your data private, and why we built a crypto tracker for privacy-conscious investors worldwide with BB, the AI that speaks 100+ languages.'
 }
 
 export default function AboutPage() {
@@ -17,7 +17,7 @@ export default function AboutPage() {
             About KryptoTrac
           </h1>
           <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-            A privacy-first crypto portfolio tracker built for Canadians and users who value transparency and control.
+            A privacy-first crypto portfolio tracker with AI assistant BB who speaks 100+ languages. Built for investors worldwide who value transparency and control.
           </p>
         </div>
 
@@ -27,9 +27,9 @@ export default function AboutPage() {
           <div className="prose prose-invert max-w-none">
             <p className="text-muted-foreground leading-relaxed">
               We built KryptoTrac because existing crypto trackers either sell your data, bombard you with ads, 
-              or make it impossible to understand your actual portfolio performance. As Canadians navigating the 
-              crypto space, we wanted a tool that respects privacy, provides real insights, and helps you make 
-              informed decisions without the noise.
+              or make it impossible to understand your actual portfolio performance. We wanted a tool that respects 
+              privacy, speaks your language (literally - BB supports 100+ languages!), provides real insights, and 
+              helps you make informed decisions without the noise.
             </p>
           </div>
         </section>
@@ -67,9 +67,9 @@ export default function AboutPage() {
 
             <div className="bg-card border border-border rounded-lg p-6">
               <Globe className="h-8 w-8 text-primary mb-3" />
-              <h3 className="text-lg font-semibold mb-2">Canadian-Friendly</h3>
+              <h3 className="text-lg font-semibold mb-2">Global Reach</h3>
               <p className="text-sm text-muted-foreground">
-                We recommend exchanges that work well for Canadians and follow local regulations.
+                Multi-currency support (USD, EUR, CAD, GBP) and BB speaks 100+ languages to serve investors worldwide.
               </p>
             </div>
           </div>
@@ -167,7 +167,7 @@ export default function AboutPage() {
         <section className="text-center">
           <h2 className="text-2xl font-bold mb-4">Ready to Track Your Portfolio?</h2>
           <p className="text-muted-foreground mb-6">
-            Join thousands of Canadians tracking their crypto investments with KryptoTrac.
+            Join investors worldwide tracking their crypto portfolios with KryptoTrac and BB.
           </p>
           <Link 
             href="/auth/signup" 
