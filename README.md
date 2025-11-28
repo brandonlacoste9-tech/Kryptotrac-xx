@@ -71,11 +71,23 @@ Open [http://localhost:3000](http://localhost:3000) to see the app! 🎉
 
 ## 📚 Documentation
 
+### Getting Started
 - **[Getting Started Guide](./GETTING_STARTED.md)** - Complete setup walkthrough
+- **[Quick Reference](./QUICK_REFERENCE.md)** - Essential commands and tips
+- **[FAQ](./FAQ.md)** - Frequently asked questions
+
+### Configuration
 - **[Database Setup](./DATABASE_SETUP.md)** - Supabase configuration and migrations
+- **[Migration Guide](./MIGRATION_GUIDE.md)** - Database migration reference
 - **[Deployment Guide](./DEPLOYMENT.md)** - Deploy to Vercel or other platforms
+
+### Help & Support
 - **[Troubleshooting](./TROUBLESHOOTING.md)** - Common issues and solutions
-- **[Project Handoff](./PROJECT_HANDOFF_SUMMARY.md)** - Technical deep dive
+- **[Contributing](./CONTRIBUTING.md)** - How to contribute to the project
+
+### Additional Resources
+- **[Legacy Documentation](./docs/legacy/)** - Historical development docs
+- **[Project Handoff](./docs/legacy/PROJECT_HANDOFF_SUMMARY.md)** - Technical deep dive
 
 ## 🏗️ Tech Stack
 
