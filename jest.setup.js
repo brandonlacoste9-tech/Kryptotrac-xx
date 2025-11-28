@@ -3,13 +3,15 @@
  * 
  * This file runs before each test file.
  * Use it to configure testing libraries and global test utilities.
+ * 
+ * Note: Uses CommonJS (require) to match jest.config.js
  */
 
 // Load environment variables for testing
 require('dotenv').config({ path: '.env.local' })
 
-// Extend Jest matchers (if using additional matchers)
-// import '@testing-library/jest-dom'
+// Extend Jest matchers with @testing-library/jest-dom
+require('@testing-library/jest-dom')
 
 // Set up global test utilities
 global.console = {
