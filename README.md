@@ -11,6 +11,7 @@ KryptoTrac is a modern, AI-powered cryptocurrency portfolio tracker that helps i
 - **Portfolio Management** - Track your holdings, gains, and losses in one place
 - **Price Alerts** - Get notified when your coins hit target prices
 - **Multi-Currency Support** - View prices in USD, EUR, CAD, GBP, and more
+- **Easy Authentication** - Sign in with Google, email/password, or magic link
 
 ### BB - Your AI Crypto Assistant
 - **100+ Languages** - Chat with BB in your native language
@@ -89,6 +90,9 @@ STRIPE_WEBHOOK_SECRET=your_webhook_secret
 
 # Application
 NEXT_PUBLIC_DEV_SUPABASE_REDIRECT_URL=http://localhost:3000
+
+# Note: Google OAuth credentials are configured directly in Supabase Dashboard
+# No additional environment variables needed for Google authentication
 \`\`\`
 
 ### Database Setup
@@ -101,6 +105,17 @@ NEXT_PUBLIC_DEV_SUPABASE_REDIRECT_URL=http://localhost:3000
    - `scripts/015_add_referral_rpc.sql`
 
 2. Verify all tables and RLS policies are created correctly
+
+### Google OAuth Setup (Optional but Recommended)
+
+To enable "Sign in with Google":
+
+1. Follow the detailed guide: [Google OAuth Setup](./docs/GOOGLE_AUTH_SETUP.md)
+2. Configure OAuth credentials in Google Cloud Console
+3. Add credentials to Supabase Authentication → Providers → Google
+4. Test the authentication flow
+
+Google OAuth provides a better user experience with one-click authentication.
 
 ## 📁 Project Structure
 
