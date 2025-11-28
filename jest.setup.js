@@ -8,8 +8,8 @@
 // Load environment variables for testing
 require('dotenv').config({ path: '.env.local' })
 
-// Extend Jest matchers (if using additional matchers)
-// import '@testing-library/jest-dom'
+// Extend Jest matchers with @testing-library/jest-dom
+require('@testing-library/jest-dom')
 
 // Set up global test utilities
 global.console = {
