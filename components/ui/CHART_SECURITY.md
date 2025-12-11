@@ -63,14 +63,14 @@ Strict regex patterns for each allowed color format:
 |--------|---------|---------|
 | Hex | `/^#[0-9a-fA-F]{3,8}$/` | `#fff`, `#ff0000`, `#ff00ff00` |
 | RGB | `/^rgb\(\s*\d+\s*,\s*\d+\s*,\s*\d+\s*\)$/` | `rgb(255, 0, 0)` |
-| RGBA | `/^rgba\(\s*\d+\s*,\s*\d+\s*,\s*\d+\s*,\s*(?:0\|0?\.\d+\|1(?:\.0+)?)\s*\)$/` | `rgba(255, 0, 0, 0.5)` |
+| RGBA | `/^rgba\(\s*\d+\s*,\s*\d+\s*,\s*\d+\s*,\s*(?:0|0?\.\d+|1(?:\.0+)?)\s*\)$/` | `rgba(255, 0, 0, 0.5)` |
 | HSL | `/^hsl\(\s*\d+\s*,\s*\d+%\s*,\s*\d+%\s*\)$/` | `hsl(120, 100%, 50%)` |
-| HSLA | `/^hsla\(\s*\d+\s*,\s*\d+%\s*,\s*\d+%\s*,\s*(?:0\|0?\.\d+\|1(?:\.0+)?)\s*\)$/` | `hsla(120, 100%, 50%, 0.5)` |
+| HSLA | `/^hsla\(\s*\d+\s*,\s*\d+%\s*,\s*\d+%\s*,\s*(?:0|0?\.\d+|1(?:\.0+)?)\s*\)$/` | `hsla(120, 100%, 50%, 0.5)` |
 | CSS Variable | `/^var\(--[a-zA-Z0-9_-]+\)$/` | `var(--primary)` |
 | HSL with var | `/^hsl\(\s*var\(--[a-zA-Z0-9_-]+\)\s*\)$/` | `hsl(var(--chart-1))` |
-| HSLA with var | `/^hsla\(\s*var\(--[a-zA-Z0-9_-]+\)\s*,\s*(?:0\|0?\.\d+\|1(?:\.0+)?)\s*\)$/` | `hsla(var(--chart-1), 0.5)` |
+| HSLA with var | `/^hsla\(\s*var\(--[a-zA-Z0-9_-]+\)\s*,\s*(?:0|0?\.\d+|1(?:\.0+)?)\s*\)$/` | `hsla(var(--chart-1), 0.5)` |
 | RGB with var | `/^rgb\(\s*var\(--[a-zA-Z0-9_-]+\)\s*\)$/` | `rgb(var(--color))` |
-| RGBA with var | `/^rgba\(\s*var\(--[a-zA-Z0-9_-]+\)\s*,\s*(?:0\|0?\.\d+\|1(?:\.0+)?)\s*\)$/` | `rgba(var(--color), 0.8)` |
+| RGBA with var | `/^rgba\(\s*var\(--[a-zA-Z0-9_-]+\)\s*,\s*(?:0|0?\.\d+|1(?:\.0+)?)\s*\)$/` | `rgba(var(--color), 0.8)` |
 | Keywords | `/^[a-z]+$/` | `red`, `blue`, `transparent` |
 
 **Note**: Alpha values in rgba/hsla are strictly validated to be between 0 and 1 (inclusive), preventing invalid values like `999.999`.
