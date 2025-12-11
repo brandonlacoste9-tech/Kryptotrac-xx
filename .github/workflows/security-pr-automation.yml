@@ -44,14 +44,14 @@ jobs:
   security-pr-handler:
     name: Security PR Handler
     runs-on: ubuntu-latest
-    
+
     # Only run for PRs from trusted bots
     if: |
       github.event_name == 'workflow_dispatch' ||
       github.actor == 'dependabot[bot]' ||
       github.actor == 'github-actions[bot]' ||
       github.actor == 'vercel[bot]'
-    
+
     steps:
       # Step 1: Checkout the PR code
       - name: Checkout PR code
@@ -62,19 +62,19 @@ jobs:
           # Checkout the PR branch
           ref: ${{ github.event.pull_request.head.ref }}
           token: ${{ secrets.GITHUB_TOKEN }}
-      
+
       # Step 2: Setup Node.js environment
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '20'
-      
+
       # Step 3: Setup pnpm package manager
       - name: Setup pnpm
         uses: pnpm/action-setup@v2
         with:
           version: 9
-      
+
       # Step 4: Initialize audit log
       - name: Initialize audit log
         id: init-audit
@@ -86,7 +86,7 @@ jobs:
           echo "**Mode:** ${{ github.event.inputs.test_mode || 'true' }}" >> audit-log.md
           echo "**Timestamp:** $(date -u '+%Y-%m-%d %H:%M:%S UTC')" >> audit-log.md
           echo "" >> audit-log.md
-          
+
           # Set test mode from workflow dispatch or default to true
           if [ "${{ github.event.inputs.test_mode }}" == "false" ]; then
             echo "TEST_MODE=false" >> $GITHUB_ENV
@@ -96,14 +96,14 @@ jobs:
             echo "🟡 **Running in TEST mode** - Dry-run only, no auto-merge" >> audit-log.md
           fi
           echo "" >> audit-log.md
-      
+
       # Step 5: Detect and log PR source
       - name: Detect PR source
         id: detect-source
         run: |
           echo "### 1. PR Source Detection" >> audit-log.md
           echo "" >> audit-log.md
-          
+
           if [ "${{ github.actor }}" == "dependabot[bot]" ]; then
             echo "✅ Detected trusted source: **Dependabot**" >> audit-log.md
             echo "SOURCE=dependabot" >> $GITHUB_ENV
@@ -118,7 +118,7 @@ jobs:
             echo "SOURCE=other" >> $GITHUB_ENV
           fi
           echo "" >> audit-log.md
-      
+
       # Step 6: Check for merge conflicts
       - name: Check for merge conflicts
         id: check-conflicts
@@ -126,15 +126,15 @@ jobs:
         run: |
           echo "### 2. Merge Conflict Detection" >> audit-log.md
           echo "" >> audit-log.md
-          
+
           # Configure git
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          
+
           # Fetch the base branch
           BASE_BRANCH="${{ github.event.pull_request.base.ref }}"
           git fetch origin "$BASE_BRANCH"
-          
+
           # Attempt to merge base into current branch
           if git merge --no-commit --no-ff "origin/$BASE_BRANCH" 2>&1 | tee merge-output.txt; then
             echo "✅ No merge conflicts detected" >> audit-log.md
@@ -143,18 +143,18 @@ jobs:
           else
             echo "⚠️ Merge conflicts detected" >> audit-log.md
             echo "HAS_CONFLICTS=true" >> $GITHUB_ENV
-            
+
             # List conflicted files
             echo "" >> audit-log.md
             echo "**Conflicted files:**" >> audit-log.md
             git diff --name-only --diff-filter=U | while read -r file; do
               echo "- \`$file\`" >> audit-log.md
             done
-            
+
             git merge --abort 2>/dev/null || true
           fi
           echo "" >> audit-log.md
-      
+
       # Step 7: Auto-resolve dependency file conflicts
       - name: Auto-resolve dependency conflicts
         id: resolve-deps
@@ -163,27 +163,27 @@ jobs:
         run: |
           echo "### 3. Auto-resolve Dependency Conflicts" >> audit-log.md
           echo "" >> audit-log.md
-          
+
           BASE_BRANCH="${{ github.event.pull_request.base.ref }}"
-          
+
           # Start merge
           git merge --no-commit --no-ff "origin/$BASE_BRANCH" || true
-          
+
           # Get list of conflicted files
           CONFLICTED_FILES=$(git diff --name-only --diff-filter=U)
-          
+
           RESOLVED_COUNT=0
           FAILED_COUNT=0
-          
+
           # Auto-resolve dependency files by accepting incoming changes
           for file in $CONFLICTED_FILES; do
             if [[ "$file" == "package.json" ]] || \
                [[ "$file" == "yarn.lock" ]] || \
                [[ "$file" == "pnpm-lock.yaml" ]] || \
                [[ "$file" == "package-lock.json" ]]; then
-              
+
               echo "Resolving: $file (accepting incoming changes)"
-              
+
               if [ "$TEST_MODE" == "true" ]; then
                 echo "- 🟡 [TEST MODE] Would accept incoming changes for \`$file\`" >> audit-log.md
               else
@@ -195,7 +195,7 @@ jobs:
               fi
             fi
           done
-          
+
           if [ "$TEST_MODE" != "true" ] && [ $RESOLVED_COUNT -gt 0 ]; then
             echo "" >> audit-log.md
             echo "✅ Successfully auto-resolved $RESOLVED_COUNT dependency file(s)" >> audit-log.md
@@ -205,12 +205,12 @@ jobs:
             echo "🟡 [TEST MODE] Would have resolved dependency conflicts" >> audit-log.md
             echo "DEPS_RESOLVED=test" >> $GITHUB_ENV
           fi
-          
+
           echo "" >> audit-log.md
-          
+
           # Abort merge for now, we'll complete it later if needed
           git merge --abort 2>/dev/null || true
-      
+
       # Step 8: Smart conflict resolution for code files
       - name: Smart conflict resolution for code files
         id: resolve-code
@@ -219,35 +219,35 @@ jobs:
         run: |
           echo "### 4. Smart Code Conflict Resolution" >> audit-log.md
           echo "" >> audit-log.md
-          
+
           BASE_BRANCH="${{ github.event.pull_request.base.ref }}"
-          
+
           # Start merge again
           git merge --no-commit --no-ff "origin/$BASE_BRANCH" || true
-          
+
           # Get list of conflicted code files (non-dependency files)
           CONFLICTED_FILES=$(git diff --name-only --diff-filter=U)
-          
+
           CODE_CONFLICTS=0
-          
+
           for file in $CONFLICTED_FILES; do
             # Skip dependency files (already handled)
             if [[ "$file" != "package.json" ]] && \
                [[ "$file" != "yarn.lock" ]] && \
                [[ "$file" != "pnpm-lock.yaml" ]] && \
                [[ "$file" != "package-lock.json" ]]; then
-              
+
               echo "- ⚠️ Code conflict in \`$file\`" >> audit-log.md
               CODE_CONFLICTS=$((CODE_CONFLICTS + 1))
             fi
           done
-          
+
           if [ $CODE_CONFLICTS -gt 0 ]; then
             echo "" >> audit-log.md
             echo "⚠️ Found $CODE_CONFLICTS code file conflict(s)" >> audit-log.md
             echo "" >> audit-log.md
             echo "**Strategy:** Accept incoming (bot) changes for security updates" >> audit-log.md
-            
+
             if [ "$TEST_MODE" == "true" ]; then
               echo "🟡 [TEST MODE] Would accept incoming changes for code conflicts" >> audit-log.md
               echo "CODE_RESOLVED=test" >> $GITHUB_ENV
@@ -259,12 +259,12 @@ jobs:
             echo "✅ No code conflicts to resolve" >> audit-log.md
             echo "CODE_RESOLVED=none" >> $GITHUB_ENV
           fi
-          
+
           echo "" >> audit-log.md
-          
+
           # Abort merge
           git merge --abort 2>/dev/null || true
-      
+
       # Step 9: Complete merge if conflicts were resolved
       - name: Complete merge
         id: complete-merge
@@ -272,13 +272,13 @@ jobs:
         continue-on-error: true
         run: |
           BASE_BRANCH="${{ github.event.pull_request.base.ref }}"
-          
+
           # Start merge
           git merge --no-commit --no-ff "origin/$BASE_BRANCH" || true
-          
+
           # Re-resolve dependency files
           CONFLICTED_FILES=$(git diff --name-only --diff-filter=U)
-          
+
           for file in $CONFLICTED_FILES; do
             if [[ "$file" == "package.json" ]] || \
                [[ "$file" == "yarn.lock" ]] || \
@@ -288,7 +288,7 @@ jobs:
               git add "$file"
             fi
           done
-          
+
           # Commit if all conflicts are resolved
           if ! git diff --name-only --diff-filter=U | grep -q .; then
             git commit -m "Auto-resolved merge conflicts in dependency files"
@@ -298,7 +298,7 @@ jobs:
             git merge --abort
             echo "MERGE_COMPLETED=false" >> $GITHUB_ENV
           fi
-      
+
       # Step 10: Install dependencies
       - name: Install dependencies
         id: install-deps
@@ -306,7 +306,7 @@ jobs:
         run: |
           echo "### 5. Install Dependencies" >> audit-log.md
           echo "" >> audit-log.md
-          
+
           if pnpm install --frozen-lockfile 2>&1 | tee install-output.txt; then
             echo "✅ Dependencies installed successfully" >> audit-log.md
             echo "DEPS_INSTALLED=true" >> $GITHUB_ENV
@@ -320,7 +320,7 @@ jobs:
             echo "DEPS_INSTALLED=false" >> $GITHUB_ENV
           fi
           echo "" >> audit-log.md
-      
+
       # Step 11: Run linter
       - name: Run linter
         id: run-lint
@@ -329,7 +329,7 @@ jobs:
         run: |
           echo "### 6. Lint Check" >> audit-log.md
           echo "" >> audit-log.md
-          
+
           if pnpm run lint 2>&1 | tee lint-output.txt; then
             echo "✅ Linter passed" >> audit-log.md
             echo "LINT_PASSED=true" >> $GITHUB_ENV
@@ -343,7 +343,7 @@ jobs:
             echo "LINT_PASSED=false" >> $GITHUB_ENV
           fi
           echo "" >> audit-log.md
-      
+
       # Step 12: Attempt to auto-fix lint errors
       - name: Auto-fix lint errors
         id: fix-lint
@@ -352,7 +352,7 @@ jobs:
         run: |
           echo "### 7. Auto-fix Lint Errors" >> audit-log.md
           echo "" >> audit-log.md
-          
+
           if [ "$TEST_MODE" == "true" ]; then
             echo "🟡 [TEST MODE] Would attempt to auto-fix lint errors" >> audit-log.md
             echo "" >> audit-log.md
@@ -383,7 +383,7 @@ jobs:
             fi
           fi
           echo "" >> audit-log.md
-      
+
       # Step 13: Run tests
       - name: Run tests
         id: run-tests
@@ -392,7 +392,7 @@ jobs:
         run: |
           echo "### 8. Run Tests" >> audit-log.md
           echo "" >> audit-log.md
-          
+
           if pnpm test 2>&1 | tee test-output.txt; then
             echo "✅ Tests passed" >> audit-log.md
             echo "TESTS_PASSED=true" >> $GITHUB_ENV
@@ -406,7 +406,7 @@ jobs:
             echo "TESTS_PASSED=false" >> $GITHUB_ENV
           fi
           echo "" >> audit-log.md
-      
+
       # Step 14: Attempt to auto-fix test failures
       - name: Auto-fix test failures
         id: fix-tests
@@ -415,7 +415,7 @@ jobs:
         run: |
           echo "### 9. Auto-fix Test Failures" >> audit-log.md
           echo "" >> audit-log.md
-          
+
           if [ "$TEST_MODE" == "true" ]; then
             echo "🟡 [TEST MODE] Would analyze test failures for auto-fix opportunities" >> audit-log.md
             echo "" >> audit-log.md
@@ -431,39 +431,39 @@ jobs:
             echo "TEST_FIXED=manual" >> $GITHUB_ENV
           fi
           echo "" >> audit-log.md
-      
+
       # Step 15: Determine if PR is ready for auto-merge
       - name: Check auto-merge eligibility
         id: check-automerge
         run: |
           echo "### 10. Auto-merge Eligibility" >> audit-log.md
           echo "" >> audit-log.md
-          
+
           ELIGIBLE=true
-          
+
           # Check each condition
           if [ "${{ env.DEPS_INSTALLED }}" != "true" ]; then
             echo "❌ Dependencies not installed" >> audit-log.md
             ELIGIBLE=false
           fi
-          
+
           if [ "${{ env.LINT_PASSED }}" == "false" ] && [ "${{ env.LINT_FIXED }}" != "true" ]; then
             echo "❌ Lint errors not resolved" >> audit-log.md
             ELIGIBLE=false
           fi
-          
+
           if [ "${{ env.TESTS_PASSED }}" == "false" ]; then
             echo "❌ Tests failed" >> audit-log.md
             ELIGIBLE=false
           fi
-          
+
           if [ "${{ env.HAS_CONFLICTS }}" == "true" ] && [ "${{ env.MERGE_COMPLETED }}" != "true" ]; then
             echo "❌ Merge conflicts not resolved" >> audit-log.md
             ELIGIBLE=false
           fi
-          
+
           echo "" >> audit-log.md
-          
+
           if [ "$ELIGIBLE" == "true" ]; then
             echo "✅ **PR is eligible for auto-merge**" >> audit-log.md
             echo "AUTOMERGE_ELIGIBLE=true" >> $GITHUB_ENV
@@ -472,7 +472,7 @@ jobs:
             echo "AUTOMERGE_ELIGIBLE=false" >> $GITHUB_ENV
           fi
           echo "" >> audit-log.md
-      
+
       # Step 16: Auto-merge PR (production mode only)
       - name: Auto-merge PR
         id: automerge
@@ -481,7 +481,7 @@ jobs:
         run: |
           echo "### 11. Auto-merge" >> audit-log.md
           echo "" >> audit-log.md
-          
+
           if [ "$TEST_MODE" == "true" ]; then
             echo "🟡 [TEST MODE] Would auto-merge PR #${{ github.event.pull_request.number }}" >> audit-log.md
             echo "" >> audit-log.md
@@ -489,14 +489,14 @@ jobs:
             echo "AUTOMERGE_RESULT=test" >> $GITHUB_ENV
           else
             echo "🚀 Attempting to auto-merge PR..." >> audit-log.md
-            
+
             # Use GitHub API to merge PR
             RESPONSE=$(curl -X PUT \
               -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
               -H "Accept: application/vnd.github.v3+json" \
               "https://api.github.com/repos/${{ github.repository }}/pulls/${{ github.event.pull_request.number }}/merge" \
               -d '{"merge_method":"squash"}')
-            
+
             if echo "$RESPONSE" | grep -q '"merged": true'; then
               echo "✅ Successfully auto-merged PR" >> audit-log.md
               echo "AUTOMERGE_RESULT=success" >> $GITHUB_ENV
@@ -508,7 +508,7 @@ jobs:
             fi
           fi
           echo "" >> audit-log.md
-      
+
       # Step 17: Generate summary
       - name: Generate summary
         id: summary
@@ -518,20 +518,20 @@ jobs:
           echo "" >> audit-log.md
           echo "### Summary" >> audit-log.md
           echo "" >> audit-log.md
-          
+
           if [ "$TEST_MODE" == "true" ]; then
             echo "**Mode:** 🟡 Test Mode (Dry-run)" >> audit-log.md
           else
             echo "**Mode:** 🔴 Production Mode" >> audit-log.md
           fi
-          
+
           echo "**Source:** ${{ github.actor }}" >> audit-log.md
           echo "**Conflicts:** ${{ env.HAS_CONFLICTS || 'false' }}" >> audit-log.md
           echo "**Dependencies:** ${{ env.DEPS_INSTALLED || 'false' }}" >> audit-log.md
           echo "**Lint:** ${{ env.LINT_PASSED || 'false' }}" >> audit-log.md
           echo "**Tests:** ${{ env.TESTS_PASSED || 'false' }}" >> audit-log.md
           echo "**Auto-merge eligible:** ${{ env.AUTOMERGE_ELIGIBLE || 'false' }}" >> audit-log.md
-          
+
           if [ "${{ env.AUTOMERGE_RESULT }}" == "success" ]; then
             echo "**Result:** ✅ PR auto-merged successfully" >> audit-log.md
           elif [ "${{ env.AUTOMERGE_RESULT }}" == "test" ]; then
@@ -541,12 +541,12 @@ jobs:
           else
             echo "**Result:** ⚠️ Auto-merge attempted but failed" >> audit-log.md
           fi
-          
+
           echo "" >> audit-log.md
           echo "---" >> audit-log.md
           echo "" >> audit-log.md
           echo "*Generated by Security PR Automation Workflow*" >> audit-log.md
-      
+
       # Step 18: Post audit log as PR comment
       - name: Post audit log comment
         if: always()
@@ -556,7 +556,7 @@ jobs:
           script: |
             const fs = require('fs');
             const auditLog = fs.readFileSync('audit-log.md', 'utf8');
-            
+
             // Post comment to PR
             await github.rest.issues.createComment({
               owner: context.repo.owner,
