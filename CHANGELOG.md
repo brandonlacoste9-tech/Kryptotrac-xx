@@ -47,9 +47,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Chart IDs: `/^[a-zA-Z0-9_-]+$/`
 - Config keys: `/^[a-zA-Z0-9_-]+$/`
 - Hex colors: `/^#[0-9a-fA-F]{3,8}$/`
-- RGB/RGBA: `/^rgba?\(\s*\d+\s*,\s*\d+\s*,\s*\d+\s*(,\s*[\d.]+\s*)?\)$/`
-- HSL/HSLA: `/^hsla?\(\s*\d+\s*,\s*\d+%\s*,\s*\d+%\s*(,\s*[\d.]+\s*)?\)$/`
-- CSS variables: `/^(var\(--[a-zA-Z0-9_-]+\)|hsl\(var\(--[a-zA-Z0-9_-]+\)\))$/`
+- RGB: `/^rgb\(\s*\d+\s*,\s*\d+\s*,\s*\d+\s*\)$/`
+- RGBA: `/^rgba\(\s*\d+\s*,\s*\d+\s*,\s*\d+\s*,\s*(?:0|0?\.\d+|1(?:\.0+)?)\s*\)$/` (alpha 0-1)
+- HSL: `/^hsl\(\s*\d+\s*,\s*\d+%\s*,\s*\d+%\s*\)$/`
+- HSLA: `/^hsla\(\s*\d+\s*,\s*\d+%\s*,\s*\d+%\s*,\s*(?:0|0?\.\d+|1(?:\.0+)?)\s*\)$/` (alpha 0-1)
+- CSS variables: `/^var\(--[a-zA-Z0-9_-]+\)$/` plus variants with hsl/rgb wrappers
 - Color keywords: `/^[a-z]+$/` (lowercase only)
 
 **Test Plan**:

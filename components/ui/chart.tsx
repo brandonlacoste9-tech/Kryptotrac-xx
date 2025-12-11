@@ -136,16 +136,17 @@ const ChartStyle = ({ id, config }: { id: string; config: ChartConfig }) => {
       if (!color) return true
       
       // Allow hex colors, rgb/rgba, hsl/hsla, CSS variables, and CSS color keywords
+      // Note: Alpha values are validated to be between 0 and 1
       const isSafeColor =
         /^#[0-9a-fA-F]{3,8}$/.test(color) || // hex colors
         /^rgb\(\s*\d+\s*,\s*\d+\s*,\s*\d+\s*\)$/.test(color) || // rgb
-        /^rgba\(\s*\d+\s*,\s*\d+\s*,\s*\d+\s*,\s*[\d.]+\s*\)$/.test(color) || // rgba
+        /^rgba\(\s*\d+\s*,\s*\d+\s*,\s*\d+\s*,\s*(?:0|0?\.\d+|1(?:\.0+)?)\s*\)$/.test(color) || // rgba with alpha 0-1
         /^hsl\(\s*\d+\s*,\s*\d+%\s*,\s*\d+%\s*\)$/.test(color) || // hsl
-        /^hsla\(\s*\d+\s*,\s*\d+%\s*,\s*\d+%\s*,\s*[\d.]+\s*\)$/.test(color) || // hsla
+        /^hsla\(\s*\d+\s*,\s*\d+%\s*,\s*\d+%\s*,\s*(?:0|0?\.\d+|1(?:\.0+)?)\s*\)$/.test(color) || // hsla with alpha 0-1
         /^hsl\(\s*var\(--[a-zA-Z0-9_-]+\)\s*\)$/.test(color) || // hsl with CSS variable
-        /^hsla\(\s*var\(--[a-zA-Z0-9_-]+\)\s*,\s*[\d.]+\s*\)$/.test(color) || // hsla with CSS variable and alpha
+        /^hsla\(\s*var\(--[a-zA-Z0-9_-]+\)\s*,\s*(?:0|0?\.\d+|1(?:\.0+)?)\s*\)$/.test(color) || // hsla with CSS variable and alpha 0-1
         /^rgb\(\s*var\(--[a-zA-Z0-9_-]+\)\s*\)$/.test(color) || // rgb with CSS variable
-        /^rgba\(\s*var\(--[a-zA-Z0-9_-]+\)\s*,\s*[\d.]+\s*\)$/.test(color) || // rgba with CSS variable and alpha
+        /^rgba\(\s*var\(--[a-zA-Z0-9_-]+\)\s*,\s*(?:0|0?\.\d+|1(?:\.0+)?)\s*\)$/.test(color) || // rgba with CSS variable and alpha 0-1
         /^var\(--[a-zA-Z0-9_-]+\)$/.test(color) || // CSS variable
         /^[a-z]+$/.test(color) // CSS color keywords (lowercase only)
 

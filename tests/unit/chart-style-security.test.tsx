@@ -242,6 +242,57 @@ describe('ChartStyle Component Security Tests', () => {
       expect(styleElement?.innerHTML).not.toContain('#gggggg')
       expect(styleElement?.innerHTML).toContain('--color-safe')
     })
+
+    it('should reject rgba colors with invalid alpha values', () => {
+      const config: ChartConfig = {
+        invalid1: { color: 'rgba(255, 0, 0, 999)' },
+        invalid2: { color: 'rgba(255, 0, 0, -0.5)' },
+        invalid3: { color: 'rgba(255, 0, 0, 1.5)' },
+        valid: { color: 'rgba(255, 0, 0, 0.5)' },
+      }
+
+      const { container } = render(<ChartStyle id="test" config={config} />)
+      const styleElement = container.querySelector('style')
+      
+      expect(styleElement?.innerHTML).not.toContain('999')
+      expect(styleElement?.innerHTML).not.toContain('-0.5')
+      expect(styleElement?.innerHTML).not.toContain('1.5')
+      expect(styleElement?.innerHTML).toContain('rgba(255, 0, 0, 0.5)')
+    })
+
+    it('should accept rgba colors with valid alpha boundary values', () => {
+      const config: ChartConfig = {
+        alpha0: { color: 'rgba(255, 0, 0, 0)' },
+        alpha05: { color: 'rgba(255, 0, 0, 0.5)' },
+        alpha1: { color: 'rgba(255, 0, 0, 1)' },
+        alpha10: { color: 'rgba(255, 0, 0, 1.0)' },
+      }
+
+      const { container } = render(<ChartStyle id="test" config={config} />)
+      const styleElement = container.querySelector('style')
+      
+      expect(styleElement?.innerHTML).toContain('rgba(255, 0, 0, 0)')
+      expect(styleElement?.innerHTML).toContain('rgba(255, 0, 0, 0.5)')
+      expect(styleElement?.innerHTML).toContain('rgba(255, 0, 0, 1)')
+      expect(styleElement?.innerHTML).toContain('rgba(255, 0, 0, 1.0)')
+    })
+
+    it('should reject hsla colors with invalid alpha values', () => {
+      const config: ChartConfig = {
+        invalid1: { color: 'hsla(120, 100%, 50%, 999)' },
+        invalid2: { color: 'hsla(120, 100%, 50%, -0.5)' },
+        invalid3: { color: 'hsla(120, 100%, 50%, 1.5)' },
+        valid: { color: 'hsla(120, 100%, 50%, 0.8)' },
+      }
+
+      const { container } = render(<ChartStyle id="test" config={config} />)
+      const styleElement = container.querySelector('style')
+      
+      expect(styleElement?.innerHTML).not.toContain('999')
+      expect(styleElement?.innerHTML).not.toContain('-0.5')
+      expect(styleElement?.innerHTML).not.toContain('1.5')
+      expect(styleElement?.innerHTML).toContain('hsla(120, 100%, 50%, 0.8)')
+    })
   })
 
   describe('Theme Color Validation', () => {
