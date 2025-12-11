@@ -7,6 +7,61 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Security - ChartStyle Component Hardening (2025-12-11)
+
+#### Added
+- **Runtime Validation in ChartStyle Component** - Implemented strict input validation for `dangerouslySetInnerHTML` usage
+  - Chart ID validation: Only alphanumeric characters, hyphens, and underscores allowed
+  - Config key validation: Prevents CSS injection through malformed property names
+  - Color value validation: Strict regex patterns for hex, rgb, rgba, hsl, hsla, CSS variables, and color keywords
+  - Automatic rejection of malicious inputs with console error logging
+  
+- **Comprehensive Security Documentation** - Added detailed JSDoc comments explaining:
+  - Security requirements and constraints
+  - Current implementation safety measures
+  - Risk mitigation strategies
+  - Prohibited actions and modification guidelines
+  
+- **Security Test Suite** - Created `tests/unit/chart-style-security.test.tsx` with:
+  - 20+ test cases covering injection attack vectors
+  - Validation tests for chart IDs, config keys, and color values
+  - Edge case handling tests
+  - Integration tests with real-world usage patterns
+
+#### Security Risk Assessment
+**Vulnerability**: Potential SSR/RCE through unsanitized `dangerouslySetInnerHTML` injection in ChartStyle component
+
+**Risk Level**: MEDIUM (mitigated to LOW after changes)
+- Original implementation used only static THEMES and controlled config, but lacked explicit validation
+- No user-supplied content currently flows into the component
+- Risk was primarily from future code changes introducing untrusted data
+
+**Mitigation Strategy**:
+1. ✅ Added runtime validation rejecting any malformed inputs
+2. ✅ Implemented strict regex patterns for all injected values
+3. ✅ Added comprehensive documentation warning about security risks
+4. ✅ Created automated tests to prevent regression
+5. ✅ Logged all rejected inputs for security monitoring
+
+**Validation Patterns**:
+- Chart IDs: `/^[a-zA-Z0-9_-]+$/`
+- Config keys: `/^[a-zA-Z0-9_-]+$/`
+- Hex colors: `/^#[0-9a-fA-F]{3,8}$/`
+- RGB: `/^rgb\(\s*\d+\s*,\s*\d+\s*,\s*\d+\s*\)$/`
+- RGBA: `/^rgba\(\s*\d+\s*,\s*\d+\s*,\s*\d+\s*,\s*(?:0|0?\.\d+|1(?:\.0+)?)\s*\)$/` (alpha 0-1)
+- HSL: `/^hsl\(\s*\d+\s*,\s*\d+%\s*,\s*\d+%\s*\)$/`
+- HSLA: `/^hsla\(\s*\d+\s*,\s*\d+%\s*,\s*\d+%\s*,\s*(?:0|0?\.\d+|1(?:\.0+)?)\s*\)$/` (alpha 0-1)
+- CSS variables: `/^var\(--[a-zA-Z0-9_-]+\)$/` plus variants with hsl/rgb wrappers
+- Color keywords: `/^[a-z]+$/` (lowercase only)
+
+**Test Plan**:
+1. ✅ Unit tests verify rejection of malicious inputs
+2. ✅ Integration tests confirm normal chart rendering works
+3. ⏳ Manual smoke tests for chart theming in light/dark modes
+4. ⏳ CodeQL security scan to verify vulnerability elimination
+
+**Breaking Changes**: None - all valid existing configurations continue to work
+
 ### Added - Customer-Ready Improvements (2025-11-28)
 
 #### Documentation

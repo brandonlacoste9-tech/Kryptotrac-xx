@@ -69,7 +69,45 @@ function ChartContainer({
   )
 }
 
+/**
+ * ChartStyle Component - CSS Variable Injection for Chart Theming
+ * 
+ * ⚠️ SECURITY WARNING: This component uses dangerouslySetInnerHTML
+ * 
+ * SECURITY REQUIREMENTS:
+ * - MUST ONLY accept static, hardcoded theme configurations
+ * - MUST NEVER accept user-supplied content or untrusted values
+ * - All inputs MUST be validated and sanitized before injection
+ * 
+ * CURRENT IMPLEMENTATION:
+ * - Uses only the static THEMES constant (light/dark with CSS selectors)
+ * - Generates CSS custom properties from validated ChartConfig
+ * - Sanitizes all keys and values to prevent CSS injection
+ * - No user-supplied data flows into dangerouslySetInnerHTML
+ * 
+ * RISK MITIGATION:
+ * - Runtime validation ensures config keys are alphanumeric with hyphens/underscores only
+ * - Color values are validated to match safe CSS color patterns (hex, rgb, hsl, CSS keywords)
+ * - Chart IDs are sanitized to prevent attribute injection
+ * - All string concatenation uses validated, controlled values only
+ * 
+ * PROHIBITED ACTIONS:
+ * - DO NOT pass user input directly to config
+ * - DO NOT accept theme names from external sources
+ * - DO NOT allow arbitrary CSS injection through config values
+ * - DO NOT modify this component without security review
+ * 
+ * @param id - Chart identifier (generated internally, never from user input)
+ * @param config - Chart configuration (must be validated before passing)
+ */
 const ChartStyle = ({ id, config }: { id: string; config: ChartConfig }) => {
+  // SECURITY: Validate chart ID to prevent CSS injection
+  // Only allow alphanumeric characters, hyphens, and underscores
+  if (!/^[a-zA-Z0-9_-]+$/.test(id)) {
+    console.error('[ChartStyle] SECURITY: Invalid chart ID rejected:', id)
+    return null
+  }
+
   const colorConfig = Object.entries(config).filter(
     ([, config]) => config.theme || config.color,
   )
@@ -78,6 +116,50 @@ const ChartStyle = ({ id, config }: { id: string; config: ChartConfig }) => {
     return null
   }
 
+  // SECURITY: Validate all config keys and color values before injection
+  const sanitizedColorConfig = colorConfig.filter(([key, itemConfig]) => {
+    // SECURITY: Validate config key (CSS variable name suffix)
+    // Only allow alphanumeric characters, hyphens, and underscores
+    if (!/^[a-zA-Z0-9_-]+$/.test(key)) {
+      console.error('[ChartStyle] SECURITY: Invalid config key rejected:', key)
+      return false
+    }
+
+    // SECURITY: Validate color values to prevent CSS injection
+    const colors = itemConfig.theme
+      ? Object.values(itemConfig.theme)
+      : itemConfig.color
+        ? [itemConfig.color]
+        : []
+
+    return colors.every((color) => {
+      if (!color) return true
+      
+      // Allow hex colors, rgb/rgba, hsl/hsla, CSS variables, and CSS color keywords
+      // Note: Alpha values are validated to be between 0 and 1
+      const isSafeColor =
+        /^#[0-9a-fA-F]{3,8}$/.test(color) || // hex colors
+        /^rgb\(\s*\d+\s*,\s*\d+\s*,\s*\d+\s*\)$/.test(color) || // rgb
+        /^rgba\(\s*\d+\s*,\s*\d+\s*,\s*\d+\s*,\s*(?:0|0?\.\d+|1(?:\.0+)?)\s*\)$/.test(color) || // rgba with alpha 0-1
+        /^hsl\(\s*\d+\s*,\s*\d+%\s*,\s*\d+%\s*\)$/.test(color) || // hsl
+        /^hsla\(\s*\d+\s*,\s*\d+%\s*,\s*\d+%\s*,\s*(?:0|0?\.\d+|1(?:\.0+)?)\s*\)$/.test(color) || // hsla with alpha 0-1
+        /^hsl\(\s*var\(--[a-zA-Z0-9_-]+\)\s*\)$/.test(color) || // hsl with CSS variable
+        /^hsla\(\s*var\(--[a-zA-Z0-9_-]+\)\s*,\s*(?:0|0?\.\d+|1(?:\.0+)?)\s*\)$/.test(color) || // hsla with CSS variable and alpha 0-1
+        /^rgb\(\s*var\(--[a-zA-Z0-9_-]+\)\s*\)$/.test(color) || // rgb with CSS variable
+        /^rgba\(\s*var\(--[a-zA-Z0-9_-]+\)\s*,\s*(?:0|0?\.\d+|1(?:\.0+)?)\s*\)$/.test(color) || // rgba with CSS variable and alpha 0-1
+        /^var\(--[a-zA-Z0-9_-]+\)$/.test(color) || // CSS variable
+        /^[a-z]+$/.test(color) // CSS color keywords (lowercase only)
+
+      if (!isSafeColor) {
+        console.error('[ChartStyle] SECURITY: Invalid color value rejected:', color)
+        return false
+      }
+      return true
+    })
+  })
+
+  // SECURITY: Generate CSS using only validated, sanitized values
+  // All values have been checked against strict patterns above
   return (
     <style
       dangerouslySetInnerHTML={{
@@ -85,7 +167,7 @@ const ChartStyle = ({ id, config }: { id: string; config: ChartConfig }) => {
           .map(
             ([theme, prefix]) => `
 ${prefix} [data-chart=${id}] {
-${colorConfig
+${sanitizedColorConfig
   .map(([key, itemConfig]) => {
     const color =
       itemConfig.theme?.[theme as keyof typeof itemConfig.theme] ||
