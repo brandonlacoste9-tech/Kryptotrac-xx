@@ -18,8 +18,8 @@ Automatically identifies and processes PRs from:
 
 ### 3. **CI/Test Execution**
 - Installs dependencies
-- Runs linter (`npm run lint`)
-- Executes test suite (`npm test`)
+- Runs linter (`pnpm run lint`)
+- Executes test suite (`pnpm test`)
 - Logs all failures with detailed output
 
 ### 4. **Automated Fixes**

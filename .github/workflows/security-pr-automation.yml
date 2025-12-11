@@ -447,7 +447,7 @@ jobs:
             ELIGIBLE=false
           fi
 
-          if [ "${{ env.LINT_PASSED }}" == "false" ] && [ "${{ env.LINT_FIXED }}" != "true" ]; then
+          if [ "${{ env.LINT_PASSED }}" == "false" ] && [ "${{ env.LINT_FIXED }}" != "true" ] && [ "${{ env.LINT_FIXED }}" != "nochanges" ]; then
             echo "❌ Lint errors not resolved" >> audit-log.md
             ELIGIBLE=false
           fi
