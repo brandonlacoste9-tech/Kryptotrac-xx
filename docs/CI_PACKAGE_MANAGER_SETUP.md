@@ -95,7 +95,7 @@ Every GitHub Actions workflow must include these steps in order:
 
 When you cannot update the lockfile locally (e.g., in restricted environments):
 
-1. Navigate to GitHub Actions: https://github.com/brandonlacoste9-tech/Kryptotrac-xx/actions
+1. Navigate to GitHub Actions in your repository
 2. Select "Update pnpm Lockfile" workflow
 3. Click "Run workflow"
 4. Select the target branch
