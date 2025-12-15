@@ -279,18 +279,47 @@ Google OAuth provides a better user experience with one-click authentication.
 
 \`\`\`bash
 # Development
-pnpm dev              # Start development server
-pnpm build            # Build for production
-pnpm start            # Start production server
+npm run dev              # Start development server
+npm run build            # Build for production
+npm run start            # Start production server
 
 # Testing
-pnpm test             # Run all tests
-pnpm test:watch       # Run tests in watch mode
-pnpm test:e2e         # Run end-to-end tests
+npm test                 # Run Jest unit/integration tests
+npm run test:watch       # Run tests in watch mode
+npm run test:e2e         # Run Jest E2E tests
+npm run test:playwright  # Run Playwright E2E browser tests
+npm run test:playwright:ui # Run Playwright tests in UI mode
+npm run test:playwright:headed # Run Playwright tests with browser visible
 
 # Code Quality
-pnpm lint             # Run ESLint
+npm run lint             # Run ESLint
 \`\`\`
+
+## 🧪 Testing
+
+KryptoTrac uses a comprehensive testing strategy:
+
+### Unit & Integration Tests (Jest)
+- **Location**: `tests/unit/` and `tests/integration/`
+- **Run**: `npm test`
+- **Coverage**: `npm run test:all`
+
+### E2E Browser Tests (Playwright)
+- **Location**: `tests/playwright/`
+- **Run**: `npm run test:playwright`
+- **Browsers**: Chromium, Firefox, WebKit
+- **Features**:
+  - Cross-browser testing
+  - Mobile device emulation
+  - Visual regression testing
+  - Automatic screenshots/videos on failure
+
+**First time setup**:
+```bash
+npx playwright install
+```
+
+For more details, see [tests/playwright/README.md](./tests/playwright/README.md)
 
 ## 💰 Pricing Tiers
 

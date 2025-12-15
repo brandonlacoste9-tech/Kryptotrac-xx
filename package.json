@@ -18,7 +18,14 @@
     "test:e2e:stripe": "jest tests/e2e/stripe.test.ts",
     "test:integration": "jest tests/integration/",
     "test:integration:auth": "jest tests/integration/auth-api.test.ts",
-    "test:integration:stripe": "jest tests/integration/stripe-api.test.ts"
+    "test:integration:stripe": "jest tests/integration/stripe-api.test.ts",
+    "test:playwright": "playwright test",
+    "test:playwright:ui": "playwright test --ui",
+    "test:playwright:headed": "playwright test --headed",
+    "test:playwright:chromium": "playwright test --project=chromium",
+    "test:playwright:firefox": "playwright test --project=firefox",
+    "test:playwright:webkit": "playwright test --project=webkit",
+    "test:playwright:report": "playwright show-report"
   },
   "dependencies": {
     "@emotion/is-prop-valid": "latest",
@@ -88,6 +95,7 @@
     "zod": "3.25.76"
   },
   "devDependencies": {
+    "@playwright/test": "^1.48.0",
     "@tailwindcss/postcss": "^4.1.9",
     "@testing-library/jest-dom": "^6.1.5",
     "@testing-library/react": "^14.1.2",
