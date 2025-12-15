@@ -3,6 +3,9 @@ name: Update pnpm Lockfile
 on:
   workflow_dispatch:
 
+permissions:
+  contents: write
+
 jobs:
   update-lockfile:
     runs-on: ubuntu-latest
