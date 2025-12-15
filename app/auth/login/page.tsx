@@ -12,6 +12,8 @@ export default function LoginPage() {
   const [password, setPassword] = useState("")
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState("")
+  const [resetSent, setResetSent] = useState(false)
+  const [showResetForm, setShowResetForm] = useState(false)
   const router = useRouter()
 
   async function handleLogin(e: React.FormEvent) {
@@ -54,6 +56,103 @@ export default function LoginPage() {
     }
   }
 
+  async function handlePasswordReset(e: React.FormEvent) {
+    e.preventDefault()
+    if (!email) {
+      setError("Please enter your email address")
+      return
+    }
+
+    setLoading(true)
+    setError("")
+
+    const supabase = createBrowserClient()
+    const redirectUrl = process.env.NEXT_PUBLIC_DEV_SUPABASE_REDIRECT_URL || `${window.location.origin}/auth/reset-password`
+    
+    const { error: resetError } = await supabase.auth.resetPasswordForEmail(email, {
+      redirectTo: redirectUrl,
+    })
+
+    if (resetError) {
+      setError(resetError.message)
+      setLoading(false)
+    } else {
+      setResetSent(true)
+      setLoading(false)
+    }
+  }
+
+  // Reset password form view
+  if (showResetForm) {
+    return (
+      <div className="min-h-screen flex items-center justify-center p-6">
+        <div className="w-full max-w-md">
+          <div className="glass-card p-8 space-y-6">
+            <div className="text-center space-y-2">
+              <h1 className="text-3xl font-bold text-white">Reset Password</h1>
+              <p className="text-white/60">Enter your email to receive a reset link</p>
+            </div>
+
+            {resetSent ? (
+              <div className="space-y-4">
+                <div className="p-4 bg-green-500/10 border border-green-500/20 rounded-lg text-green-400 text-center">
+                  <p className="font-medium mb-2">✓ Email Sent!</p>
+                  <p className="text-sm">Check your inbox for the password reset link.</p>
+                </div>
+                <button
+                  onClick={() => {
+                    setShowResetForm(false)
+                    setResetSent(false)
+                  }}
+                  className="w-full py-3 bg-white/5 border border-white/10 rounded-lg font-medium text-white hover:bg-white/10 transition-all"
+                >
+                  Back to Sign In
+                </button>
+              </div>
+            ) : (
+              <form onSubmit={handlePasswordReset} className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-white/80 mb-2">Email</label>
+                  <input
+                    type="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    className="w-full px-4 py-2 bg-white/5 border border-white/10 rounded-lg text-white placeholder:text-white/40 focus:outline-none focus:ring-2 focus:ring-red-500/50"
+                    placeholder="you@example.com"
+                    required
+                  />
+                </div>
+
+                {error && (
+                  <div className="p-3 bg-red-500/10 border border-red-500/20 rounded-lg text-red-400 text-sm">{error}</div>
+                )}
+
+                <button
+                  type="submit"
+                  disabled={loading}
+                  className="w-full py-3 bg-gradient-to-r from-red-600 to-red-500 rounded-lg font-medium text-white shadow-lg shadow-red-500/50 hover:shadow-red-500/70 transition-all disabled:opacity-50"
+                >
+                  {loading ? "Sending..." : "Send Reset Link"}
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => {
+                    setShowResetForm(false)
+                    setError("")
+                  }}
+                  className="w-full py-3 bg-white/5 border border-white/10 rounded-lg font-medium text-white hover:bg-white/10 transition-all"
+                >
+                  Back to Sign In
+                </button>
+              </form>
+            )}
+          </div>
+        </div>
+      </div>
+    )
+  }
+
   return (
     <div className="min-h-screen flex items-center justify-center p-6">
       <div className="w-full max-w-md">
@@ -88,8 +187,24 @@ export default function LoginPage() {
               />
             </div>
 
+            <div className="flex justify-end">
+              <button
+                type="button"
+                onClick={() => setShowResetForm(true)}
+                className="text-sm text-red-400 hover:text-red-300"
+              >
+                Forgot password?
+              </button>
+            </div>
+
             {error && (
               <div className="p-3 bg-red-500/10 border border-red-500/20 rounded-lg text-red-400 text-sm">{error}</div>
+            )}
+
+            {resetSent && (
+              <div className="p-3 bg-green-500/10 border border-green-500/20 rounded-lg text-green-400 text-sm">
+                Password reset email sent! Check your inbox.
+              </div>
             )}
 
             <button

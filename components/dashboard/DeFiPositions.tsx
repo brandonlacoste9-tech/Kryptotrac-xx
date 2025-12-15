@@ -5,6 +5,9 @@ import { Loader2, Wallet, TrendingUp, AlertCircle } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 
 interface ProtocolData {
   protocol: string;
@@ -136,6 +139,11 @@ export function DeFiPositions() {
   const [positions, setPositions] = useState<WalletPositions[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [showAddWalletDialog, setShowAddWalletDialog] = useState(false);
+  const [walletAddress, setWalletAddress] = useState('');
+  const [walletLabel, setWalletLabel] = useState('');
+  const [addingWallet, setAddingWallet] = useState(false);
+  const [addWalletError, setAddWalletError] = useState('');
 
   useEffect(() => {
     fetchPositions();
@@ -155,6 +163,49 @@ export function DeFiPositions() {
       setError('Failed to load DeFi positions');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleAddWallet = async () => {
+    if (!walletAddress.trim()) {
+      setAddWalletError('Please enter a wallet address');
+      return;
+    }
+
+    // Basic Ethereum address validation
+    if (!/^0x[a-fA-F0-9]{40}$/.test(walletAddress.trim())) {
+      setAddWalletError('Please enter a valid Ethereum address');
+      return;
+    }
+
+    setAddingWallet(true);
+    setAddWalletError('');
+
+    try {
+      const res = await fetch('/api/defi/add-wallet', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          address: walletAddress.trim(),
+          label: walletLabel.trim() || undefined,
+        }),
+      });
+
+      const data = await res.json();
+
+      if (data.error) {
+        setAddWalletError(data.error);
+      } else {
+        // Success - close dialog and refresh positions
+        setShowAddWalletDialog(false);
+        setWalletAddress('');
+        setWalletLabel('');
+        fetchPositions();
+      }
+    } catch (err) {
+      setAddWalletError('Failed to add wallet. Please try again.');
+    } finally {
+      setAddingWallet(false);
     }
   };
 
@@ -199,7 +250,10 @@ export function DeFiPositions() {
               </p>
             </div>
           </div>
-          <Button className="bg-red-600 hover:bg-red-700 text-white">
+          <Button 
+            onClick={() => setShowAddWalletDialog(true)} 
+            className="bg-red-600 hover:bg-red-700 text-white"
+          >
             Add Wallet
           </Button>
         </div>
@@ -213,7 +267,10 @@ export function DeFiPositions() {
             <p className="text-sm text-gray-400 mb-4">
               Add an Ethereum wallet address to start tracking your DeFi positions
             </p>
-            <Button className="bg-red-600 hover:bg-red-700 text-white">
+            <Button 
+              onClick={() => setShowAddWalletDialog(true)} 
+              className="bg-red-600 hover:bg-red-700 text-white"
+            >
               Add Your First Wallet
             </Button>
           </div>
@@ -287,6 +344,71 @@ export function DeFiPositions() {
           ))
         )}
       </CardContent>
+
+      {/* Add Wallet Dialog */}
+      <Dialog open={showAddWalletDialog} onOpenChange={setShowAddWalletDialog}>
+        <DialogContent className="bg-black/95 border-red-900/30 backdrop-blur-xl">
+          <DialogHeader>
+            <DialogTitle className="text-white">Add Ethereum Wallet</DialogTitle>
+            <DialogDescription className="text-gray-400">
+              Add an Ethereum wallet address to track your DeFi positions across protocols
+            </DialogDescription>
+          </DialogHeader>
+          
+          <div className="space-y-4">
+            <div>
+              <Label htmlFor="wallet-address" className="text-white">Wallet Address</Label>
+              <Input
+                id="wallet-address"
+                placeholder="0x..."
+                value={walletAddress}
+                onChange={(e) => setWalletAddress(e.target.value)}
+                className="bg-white/5 border-white/10 text-white mt-2"
+              />
+            </div>
+
+            <div>
+              <Label htmlFor="wallet-label" className="text-white">Label (Optional)</Label>
+              <Input
+                id="wallet-label"
+                placeholder="My Main Wallet"
+                value={walletLabel}
+                onChange={(e) => setWalletLabel(e.target.value)}
+                className="bg-white/5 border-white/10 text-white mt-2"
+              />
+            </div>
+
+            {addWalletError && (
+              <div className="p-3 bg-red-500/10 border border-red-500/20 rounded-lg text-red-400 text-sm">
+                {addWalletError}
+              </div>
+            )}
+
+            <div className="flex gap-3">
+              <Button
+                variant="outline"
+                onClick={() => {
+                  setShowAddWalletDialog(false);
+                  setWalletAddress('');
+                  setWalletLabel('');
+                  setAddWalletError('');
+                }}
+                className="flex-1"
+                disabled={addingWallet}
+              >
+                Cancel
+              </Button>
+              <Button
+                onClick={handleAddWallet}
+                disabled={addingWallet}
+                className="flex-1 bg-red-600 hover:bg-red-700"
+              >
+                {addingWallet ? 'Adding...' : 'Add Wallet'}
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </Card>
   );
 }
