@@ -69,7 +69,7 @@ test.describe('Authentication', () => {
     
     // Browser should show validation error or prevent submission
     // This tests HTML5 validation
-    const validationMessage = await emailInput.evaluate((el: any) => el.validationMessage);
+    const validationMessage = await emailInput.evaluate((el: HTMLInputElement) => el.validationMessage);
     expect(validationMessage).toBeTruthy();
   });
 
@@ -86,12 +86,10 @@ test.describe('Authentication', () => {
   });
 
   test('should navigate to magic link page if available', async ({ page }) => {
-    await page.goto('/auth/magic-link');
+    const response = await page.goto('/auth/magic-link');
     
     // If magic link page exists, verify it loads
-    const statusCode = await page.evaluate(() => {
-      return fetch(window.location.href).then(res => res.status);
-    }).catch(() => 404);
+    const statusCode = response?.status() || 404;
     
     if (statusCode === 200) {
       await page.waitForLoadState('networkidle');

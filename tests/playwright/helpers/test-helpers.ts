@@ -168,9 +168,11 @@ export async function mockApiResponse(
 }
 
 /**
- * Check for console errors
+ * Set up console error tracking
+ * Call this before navigating to pages to capture errors
+ * Returns a function to retrieve collected errors
  */
-export async function checkForConsoleErrors(page: Page): Promise<string[]> {
+export function setupConsoleErrorTracking(page: Page): () => string[] {
   const errors: string[] = [];
   
   page.on('console', (msg) => {
@@ -179,7 +181,7 @@ export async function checkForConsoleErrors(page: Page): Promise<string[]> {
     }
   });
   
-  return errors;
+  return () => [...errors];
 }
 
 /**

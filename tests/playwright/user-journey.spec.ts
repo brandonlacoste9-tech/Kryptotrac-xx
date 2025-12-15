@@ -8,6 +8,9 @@
 import { test, expect } from '@playwright/test';
 import { waitForPageLoad } from './helpers/test-helpers';
 
+// Test constants
+const MAX_PAGE_LOAD_TIME = 10000; // 10 seconds
+
 test.describe('User Journey: New Visitor Flow', () => {
   test('should guide new user through main features', async ({ page }) => {
     // Step 1: Landing on homepage
@@ -153,23 +156,21 @@ test.describe('User Journey: Performance', () => {
       await waitForPageLoad(page);
       const loadTime = Date.now() - startTime;
       
-      // Page should load within 10 seconds
-      expect(loadTime).toBeLessThan(10000);
+      // Page should load within acceptable time
+      expect(loadTime).toBeLessThan(MAX_PAGE_LOAD_TIME);
       console.log(`✓ ${url} loaded in ${loadTime}ms`);
     }
   });
 
   test('should not have excessive console errors', async ({ page }) => {
-    const errors: string[] = [];
-    
-    page.on('console', (msg) => {
-      if (msg.type() === 'error') {
-        errors.push(msg.text());
-      }
-    });
+    // Import the helper at the top level if needed
+    const { setupConsoleErrorTracking } = await import('./helpers/test-helpers');
+    const getErrors = setupConsoleErrorTracking(page);
     
     await page.goto('/');
     await waitForPageLoad(page);
+    
+    const errors = getErrors();
     
     // Allow for some acceptable errors (like third-party scripts)
     // but catch major issues
