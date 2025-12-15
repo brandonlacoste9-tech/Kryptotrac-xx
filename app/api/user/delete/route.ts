@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createServerClient } from '@/lib/supabase/server';
+import { createServerClient, createAdminClient } from '@/lib/supabase/server';
 
 export async function DELETE(req: NextRequest) {
   try {
@@ -46,8 +46,9 @@ export async function DELETE(req: NextRequest) {
       // Delete profile
       await supabase.from('profiles').delete().eq('id', userId);
       
-      // Finally, delete the auth user
-      const { error: deleteUserError } = await supabase.auth.admin.deleteUser(userId);
+      // Finally, delete the auth user using admin client
+      const adminClient = createAdminClient();
+      const { error: deleteUserError } = await adminClient.auth.admin.deleteUser(userId);
       
       if (deleteUserError) {
         console.error('Failed to delete auth user:', deleteUserError);

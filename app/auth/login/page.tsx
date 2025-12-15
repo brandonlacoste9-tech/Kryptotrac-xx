@@ -67,7 +67,10 @@ export default function LoginPage() {
     setError("")
 
     const supabase = createBrowserClient()
-    const redirectUrl = process.env.NEXT_PUBLIC_DEV_SUPABASE_REDIRECT_URL || `${window.location.origin}/auth/reset-password`
+    const baseUrl = process.env.NEXT_PUBLIC_DEV_SUPABASE_REDIRECT_URL || 
+                    process.env.NEXT_PUBLIC_SUPABASE_URL || 
+                    (typeof window !== 'undefined' ? window.location.origin : '')
+    const redirectUrl = `${baseUrl}/auth/reset-password`
     
     const { error: resetError } = await supabase.auth.resetPasswordForEmail(email, {
       redirectTo: redirectUrl,
