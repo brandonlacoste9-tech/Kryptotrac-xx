@@ -4,6 +4,15 @@ import { createServerClient } from "@/lib/supabase/server"
 
 export async function POST(req: NextRequest) {
   try {
+    // Validate Stripe credentials are available
+    if (!process.env.STRIPE_SECRET_KEY) {
+      console.error("[v0] Missing STRIPE_SECRET_KEY environment variable")
+      return NextResponse.json(
+        { error: "Payment system not configured. Please contact support." },
+        { status: 503 }
+      )
+    }
+
     const supabase = await createServerClient()
     
     // Get authenticated user
@@ -29,17 +38,27 @@ export async function POST(req: NextRequest) {
       customerId = subscription.stripe_customer_id
     } else {
       // Create new Stripe customer
-      const customer = await stripe.customers.create({
-        email: user.email,
-        metadata: {
-          supabase_user_id: user.id,
-        },
-      })
-      customerId = customer.id
+      try {
+        const customer = await stripe.customers.create({
+          email: user.email,
+          metadata: {
+            supabase_user_id: user.id,
+          },
+        })
+        customerId = customer.id
+      } catch (stripeError) {
+        console.error("[v0] Failed to create Stripe customer:", stripeError)
+        return NextResponse.json(
+          { error: "Failed to initialize payment account" },
+          { status: 500 }
+        )
+      }
     }
 
     // Create checkout session
-    const session = await stripe.checkout.sessions.create({
+    let session
+    try {
+      session = await stripe.checkout.sessions.create({
       customer: customerId,
       payment_method_types: ["card"],
       line_items: [
@@ -65,6 +84,13 @@ export async function POST(req: NextRequest) {
         user_id: user.id,
       },
     })
+    } catch (stripeError) {
+      console.error("[v0] Failed to create checkout session:", stripeError)
+      return NextResponse.json(
+        { error: "Failed to create checkout session" },
+        { status: 500 }
+      )
+    }
 
     return NextResponse.json({ url: session.url })
   } catch (error) {
