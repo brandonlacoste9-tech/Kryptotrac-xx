@@ -1,6 +1,12 @@
 import { createClient } from "@/lib/supabase/server"
 import { getCoinPrice } from "@/lib/coingecko"
 import { NextResponse } from "next/server"
+import { taintUniqueValue } from "@/lib/taint"
+
+// Taint cron secret to prevent accidental exposure to client
+if (process.env.CRON_SECRET) {
+  taintUniqueValue('CRON_SECRET must not be sent to the client', process.env.CRON_SECRET)
+}
 
 export const dynamic = "force-dynamic"
 export const runtime = "nodejs"

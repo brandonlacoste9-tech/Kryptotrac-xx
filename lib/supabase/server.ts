@@ -1,5 +1,12 @@
 import { createServerClient as createSupabaseServerClient } from "@supabase/ssr"
 import { cookies } from "next/headers"
+import { taintEnvironmentVariables } from "../taint"
+
+// Taint sensitive Supabase secrets to prevent accidental exposure to client
+// Note: NEXT_PUBLIC_* variables are intentionally public and not tainted
+taintEnvironmentVariables([
+  { name: 'SUPABASE_SERVICE_ROLE_KEY', value: process.env.SUPABASE_SERVICE_ROLE_KEY },
+])
 
 export async function createServerClient() {
   const cookieStore = await cookies()

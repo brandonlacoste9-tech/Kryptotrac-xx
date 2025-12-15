@@ -2,6 +2,15 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createServerClient } from '@/lib/supabase/server'
 import { cookies } from 'next/headers'
 import { createClient } from '@supabase/supabase-js'
+import { taintUniqueValue } from '@/lib/taint'
+
+// Taint sensitive environment variables used in this route
+if (process.env.SUPABASE_SERVICE_ROLE_KEY) {
+  taintUniqueValue(
+    'SUPABASE_SERVICE_ROLE_KEY must not be sent to the client',
+    process.env.SUPABASE_SERVICE_ROLE_KEY
+  )
+}
 
 export async function GET(request: NextRequest) {
   try {

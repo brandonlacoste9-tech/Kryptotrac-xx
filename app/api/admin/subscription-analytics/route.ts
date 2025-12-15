@@ -1,5 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
+import { taintEnvironmentVariables } from '@/lib/taint'
+
+// Taint sensitive secrets to prevent accidental exposure to client
+taintEnvironmentVariables([
+  { name: 'ADMIN_ANALYTICS_TOKEN', value: process.env.ADMIN_ANALYTICS_TOKEN },
+  { name: 'SUPABASE_SERVICE_ROLE_KEY', value: process.env.SUPABASE_SERVICE_ROLE_KEY },
+])
 
 const ADMIN_TOKEN = process.env.ADMIN_ANALYTICS_TOKEN || 'dev-admin-token-12345'
 

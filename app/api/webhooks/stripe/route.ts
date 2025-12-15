@@ -2,6 +2,15 @@ import { type NextRequest, NextResponse } from "next/server"
 import { stripe } from "@/lib/stripe"
 import { createServerClient } from "@/lib/supabase/server"
 import type Stripe from "stripe"
+import { taintUniqueValue } from "@/lib/taint"
+
+// Taint webhook secret to prevent accidental exposure to client
+if (process.env.STRIPE_WEBHOOK_SECRET) {
+  taintUniqueValue(
+    'STRIPE_WEBHOOK_SECRET must not be sent to the client',
+    process.env.STRIPE_WEBHOOK_SECRET
+  )
+}
 
 export async function POST(req: NextRequest) {
   const body = await req.text()
