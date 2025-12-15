@@ -50,12 +50,17 @@ function ProtocolCard({ name, data }: ProtocolCardProps) {
               <span className="text-gray-400">Debt:</span>
               <span className="text-white font-medium">{parseFloat(data.totalDebtETH).toFixed(4)} ETH</span>
             </div>
-            <div className="flex justify-between text-xs">
-              <span className="text-gray-400">Health Factor:</span>
-              <span className={`font-medium ${parseFloat(data.healthFactor) > 2 ? 'text-green-500' : parseFloat(data.healthFactor) > 1.5 ? 'text-yellow-500' : 'text-red-500'}`}>
-                {parseFloat(data.healthFactor).toFixed(2)}
-              </span>
-            </div>
+            {(() => {
+              const healthFactor = parseFloat(data.healthFactor);
+              return (
+                <div className="flex justify-between text-xs">
+                  <span className="text-gray-400">Health Factor:</span>
+                  <span className={`font-medium ${healthFactor > 2 ? 'text-green-500' : healthFactor > 1.5 ? 'text-yellow-500' : 'text-red-500'}`}>
+                    {healthFactor.toFixed(2)}
+                  </span>
+                </div>
+              );
+            })()}
           </>
         )}
 
@@ -89,12 +94,17 @@ function ProtocolCard({ name, data }: ProtocolCardProps) {
               <span className="text-gray-400">Borrowed:</span>
               <span className="text-white font-medium">${parseFloat(data.borrowed).toFixed(2)}</span>
             </div>
-            <div className="flex justify-between text-xs">
-              <span className="text-gray-400">Net Position:</span>
-              <span className={`font-medium ${data.netPosition >= 0 ? 'text-green-500' : 'text-red-500'}`}>
-                ${Math.abs(data.netPosition).toFixed(2)}
-              </span>
-            </div>
+            {(() => {
+              const netPosition = parseFloat(data.netPosition);
+              return (
+                <div className="flex justify-between text-xs">
+                  <span className="text-gray-400">Net Position:</span>
+                  <span className={`font-medium ${netPosition >= 0 ? 'text-green-500' : 'text-red-500'}`}>
+                    ${Math.abs(netPosition).toFixed(2)}
+                  </span>
+                </div>
+              );
+            })()}
           </>
         )}
 
@@ -223,37 +233,56 @@ export function DeFiPositions() {
 
               {/* Protocol Positions Grid */}
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {walletData.protocols.aave && parseFloat(walletData.protocols.aave.totalCollateralETH) > 0 && (
+                {walletData.protocols.aave && 
+                 walletData.protocols.aave.totalCollateralETH != null && 
+                 parseFloat(walletData.protocols.aave.totalCollateralETH) > 0 && (
                   <ProtocolCard name="Aave" data={walletData.protocols.aave} />
                 )}
 
-                {walletData.protocols.uniswap && walletData.protocols.uniswap.totalPositions > 0 && (
+                {walletData.protocols.uniswap && 
+                 walletData.protocols.uniswap.totalPositions != null &&
+                 walletData.protocols.uniswap.totalPositions > 0 && (
                   <ProtocolCard name="Uniswap V3" data={walletData.protocols.uniswap} />
                 )}
 
-                {walletData.protocols.compound && parseFloat(walletData.protocols.compound.supplied) > 0 && (
+                {walletData.protocols.compound && 
+                 walletData.protocols.compound.supplied != null &&
+                 parseFloat(walletData.protocols.compound.supplied) > 0 && (
                   <ProtocolCard name="Compound" data={walletData.protocols.compound} />
                 )}
 
-                {walletData.protocols.lido && parseFloat(walletData.protocols.lido.stETH) > 0 && (
+                {walletData.protocols.lido && 
+                 walletData.protocols.lido.stETH != null &&
+                 parseFloat(walletData.protocols.lido.stETH) > 0 && (
                   <ProtocolCard name="Lido" data={walletData.protocols.lido} />
                 )}
 
-                {walletData.protocols.curve && walletData.protocols.curve.positions && walletData.protocols.curve.positions.length > 0 && (
+                {walletData.protocols.curve && 
+                 walletData.protocols.curve.positions && 
+                 walletData.protocols.curve.positions.length > 0 && (
                   <ProtocolCard name="Curve" data={walletData.protocols.curve} />
                 )}
               </div>
 
               {/* Show message if no positions */}
-              {!walletData.protocols.aave?.totalCollateralETH &&
-               !walletData.protocols.uniswap?.totalPositions &&
-               !walletData.protocols.compound?.supplied &&
-               !walletData.protocols.lido?.stETH &&
-               (!walletData.protocols.curve?.positions || walletData.protocols.curve.positions.length === 0) && (
-                <div className="text-center py-8 text-gray-400 text-sm">
-                  No active DeFi positions found for this wallet
-                </div>
-              )}
+              {(() => {
+                const hasAave = walletData.protocols.aave?.totalCollateralETH != null && 
+                               parseFloat(walletData.protocols.aave.totalCollateralETH) > 0;
+                const hasUniswap = walletData.protocols.uniswap?.totalPositions != null &&
+                                  walletData.protocols.uniswap.totalPositions > 0;
+                const hasCompound = walletData.protocols.compound?.supplied != null &&
+                                   parseFloat(walletData.protocols.compound.supplied) > 0;
+                const hasLido = walletData.protocols.lido?.stETH != null &&
+                               parseFloat(walletData.protocols.lido.stETH) > 0;
+                const hasCurve = walletData.protocols.curve?.positions && 
+                                walletData.protocols.curve.positions.length > 0;
+                
+                return !hasAave && !hasUniswap && !hasCompound && !hasLido && !hasCurve ? (
+                  <div className="text-center py-8 text-gray-400 text-sm">
+                    No active DeFi positions found for this wallet
+                  </div>
+                ) : null;
+              })()}
             </div>
           ))
         )}

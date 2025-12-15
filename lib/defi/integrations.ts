@@ -12,10 +12,11 @@
 import { ethers } from 'ethers';
 
 // Initialize provider with RPC URL from environment
-// Fallback to public RPC if not configured (with rate limits)
-const provider = new ethers.JsonRpcProvider(
-  process.env.ETH_RPC_URL || 'https://eth.llamarpc.com'
-);
+// Requires ETH_RPC_URL to be configured
+if (!process.env.ETH_RPC_URL) {
+  throw new Error('ETH_RPC_URL environment variable is required for DeFi integrations');
+}
+const provider = new ethers.JsonRpcProvider(process.env.ETH_RPC_URL);
 
 /**
  * AAVE V3 Position Tracking
@@ -78,7 +79,7 @@ export async function getUniswapPositions(walletAddress: string) {
         token0: position[2],
         token1: position[3],
         fee: position[4],
-        liquidity: ethers.formatUnits(position[7], 18),
+        liquidity: position[7].toString(), // uint128 liquidity amount, no decimal conversion
       });
     }
     
@@ -141,11 +142,14 @@ export async function getCompoundPositions(walletAddress: string) {
     const supplied = await cometContract.balanceOf(walletAddress);
     const borrowed = await cometContract.borrowBalanceOf(walletAddress);
     
+    // Calculate net position directly on BigInt values before formatting
+    const netPositionRaw = supplied - borrowed;
+    
     return {
       protocol: 'Compound V3',
       supplied: ethers.formatUnits(supplied, 6), // USDC has 6 decimals
       borrowed: ethers.formatUnits(borrowed, 6),
-      netPosition: parseFloat(ethers.formatUnits(supplied, 6)) - parseFloat(ethers.formatUnits(borrowed, 6)),
+      netPosition: ethers.formatUnits(netPositionRaw, 6),
     };
   } catch (error) {
     console.error('Compound fetch error:', error);
