@@ -1,6 +1,38 @@
 # CI/CD Fix Summary
 
-## ✅ Issues Fixed in This PR
+## Latest Fix (PR #40)
+
+### 3. Playwright Workflow Package Manager Inconsistency
+
+**Problem:**
+- Playwright workflow (`.github/workflows/playwright.yml`) used `npm` commands
+- Repository uses `pnpm@9.0.0` as its package manager (specified in package.json)
+- Using npm causes issues: missing package-lock.json, cache misses, increased network calls
+- Inconsistency between workflows leads to CI failures in restricted network environments
+
+**Solution:**
+- Changed all npm commands to pnpm equivalents:
+  - `npm ci` → `pnpm install --frozen-lockfile`
+  - `npx playwright` → `pnpm exec playwright`
+  - `npm run build` → `pnpm run build`
+- Added pnpm setup and caching steps (consistent with other workflows)
+- Uses same caching strategy as CI Pipeline workflow
+
+**Impact:**
+- ✅ All workflows now use pnpm consistently
+- ✅ Reduces network calls via pnpm store caching
+- ✅ More reliable CI builds in restricted environments
+- ✅ Faster workflow execution with proper caching
+
+**Files Changed:**
+- `.github/workflows/playwright.yml` (complete package manager migration)
+- `docs/CI_PACKAGE_MANAGER_SETUP.md` (new comprehensive documentation)
+
+---
+
+## ✅ Previous Issues Fixed
+
+### 1. YAML Syntax Error in agent-test.yml (CRITICAL - HIGHEST PRIORITY)
 
 ### 1. YAML Syntax Error in agent-test.yml (CRITICAL - HIGHEST PRIORITY)
 
