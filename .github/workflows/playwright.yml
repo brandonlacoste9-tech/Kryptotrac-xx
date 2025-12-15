@@ -26,16 +26,34 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '20'
-          cache: 'npm'
+      
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 9
+      
+      - name: Get pnpm store directory
+        id: pnpm-cache
+        shell: bash
+        run: |
+          echo "STORE_PATH=$(pnpm store path)" >> $GITHUB_OUTPUT
+      
+      - name: Setup pnpm cache
+        uses: actions/cache@v3
+        with:
+          path: ${{ steps.pnpm-cache.outputs.STORE_PATH }}
+          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-store-
       
       - name: Install dependencies
-        run: npm ci
+        run: pnpm install --frozen-lockfile
       
       - name: Install Playwright Browsers
-        run: npx playwright install --with-deps ${{ matrix.browser }}
+        run: pnpm exec playwright install --with-deps ${{ matrix.browser }}
       
       - name: Build application
-        run: npm run build
+        run: pnpm run build
         env:
           # Use placeholder env vars for build (adjust as needed)
           NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL || 'https://placeholder.supabase.co' }}
@@ -45,7 +63,7 @@ jobs:
           STRIPE_SECRET_KEY: ${{ secrets.STRIPE_SECRET_KEY || 'sk_test_placeholder' }}
       
       - name: Run Playwright tests
-        run: npx playwright test --project=${{ matrix.browser }}
+        run: pnpm exec playwright test --project=${{ matrix.browser }}
         env:
           PLAYWRIGHT_BASE_URL: http://localhost:3000
           # Use placeholder env vars for tests
