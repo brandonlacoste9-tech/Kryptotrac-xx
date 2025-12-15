@@ -1,0 +1,41 @@
+name: Update pnpm Lockfile
+
+on:
+  workflow_dispatch:
+
+jobs:
+  update-lockfile:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9.0.0
+          
+      - name: Update lockfile
+        run: |
+          pnpm install
+          
+      - name: Verify lockfile
+        run: |
+          pnpm install --frozen-lockfile
+          
+      - name: Commit and push changes
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          git add pnpm-lock.yaml
+          if git diff --staged --quiet; then
+            echo "No changes to lockfile"
+          else
+            git commit -m "fix: update pnpm-lock.yaml for missing dependencies"
+            git push
+          fi
