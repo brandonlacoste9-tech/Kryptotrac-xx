@@ -128,6 +128,10 @@ Open [http://localhost:3000](http://localhost:3000) to see the app! 🎉
 - **[Migration Guide](./MIGRATION_GUIDE.md)** - Database migration reference
 - **[Deployment Guide](./DEPLOYMENT.md)** - Deploy to Vercel or other platforms
 
+### Security
+- **[RSC Security](./docs/RSC_SECURITY.md)** - React Server Components security and data tainting
+- **[Chart Security](./components/ui/CHART_SECURITY.md)** - ChartStyle component security documentation
+
 ### Help & Support
 - **[Troubleshooting](./TROUBLESHOOTING.md)** - Common issues and solutions
 - **[Contributing](./CONTRIBUTING.md)** - How to contribute to the project

@@ -1,3 +1,5 @@
+import { taintUniqueValue } from './taint'
+
 export type XPostPayload = {
   text: string
 }
@@ -11,6 +13,11 @@ export type XFeedItem = {
 }
 
 const REQUIRED_ENV = ["X_BEARER_TOKEN"]
+
+// Taint X API bearer token to prevent accidental exposure to client
+if (process.env.X_BEARER_TOKEN) {
+  taintUniqueValue('X_BEARER_TOKEN must not be sent to the client', process.env.X_BEARER_TOKEN)
+}
 
 function getEnv(name: string): string {
   const value = process.env[name]

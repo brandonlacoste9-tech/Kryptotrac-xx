@@ -4,6 +4,27 @@ This directory contains unit tests for individual components and utilities.
 
 ## Security Tests
 
+### Taint Security Tests
+Location: `taint-security.test.ts`
+
+Comprehensive test suite for React Server Components data tainting utilities that prevent sensitive server-side data from being leaked to clients.
+
+**Coverage:**
+- Unique value tainting (strings, secrets, tokens)
+- Object reference tainting
+- Batch environment variable tainting
+- Automatic sensitive variable detection
+- NEXT_PUBLIC_* variable exclusion
+- Real-world usage scenarios (Stripe, Supabase, Admin tokens, Cron secrets)
+- Error handling and edge cases
+
+**Run tests:**
+```bash
+npm test tests/unit/taint-security.test.ts
+```
+
+**Security Note:** These tests verify that the taint utilities work correctly. The actual protection happens at runtime when React attempts to serialize tainted values to the client, which would throw an error.
+
 ### ChartStyle Security Tests
 Location: `chart-style-security.test.tsx`
 

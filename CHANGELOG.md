@@ -7,6 +7,74 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Security - React Server Components RCE Vulnerability Fix (2025-12-15)
+
+#### Added
+- **Data Tainting Utilities** - Created `lib/taint.ts` module with React 19 taint API wrappers
+  - `taintUniqueValue`: Protects scalar values (strings, secrets)
+  - `taintObjectReference`: Protects object references
+  - `taintEnvironmentVariables`: Batch taint multiple env vars
+  - `taintSensitiveEnvironmentVariables`: Auto-detect and taint sensitive vars
+
+- **Comprehensive Protection** - Applied data tainting to all sensitive environment variables:
+  - `STRIPE_SECRET_KEY` - Protected in `lib/stripe.ts`
+  - `STRIPE_WEBHOOK_SECRET` - Protected in `lib/stripe.ts` and webhook route
+  - `SUPABASE_SERVICE_ROLE_KEY` - Protected in `lib/supabase/server.ts` and admin routes
+  - `ADMIN_ANALYTICS_TOKEN` - Protected in admin analytics routes
+  - `CRON_SECRET` - Protected in cron job routes
+  - `X_BEARER_TOKEN` - Protected in `lib/x.ts`
+
+- **Security Documentation** - Created comprehensive `docs/RSC_SECURITY.md`:
+  - Explanation of the vulnerability and risk
+  - Implementation details and code examples
+  - Best practices and migration guide
+  - Testing and verification procedures
+  - Security checklist for deployment
+
+- **Security Test Suite** - Created `tests/unit/taint-security.test.ts`:
+  - 15+ test cases covering all taint utilities
+  - Real-world usage scenario tests
+  - Error handling and edge case tests
+  - Verification of sensitive variable protection
+
+#### Security Risk Assessment
+**Vulnerability**: React Server Components RCE - Sensitive server-side data could be accidentally sent to clients
+
+**Risk Level**: HIGH (mitigated to LOW after changes)
+- React 19 Server Components can serialize server-side data to clients
+- Sensitive environment variables (API keys, secrets, tokens) could be leaked
+- Leaked credentials could lead to privilege escalation or remote code execution
+- Risk applies to all Server Components and Server Actions using sensitive data
+
+**Mitigation Strategy**:
+1. ✅ Implemented React 19's experimental taint APIs to prevent data leaks
+2. ✅ Protected all sensitive environment variables at module initialization
+3. ✅ Created reusable taint utility module for consistent protection
+4. ✅ Added comprehensive tests to prevent regression
+5. ✅ Documented security measures and best practices
+
+**Protected Environment Variables**:
+- Stripe: `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`
+- Supabase: `SUPABASE_SERVICE_ROLE_KEY`
+- Admin: `ADMIN_ANALYTICS_TOKEN`
+- Cron: `CRON_SECRET`
+- Third-party APIs: `X_BEARER_TOKEN`
+
+**How It Works**:
+- Taint APIs mark values as "tainted" at the server
+- Any attempt to serialize tainted values to client throws an error
+- Prevents accidental exposure through props, serialization, or RSC payload
+- Development and production both protected
+
+**Test Plan**:
+1. ✅ Unit tests verify taint utilities work correctly
+2. ✅ Real-world usage tests confirm protection in actual modules
+3. ⏳ Integration tests ensure no client exposure
+4. ⏳ Build verification confirms no serialization errors
+5. ⏳ CodeQL security scan to verify vulnerability elimination
+
+**Breaking Changes**: None - all changes are additive security measures
+
 ### Security - ChartStyle Component Hardening (2025-12-11)
 
 #### Added
