@@ -67,8 +67,8 @@ export default function LoginPage() {
     setError("")
 
     const supabase = createBrowserClient()
+    // Use environment-specific redirect or same origin for security
     const baseUrl = process.env.NEXT_PUBLIC_DEV_SUPABASE_REDIRECT_URL || 
-                    process.env.NEXT_PUBLIC_SUPABASE_URL || 
                     (typeof window !== 'undefined' ? window.location.origin : '')
     const redirectUrl = `${baseUrl}/auth/reset-password`
     
