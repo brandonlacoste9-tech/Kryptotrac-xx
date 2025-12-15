@@ -2,6 +2,7 @@ import { createServerClient } from "@/lib/supabase/server"
 import { redirect } from "next/navigation"
 import { EmailPreferences } from "@/components/settings/email-preferences"
 import { ExportHistory } from "@/components/settings/export-history"
+import { DeleteAccount } from "@/components/settings/delete-account"
 
 export default async function SettingsPage() {
   const supabase = await createServerClient()
@@ -57,13 +58,7 @@ export default async function SettingsPage() {
 
         <ExportHistory userId={user.id} isPro={isPro} />
 
-        <div className="glass-card p-6 space-y-4">
-          <h2 className="text-xl font-semibold text-white">Danger Zone</h2>
-          <p className="text-white/60 text-sm">Once you delete your account, there is no going back.</p>
-          <button className="px-4 py-2 bg-red-900/20 border border-red-500/50 text-red-400 rounded-lg hover:bg-red-900/40 transition-colors text-sm">
-            Delete Account
-          </button>
-        </div>
+        <DeleteAccount userEmail={user.email || ""} />
       </div>
     </div>
   )
