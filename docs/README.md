@@ -15,6 +15,13 @@ Start with these guides in the root directory:
 7. **[FAQ.md](../FAQ.md)** - Frequently asked questions
 8. **[CONTRIBUTING.md](../CONTRIBUTING.md)** - How to contribute
 
+## Technical Documentation (This Directory)
+
+1. **[PLAYWRIGHT_SETUP.md](./PLAYWRIGHT_SETUP.md)** - E2E testing with Playwright
+2. **[RSC_SECURITY.md](./RSC_SECURITY.md)** - React Server Components security
+3. **[GOOGLE_AUTH_SETUP.md](./GOOGLE_AUTH_SETUP.md)** - Google OAuth configuration
+4. **[DEFI_TRACKING.md](./DEFI_TRACKING.md)** - DeFi feature implementation
+
 ## Legacy Documentation
 
 The `legacy/` folder contains older documentation files that were used during development. These are kept for reference but may contain outdated information.
@@ -54,6 +61,7 @@ Kryptotrac-xx/
 1. [README.md](../README.md) - Understand the project
 2. [GETTING_STARTED.md](../GETTING_STARTED.md) - Set up locally
 3. [CONTRIBUTING.md](../CONTRIBUTING.md) - Learn contribution process
+4. [PLAYWRIGHT_SETUP.md](./PLAYWRIGHT_SETUP.md) - Learn about E2E testing
 
 ### I'm setting up the database
 1. [DATABASE_SETUP.md](../DATABASE_SETUP.md) - Detailed setup

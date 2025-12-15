@@ -110,7 +110,44 @@ By default, Supabase requires email confirmation. For development:
 - `npm run build` - Build for production
 - `npm run start` - Run production build
 - `npm run lint` - Run ESLint
-- `npm run test` - Run tests
+- `npm run test` - Run Jest unit/integration tests
+- `npm run test:playwright` - Run Playwright E2E browser tests
+- `npm run test:playwright:ui` - Run Playwright tests in interactive UI mode
+
+## Running Tests
+
+### Unit & Integration Tests (Jest)
+
+```bash
+npm test
+```
+
+### E2E Browser Tests (Playwright)
+
+First-time setup:
+```bash
+# Install Playwright browsers
+npx playwright install
+```
+
+Run tests:
+```bash
+# Run all Playwright tests
+npm run test:playwright
+
+# Run in UI mode (interactive)
+npm run test:playwright:ui
+
+# Run with browser visible
+npm run test:playwright:headed
+
+# Run specific browser
+npm run test:playwright:chromium
+npm run test:playwright:firefox
+npm run test:playwright:webkit
+```
+
+For more details, see [tests/playwright/README.md](./tests/playwright/README.md)
 
 ## Common Issues
 
