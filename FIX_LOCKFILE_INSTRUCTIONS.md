@@ -15,7 +15,23 @@ Cannot install with "frozen-lockfile" because pnpm-lock.yaml is not up to date w
 - **File NOT Updated**: `pnpm-lock.yaml` (missing ethers and all its dependencies)
 - **Code Dependency**: `lib/defi/integrations.ts` imports and uses ethers for Web3 functionality
 
-## Immediate Fix
+## Immediate Fix (Option 1: Automated via GitHub Actions)
+
+**Use this method if you have access to GitHub Actions:**
+
+1. Go to the [Actions tab](https://github.com/brandonlacoste9-tech/Kryptotrac-xx/actions)
+2. Click on "Update pnpm Lockfile" workflow in the left sidebar
+3. Click "Run workflow" button
+4. Select the branch that needs the lockfile update (e.g., `copilot/fix-ci-cd-issues` or `main`)
+5. Click "Run workflow"
+
+The workflow will automatically:
+- Install all dependencies from package.json
+- Update pnpm-lock.yaml
+- Verify the lockfile works with --frozen-lockfile
+- Commit and push the changes
+
+## Immediate Fix (Option 2: Manual on Local Machine)
 
 Run these commands on a machine with network access:
 
