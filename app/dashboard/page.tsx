@@ -8,6 +8,7 @@ import { EmptyDashboard } from "@/components/dashboard/empty-dashboard"
 import { StreakTracker } from "@/components/gamification/streak-tracker"
 import { RecommendedExchanges } from "@/components/affiliates/recommended-exchanges"
 import { BBWelcomeWrapper } from "@/components/onboarding/bb-welcome-wrapper"
+import { DeFiPositions } from "@/components/dashboard/DeFiPositions"
 
 export default async function DashboardPage() {
   const supabase = await createServerClient()
@@ -70,6 +71,7 @@ export default async function DashboardPage() {
             <div className="lg:col-span-2 space-y-8">
               <WatchlistSection />
               <PortfolioSection />
+              <DeFiPositions />
             </div>
 
             <div className="lg:col-span-1 space-y-6">
