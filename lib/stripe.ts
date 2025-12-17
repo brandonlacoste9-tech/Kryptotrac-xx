@@ -8,8 +8,9 @@ taintEnvironmentVariables([
   { name: 'STRIPE_WEBHOOK_SECRET', value: process.env.STRIPE_WEBHOOK_SECRET },
 ])
 
-export const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: "2024-11-20.acacia",
+export const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || 'sk_test_dummy', {
+  apiVersion: "2025-10-29.clover",
+  typescript: true,
 })
 
 // Optimized Pricing Structure - 2 Tier Model
