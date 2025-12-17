@@ -30,8 +30,9 @@ import { experimental_taintObjectReference, experimental_taintUniqueValue } from
  * taintUniqueValue('Stripe secret key must not be sent to the client', apiKey)
  * ```
  */
+// Safe wrapper for taintUniqueValue
 export function taintUniqueValue(message: string, value: string): void {
-  if (typeof value === 'string' && value.length > 0) {
+  if (typeof experimental_taintUniqueValue === 'function' && typeof value === 'string' && value.length > 0) {
     experimental_taintUniqueValue(message, value, value)
   }
 }
@@ -49,7 +50,7 @@ export function taintUniqueValue(message: string, value: string): void {
  * ```
  */
 export function taintObjectReference(message: string, object: object): void {
-  if (object && typeof object === 'object') {
+  if (typeof experimental_taintObjectReference === 'function' && object && typeof object === 'object') {
     experimental_taintObjectReference(message, object)
   }
 }
