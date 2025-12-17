@@ -6,6 +6,7 @@ import { fetchCryptoFeedForSymbols } from "@/lib/x"
 import { summarizeXFeedForLLM } from "@/lib/atlas-social"
 import { getSystemPrompt } from "@/lib/persona"
 import { personas } from "@/config/personas"
+import { deepseekModel } from "@/lib/deepseek"
 
 type AtlasMode = "analysis" | "sentiment" | "alpha" | "friend"
 
@@ -27,13 +28,13 @@ export async function POST(req: NextRequest) {
     }
 
     const rateLimit = await checkAtlasRateLimit(user.id)
-    
+
     if (!rateLimit.allowed) {
       return NextResponse.json(
-        { 
-          error: "Rate limit exceeded", 
+        {
+          error: "Rate limit exceeded",
           limit: rateLimit.limit,
-          resetAt: rateLimit.resetAt 
+          resetAt: rateLimit.resetAt
         },
         { status: 429 }
       )
@@ -45,6 +46,7 @@ export async function POST(req: NextRequest) {
       .eq("user_id", user.id)
       .single()
 
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const planType = subscription?.plan_type || "free"
 
     const { data: watchlist } = await supabase
@@ -54,7 +56,7 @@ export async function POST(req: NextRequest) {
       .limit(10)
 
     const watchlistSymbols = watchlist?.map((w) => w.coin_symbol) || []
-    
+
     let socialSummary = ""
     try {
       if (watchlistSymbols.length > 0) {
@@ -86,7 +88,7 @@ If this is about sharing or posting to X, provide a draft tweet in your response
     const start = Date.now()
 
     const { text } = await generateText({
-      model: "google/gemini-2.5-flash-image",
+      model: deepseekModel,
       system: systemPrompt,
       prompt: userPrompt,
       maxTokens: 1000,
@@ -116,7 +118,7 @@ If this is about sharing or posting to X, provide a draft tweet in your response
       response: text,
       mode,
       persona,
-      model: "gemini-2.0-flash-exp",
+      model: "deepseek-v3",
       vibe,
       xDraft,
       rateLimit: {

@@ -3,6 +3,7 @@ import { stripe } from "@/lib/stripe"
 import { createServerClient } from "@/lib/supabase/server"
 import type Stripe from "stripe"
 import { taintUniqueValue } from "@/lib/taint"
+import { logger } from "@/lib/logger"
 
 // Taint webhook secret to prevent accidental exposure to client
 if (process.env.STRIPE_WEBHOOK_SECRET) {
@@ -25,7 +26,7 @@ export async function POST(req: NextRequest) {
   try {
     event = stripe.webhooks.constructEvent(body, signature, process.env.STRIPE_WEBHOOK_SECRET!)
   } catch (err) {
-    console.error("[v0] Webhook signature verification failed:", err)
+    logger.error("Webhook signature verification failed", { error: err })
     return NextResponse.json({ error: "Invalid signature" }, { status: 400 })
   }
 
@@ -58,7 +59,7 @@ export async function POST(req: NextRequest) {
           .update({ plan_type: "pro" })
           .eq("id", userId)
 
-        console.log("[v0] Subscription created for user:", userId)
+        logger.info("Subscription created for user", { userId, subscriptionId: session.subscription })
         break
       }
 
@@ -74,7 +75,7 @@ export async function POST(req: NextRequest) {
           })
           .eq("stripe_subscription_id", subscription.id)
 
-        console.log("[v0] Subscription updated:", subscription.id)
+        logger.info("Subscription updated", { subscriptionId: subscription.id, status: subscription.status })
         break
       }
 
@@ -99,17 +100,17 @@ export async function POST(req: NextRequest) {
             .eq("id", subData.user_id)
         }
 
-        console.log("[v0] Subscription canceled:", subscription.id)
+        logger.info("Subscription canceled", { subscriptionId: subscription.id, userId: subData.user_id })
         break
       }
 
       default:
-        console.log("[v0] Unhandled event type:", event.type)
+        logger.debug("Unhandled Stripe event type", { eventType: event.type })
     }
 
     return NextResponse.json({ received: true })
   } catch (error) {
-    console.error("[v0] Webhook handler error:", error)
+    logger.error("Webhook handler error", { error, eventType: event.type })
     return NextResponse.json({ error: "Webhook handler failed" }, { status: 500 })
   }
 }

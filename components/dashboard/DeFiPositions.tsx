@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { Loader2, Wallet, TrendingUp, AlertCircle } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -133,6 +134,7 @@ function ProtocolCard({ name, data }: ProtocolCardProps) {
 }
 
 export function DeFiPositions() {
+  const router = useRouter();
   const [positions, setPositions] = useState<WalletPositions[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -145,7 +147,7 @@ export function DeFiPositions() {
     try {
       const res = await fetch('/api/defi/positions');
       const data = await res.json();
-      
+
       if (data.error) {
         setError(data.error);
       } else {
@@ -199,7 +201,10 @@ export function DeFiPositions() {
               </p>
             </div>
           </div>
-          <Button className="bg-red-600 hover:bg-red-700 text-white">
+          <Button
+            className="bg-red-600 hover:bg-red-700 text-white"
+            onClick={() => router.push('/settings/wallets')}
+          >
             Add Wallet
           </Button>
         </div>
@@ -213,7 +218,10 @@ export function DeFiPositions() {
             <p className="text-sm text-gray-400 mb-4">
               Add an Ethereum wallet address to start tracking your DeFi positions
             </p>
-            <Button className="bg-red-600 hover:bg-red-700 text-white">
+            <Button
+              className="bg-red-600 hover:bg-red-700 text-white"
+              onClick={() => router.push('/settings/wallets')}
+            >
               Add Your First Wallet
             </Button>
           </div>
@@ -233,50 +241,50 @@ export function DeFiPositions() {
 
               {/* Protocol Positions Grid */}
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {walletData.protocols.aave && 
-                 walletData.protocols.aave.totalCollateralETH != null && 
-                 parseFloat(walletData.protocols.aave.totalCollateralETH) > 0 && (
-                  <ProtocolCard name="Aave" data={walletData.protocols.aave} />
-                )}
+                {walletData.protocols.aave &&
+                  walletData.protocols.aave.totalCollateralETH != null &&
+                  parseFloat(walletData.protocols.aave.totalCollateralETH) > 0 && (
+                    <ProtocolCard name="Aave" data={walletData.protocols.aave} />
+                  )}
 
-                {walletData.protocols.uniswap && 
-                 walletData.protocols.uniswap.totalPositions != null &&
-                 walletData.protocols.uniswap.totalPositions > 0 && (
-                  <ProtocolCard name="Uniswap V3" data={walletData.protocols.uniswap} />
-                )}
+                {walletData.protocols.uniswap &&
+                  walletData.protocols.uniswap.totalPositions != null &&
+                  walletData.protocols.uniswap.totalPositions > 0 && (
+                    <ProtocolCard name="Uniswap V3" data={walletData.protocols.uniswap} />
+                  )}
 
-                {walletData.protocols.compound && 
-                 walletData.protocols.compound.supplied != null &&
-                 parseFloat(walletData.protocols.compound.supplied) > 0 && (
-                  <ProtocolCard name="Compound" data={walletData.protocols.compound} />
-                )}
+                {walletData.protocols.compound &&
+                  walletData.protocols.compound.supplied != null &&
+                  parseFloat(walletData.protocols.compound.supplied) > 0 && (
+                    <ProtocolCard name="Compound" data={walletData.protocols.compound} />
+                  )}
 
-                {walletData.protocols.lido && 
-                 walletData.protocols.lido.stETH != null &&
-                 parseFloat(walletData.protocols.lido.stETH) > 0 && (
-                  <ProtocolCard name="Lido" data={walletData.protocols.lido} />
-                )}
+                {walletData.protocols.lido &&
+                  walletData.protocols.lido.stETH != null &&
+                  parseFloat(walletData.protocols.lido.stETH) > 0 && (
+                    <ProtocolCard name="Lido" data={walletData.protocols.lido} />
+                  )}
 
-                {walletData.protocols.curve && 
-                 walletData.protocols.curve.positions && 
-                 walletData.protocols.curve.positions.length > 0 && (
-                  <ProtocolCard name="Curve" data={walletData.protocols.curve} />
-                )}
+                {walletData.protocols.curve &&
+                  walletData.protocols.curve.positions &&
+                  walletData.protocols.curve.positions.length > 0 && (
+                    <ProtocolCard name="Curve" data={walletData.protocols.curve} />
+                  )}
               </div>
 
               {/* Show message if no positions */}
               {(() => {
-                const hasAave = walletData.protocols.aave?.totalCollateralETH != null && 
-                               parseFloat(walletData.protocols.aave.totalCollateralETH) > 0;
+                const hasAave = walletData.protocols.aave?.totalCollateralETH != null &&
+                  parseFloat(walletData.protocols.aave.totalCollateralETH) > 0;
                 const hasUniswap = walletData.protocols.uniswap?.totalPositions != null &&
-                                  walletData.protocols.uniswap.totalPositions > 0;
+                  walletData.protocols.uniswap.totalPositions > 0;
                 const hasCompound = walletData.protocols.compound?.supplied != null &&
-                                   parseFloat(walletData.protocols.compound.supplied) > 0;
+                  parseFloat(walletData.protocols.compound.supplied) > 0;
                 const hasLido = walletData.protocols.lido?.stETH != null &&
-                               parseFloat(walletData.protocols.lido.stETH) > 0;
-                const hasCurve = walletData.protocols.curve?.positions && 
-                                walletData.protocols.curve.positions.length > 0;
-                
+                  parseFloat(walletData.protocols.lido.stETH) > 0;
+                const hasCurve = walletData.protocols.curve?.positions &&
+                  walletData.protocols.curve.positions.length > 0;
+
                 return !hasAave && !hasUniswap && !hasCompound && !hasLido && !hasCurve ? (
                   <div className="text-center py-8 text-gray-400 text-sm">
                     No active DeFi positions found for this wallet

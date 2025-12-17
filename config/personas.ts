@@ -1,11 +1,11 @@
 export const personas = {
   bb: {
     id: "bb",
-    name: "BB",
-    dock_label: "BB",
+    name: "Bee",
+    dock_label: "Bee",
     analytics_tag: "persona_bb",
     test_log_tag: "[BB TEST]",
-    description: "Younger, friendly emotional crypto assistant",
+    description: "Expert crypto analyst with degen energy & deep knowledge",
   },
   satoshi: {
     id: "satoshi",

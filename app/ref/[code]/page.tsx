@@ -1,5 +1,6 @@
 import { redirect } from 'next/navigation'
 import { cookies } from 'next/headers'
+import { logger } from '@/lib/logger'
 
 export default async function ReferralPage({
   params,
@@ -7,9 +8,9 @@ export default async function ReferralPage({
   params: Promise<{ code: string }>
 }) {
   const { code } = await params
-  
-  console.log("[v0] Referral code received:", code)
-  
+
+  logger.info("Referral code received", { code })
+
   // Store referral code in cookie for 30 days
   const cookieStore = await cookies()
   cookieStore.set('referral_code', code, {
@@ -17,9 +18,9 @@ export default async function ReferralPage({
     path: '/',
     sameSite: 'lax',
   })
-  
-  console.log("[v0] Stored referral code in cookie, redirecting to signup")
-  
+
+  logger.info("Stored referral code in cookie, redirecting to signup", { code })
+
   // Redirect to signup page with referral indicator
   redirect(`/auth/signup?ref=${code}`)
 }

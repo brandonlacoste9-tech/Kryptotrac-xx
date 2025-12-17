@@ -1,7 +1,21 @@
 const COINGECKO_API = "https://api.coingecko.com/api/v3"
+const COINGECKO_API_KEY = process.env.COINGECKO_API_KEY || ""
 
 const CACHE_DURATION = 60000 // 1 minute cache
 const cache = new Map<string, { data: any; timestamp: number }>()
+
+// Create headers with API key if available
+function getHeaders() {
+  const headers: HeadersInit = {
+    'Accept': 'application/json',
+  }
+
+  if (COINGECKO_API_KEY) {
+    headers['x-cg-pro-api-key'] = COINGECKO_API_KEY
+  }
+
+  return headers
+}
 
 const FALLBACK_TOP_COINS: CoinPrice[] = [
   {
@@ -124,7 +138,10 @@ export async function getCoinPrice(coinId: string): Promise<number> {
   if (cached) return cached
 
   try {
-    const response = await fetch(`${COINGECKO_API}/simple/price?ids=${coinId}&vs_currencies=usd`)
+    const response = await fetch(
+      `${COINGECKO_API}/simple/price?ids=${coinId}&vs_currencies=usd`,
+      { headers: getHeaders() }
+    )
     if (!response.ok) throw new Error("Failed to fetch price")
     const data = await response.json()
     const price = data[coinId]?.usd || 0
@@ -147,6 +164,7 @@ export async function getMultipleCoinPrices(coinIds: string[]): Promise<CoinPric
     const idsParam = coinIds.join(",")
     const response = await fetch(
       `${COINGECKO_API}/coins/markets?vs_currency=usd&ids=${idsParam}&order=market_cap_desc&sparkline=true&price_change_percentage=24h`,
+      { headers: getHeaders() }
     )
 
     if (!response.ok) {
@@ -177,7 +195,8 @@ export async function getTrendingCoins(): Promise<CoinPrice[]> {
 
   try {
     const response = await fetch(
-      `${COINGECKO_API}/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=10&page=1&sparkline=true&price_change_percentage=24h`
+      `${COINGECKO_API}/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=10&page=1&sparkline=true&price_change_percentage=24h`,
+      { headers: getHeaders() }
     )
 
     if (response.ok) {

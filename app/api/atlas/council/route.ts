@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server"
 import { createServerClient } from "@/lib/supabase/server"
 import { generateText } from "ai"
 import { checkAtlasRateLimit, logAtlasQuery } from "@/lib/atlas/rate-limiter"
+import { deepseekModel } from "@/lib/deepseek"
 
 export async function POST(req: NextRequest) {
   try {
@@ -28,7 +29,7 @@ export async function POST(req: NextRequest) {
     }
 
     const rateLimit = await checkAtlasRateLimit(user.id)
-    
+
     if (!rateLimit.allowed && rateLimit.limit !== -1) {
       return NextResponse.json(
         { error: "Rate limit exceeded", resetAt: rateLimit.resetAt },
@@ -42,10 +43,10 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Query required" }, { status: 400 })
     }
 
-    // Multi-model council: Gemini for analysis, consensus building
+    // Multi-model council: DeepSeek for analysis, consensus building
     const [geminiResponse] = await Promise.all([
       generateText({
-        model: "google/gemini-2.5-flash-image",
+        model: deepseekModel,
         system: `You are ATLAS Council - a multi-AI consensus system. Analyze from multiple perspectives: technical analysis, sentiment, risk assessment, and opportunity scoring. Provide a balanced, consensus view.`,
         prompt: query,
         maxTokens: 1500,
