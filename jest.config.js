@@ -20,13 +20,19 @@ const customJestConfig = {
   // Use projects to define different environments for different test types
   projects: [
     {
-      displayName: 'node',
+      displayName: 'unit',
+      testEnvironment: 'node',
+      testMatch: ['**/tests/unit/**/*.test.{ts,tsx}'],
+      setupFilesAfterEnv: ['<rootDir>/jest.setup.js'],
+    },
+    {
+      displayName: 'integration',
       testEnvironment: 'node',
       testMatch: ['**/tests/integration/**/*.test.ts'],
       setupFilesAfterEnv: ['<rootDir>/jest.setup.js'],
     },
     {
-      displayName: 'jsdom',
+      displayName: 'e2e',
       testEnvironment: 'jsdom',
       testMatch: ['**/tests/e2e/**/*.test.ts'],
       setupFilesAfterEnv: ['<rootDir>/jest.setup.js'],
