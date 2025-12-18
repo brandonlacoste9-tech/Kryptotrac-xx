@@ -26,6 +26,7 @@
     "test:playwright:firefox": "playwright test --project=firefox",
     "test:playwright:webkit": "playwright test --project=webkit",
     "test:playwright:report": "playwright show-report",
+    "test:e2e:comprehensive": "playwright test tests/playwright/comprehensive-e2e.spec.ts --reporter=list --reporter=html",
     "validate:env": "tsx scripts/validate-env.ts",
     "verify:migrations": "tsx scripts/verify-migrations.ts",
     "pre-deploy": "npm run validate:env && npm run verify:migrations && npm run test:all && npm run build"
