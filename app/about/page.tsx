@@ -26,9 +26,9 @@ export default function AboutPage() {
           <h2 className="text-2xl font-bold mb-6">Why KryptoTrac?</h2>
           <div className="prose prose-invert max-w-none">
             <p className="text-muted-foreground leading-relaxed">
-              We built KryptoTrac because existing crypto trackers either sell your data, bombard you with ads, 
-              or make it impossible to understand your actual portfolio performance. We wanted a tool that respects 
-              privacy, speaks your language (literally - BB supports 100+ languages!), provides real insights, and 
+              We built KryptoTrac because existing crypto trackers either sell your data, bombard you with ads,
+              or make it impossible to understand your actual portfolio performance. We wanted a tool that respects
+              privacy, speaks your language (literally - BB supports 100+ languages!), provides real insights, and
               helps you make informed decisions without the noise.
             </p>
           </div>
@@ -42,7 +42,7 @@ export default function AboutPage() {
               <Lock className="h-8 w-8 text-primary mb-3" />
               <h3 className="text-lg font-semibold mb-2">Privacy First</h3>
               <p className="text-sm text-muted-foreground">
-                Your portfolio data stays in your account. We never sell, share, or use your data for anything 
+                Your portfolio data stays in your account. We never sell, share, or use your data for anything
                 other than providing you the service.
               </p>
             </div>
@@ -51,7 +51,7 @@ export default function AboutPage() {
               <TrendingUp className="h-8 w-8 text-primary mb-3" />
               <h3 className="text-lg font-semibold mb-2">Accurate Data</h3>
               <p className="text-sm text-muted-foreground">
-                Powered by CoinGecko and CoinMarketCap APIs, we provide real-time prices and market data 
+                Powered by CoinGecko and CoinMarketCap APIs, we provide real-time prices and market data
                 you can trust.
               </p>
             </div>
@@ -60,7 +60,7 @@ export default function AboutPage() {
               <Zap className="h-8 w-8 text-primary mb-3" />
               <h3 className="text-lg font-semibold mb-2">Fast & Reliable</h3>
               <p className="text-sm text-muted-foreground">
-                Built with Next.js 16 and hosted on Vercel, KryptoTrac loads instantly and updates prices 
+                Built with Next.js 16 and hosted on Vercel, KryptoTrac loads instantly and updates prices
                 in real-time.
               </p>
             </div>
@@ -85,8 +85,8 @@ export default function AboutPage() {
                 Is my data safe?
               </h3>
               <p className="text-sm text-muted-foreground">
-                Yes. Your portfolio data is stored securely in Supabase with row-level security enabled. 
-                Only you can access your data. We use industry-standard encryption and never store API keys 
+                Yes. Your portfolio data is stored securely in Supabase with row-level security enabled.
+                Only you can access your data. We use industry-standard encryption and never store API keys
                 or private keys from exchanges.
               </p>
             </div>
@@ -97,9 +97,9 @@ export default function AboutPage() {
                 How do you make money?
               </h3>
               <p className="text-sm text-muted-foreground">
-                We earn through affiliate partnerships with trusted exchanges like Kraken and Coinbase. 
-                When you sign up using our referral links, we may earn a small commission at no extra cost 
-                to you. We also offer a Pro tier with advanced analytics and unlimited alerts. All affiliate 
+                We earn through affiliate partnerships with trusted exchanges like Kraken and Coinbase.
+                When you sign up using our referral links, we may earn a small commission at no extra cost
+                to you. We also offer a Pro tier with advanced analytics and unlimited alerts. All affiliate
                 relationships are clearly disclosed.
               </p>
             </div>
@@ -110,7 +110,7 @@ export default function AboutPage() {
                 Where does price data come from?
               </h3>
               <p className="text-sm text-muted-foreground">
-                We use CoinGecko and CoinMarketCap APIs for real-time cryptocurrency prices and market data. 
+                We use CoinGecko and CoinMarketCap APIs for real-time cryptocurrency prices and market data.
                 These are trusted, widely-used sources in the crypto industry.
               </p>
             </div>
@@ -121,8 +121,8 @@ export default function AboutPage() {
                 Is this financial advice?
               </h3>
               <p className="text-sm text-muted-foreground">
-                No. KryptoTrac is a portfolio tracking tool, not financial advice. We provide data and insights 
-                to help you track your investments, but all investment decisions are yours. Always do your own 
+                No. KryptoTrac is a portfolio tracking tool, not financial advice. We provide data and insights
+                to help you track your investments, but all investment decisions are yours. Always do your own
                 research (DYOR) and consult with a licensed financial advisor for personalized advice.
               </p>
             </div>
@@ -130,8 +130,8 @@ export default function AboutPage() {
             <div className="bg-card border border-border rounded-lg p-6">
               <h3 className="text-lg font-semibold mb-2">What's the difference between Free and Pro?</h3>
               <p className="text-sm text-muted-foreground mb-3">
-                Free tier includes unlimited watchlist, basic portfolio tracking, and 3 price alerts. 
-                Pro tier ($9.99/month) unlocks:
+                Free tier includes unlimited watchlist, basic portfolio tracking, and 3 price alerts.
+                Pro tier ($12/month) unlocks:
               </p>
               <ul className="text-sm text-muted-foreground space-y-1 ml-4 list-disc">
                 <li>Unlimited price alerts</li>
@@ -150,11 +150,11 @@ export default function AboutPage() {
           <div className="bg-gradient-to-r from-primary/10 to-red-500/10 border border-primary/20 rounded-lg p-8 text-center">
             <h2 className="text-2xl font-bold mb-4">Open Source & Transparent</h2>
             <p className="text-muted-foreground mb-6 max-w-2xl mx-auto">
-              KryptoTrac is open source. You can review our code, contribute improvements, or even self-host 
+              KryptoTrac is open source. You can review our code, contribute improvements, or even self-host
               your own instance on GitHub.
             </p>
-            <Link 
-              href="https://github.com/brandonlacoste9-tech/Kryptotrac-xx" 
+            <Link
+              href="https://github.com/brandonlacoste9-tech/Kryptotrac-xx"
               target="_blank"
               className="inline-flex items-center gap-2 bg-primary text-primary-foreground px-6 py-3 rounded-lg font-semibold hover:bg-primary/90 transition-colors"
             >
@@ -169,8 +169,8 @@ export default function AboutPage() {
           <p className="text-muted-foreground mb-6">
             Join investors worldwide tracking their crypto portfolios with KryptoTrac and BB.
           </p>
-          <Link 
-            href="/auth/signup" 
+          <Link
+            href="/auth/signup"
             className="inline-flex items-center gap-2 bg-primary text-primary-foreground px-8 py-4 rounded-lg font-semibold text-lg hover:bg-primary/90 transition-colors"
           >
             Get Started Free

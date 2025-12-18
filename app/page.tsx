@@ -72,99 +72,97 @@ export default function HomePage() {
             </p>
           </div>
 
-          <div className="grid md:grid-cols-3 gap-6 max-w-5xl mx-auto">
-            <Card className="p-6 bg-black/40 backdrop-blur-xl border border-white/10 hover:border-white/20 transition-all">
+          <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+            <Card className="p-8 bg-black/40 backdrop-blur-xl border border-white/10 hover:border-white/20 transition-all">
               <h3 className="text-2xl font-bold mb-2">Free</h3>
               <div className="mb-4">
-                <span className="text-4xl font-bold">$0</span>
+                <span className="text-5xl font-bold">$0</span>
                 <span className="text-gray-400">/month</span>
               </div>
-              <ul className="space-y-2 text-gray-400 mb-6">
+              <p className="text-sm text-gray-400 mb-6">Forever free, no card required</p>
+              <ul className="space-y-3 text-gray-400 mb-8 min-h-[280px]">
                 <li className="flex items-start">
                   <span className="text-green-500 mr-2">✓</span>
-                  <span>5 BB queries/day</span>
+                  <span>Track up to 5 coins</span>
                 </li>
                 <li className="flex items-start">
                   <span className="text-green-500 mr-2">✓</span>
-                  <span>3 watchlist coins</span>
+                  <span>3 price alerts</span>
                 </li>
                 <li className="flex items-start">
                   <span className="text-green-500 mr-2">✓</span>
-                  <span>Basic price alerts</span>
+                  <span>1 DeFi wallet</span>
+                </li>
+                <li className="flex items-start">
+                  <span className="text-green-500 mr-2">✓</span>
+                  <span>20 BB AI queries per day</span>
+                </li>
+                <li className="flex items-start">
+                  <span className="text-green-500 mr-2">✓</span>
+                  <span>Basic portfolio dashboard</span>
+                </li>
+                <li className="flex items-start">
+                  <span className="text-green-500 mr-2">✓</span>
+                  <span>Community support</span>
                 </li>
               </ul>
               <a
                 href="/auth/signup"
-                className="block w-full text-center py-2 px-4 rounded-lg border border-white/20 hover:bg-white/10 transition-all"
+                className="block w-full text-center py-3 px-4 rounded-lg border border-white/20 hover:bg-white/10 transition-all font-medium"
               >
                 Get Started
               </a>
             </Card>
 
-            <Card className="p-6 bg-gradient-to-b from-red-600/20 to-orange-600/20 backdrop-blur-xl border-2 border-red-500 relative overflow-hidden">
-              <div className="absolute top-4 right-4 bg-red-500 text-white text-xs font-bold px-3 py-1 rounded-full">
-                POPULAR
+            <Card className="p-8 bg-gradient-to-b from-red-600/20 to-orange-600/20 backdrop-blur-xl border-2 border-red-500 relative overflow-hidden scale-105">
+              <div className="absolute top-4 right-4 bg-gradient-to-r from-red-600 to-red-500 text-white text-xs font-bold px-4 py-1.5 rounded-full">
+                BEST VALUE
               </div>
               <h3 className="text-2xl font-bold mb-2">Pro</h3>
               <div className="mb-4">
-                <span className="text-4xl font-bold">$9</span>
+                <span className="text-5xl font-bold">$12</span>
                 <span className="text-gray-400">/month</span>
               </div>
-              <ul className="space-y-2 text-gray-300 mb-6">
+              <p className="text-sm text-gray-300 mb-6">Everything unlimited</p>
+              <ul className="space-y-3 text-gray-300 mb-8 min-h-[280px]">
                 <li className="flex items-start">
                   <span className="text-green-400 mr-2">✓</span>
-                  <span>50 BB queries/day</span>
+                  <span>Unlimited coins & price alerts</span>
                 </li>
                 <li className="flex items-start">
                   <span className="text-green-400 mr-2">✓</span>
-                  <span>Unlimited watchlist</span>
+                  <span>10 DeFi wallets tracked</span>
                 </li>
                 <li className="flex items-start">
                   <span className="text-green-400 mr-2">✓</span>
-                  <span>Council mode (3 AI advisors)</span>
+                  <span>Unlimited BB AI queries</span>
                 </li>
                 <li className="flex items-start">
                   <span className="text-green-400 mr-2">✓</span>
-                  <span>Priority BB tips</span>
+                  <span>Council Mode (multi-AI perspectives)</span>
+                </li>
+                <li className="flex items-start">
+                  <span className="text-green-400 mr-2">✓</span>
+                  <span>AI-generated insights (daily/weekly)</span>
+                </li>
+                <li className="flex items-start">
+                  <span className="text-green-400 mr-2">✓</span>
+                  <span>Portfolio snapshots & export data</span>
+                </li>
+                <li className="flex items-start">
+                  <span className="text-green-400 mr-2">✓</span>
+                  <span>Priority support (24h response)</span>
+                </li>
+                <li className="flex items-start">
+                  <span className="text-green-400 mr-2">✓</span>
+                  <span>Ad-free experience</span>
                 </li>
               </ul>
               <a
                 href="/pricing"
-                className="block w-full text-center py-2 px-4 rounded-lg bg-gradient-to-r from-red-600 to-red-500 hover:from-red-500 hover:to-red-600 transition-all font-semibold"
+                className="block w-full text-center py-3 px-4 rounded-lg bg-gradient-to-r from-red-600 to-red-500 hover:from-red-500 hover:to-red-600 transition-all font-semibold shadow-lg shadow-red-500/50"
               >
                 Upgrade to Pro
-              </a>
-            </Card>
-
-            <Card className="p-6 bg-black/40 backdrop-blur-xl border border-white/10 hover:border-white/20 transition-all">
-              <h3 className="text-2xl font-bold mb-2">Elite</h3>
-              <div className="mb-4">
-                <span className="text-4xl font-bold">$19</span>
-                <span className="text-gray-400">/month</span>
-              </div>
-              <ul className="space-y-2 text-gray-400 mb-6">
-                <li className="flex items-start">
-                  <span className="text-green-500 mr-2">✓</span>
-                  <span>Unlimited BB queries</span>
-                </li>
-                <li className="flex items-start">
-                  <span className="text-green-500 mr-2">✓</span>
-                  <span>Advanced analytics</span>
-                </li>
-                <li className="flex items-start">
-                  <span className="text-green-500 mr-2">✓</span>
-                  <span>API access</span>
-                </li>
-                <li className="flex items-start">
-                  <span className="text-green-500 mr-2">✓</span>
-                  <span>All Pro features</span>
-                </li>
-              </ul>
-              <a
-                href="/pricing"
-                className="block w-full text-center py-2 px-4 rounded-lg border border-white/20 hover:bg-white/10 transition-all"
-              >
-                Go Elite
               </a>
             </Card>
           </div>
@@ -197,7 +195,7 @@ export default function HomePage() {
               <div className="flex justify-center mb-2">
                 <DollarSign className="w-8 h-8 text-red-500" />
               </div>
-              <div className="text-3xl font-bold mb-1">$9</div>
+              <div className="text-3xl font-bold mb-1">$12</div>
               <div className="text-gray-400">vs $29-49 Competitors</div>
             </div>
           </div>
