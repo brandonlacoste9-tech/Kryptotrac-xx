@@ -148,7 +148,7 @@ pnpm run build
 1. **YAML syntax error was the root cause** blocking all other fixes
 2. **Lockfile update requires network access** - must be done via GitHub Actions
 3. **Playwright workflow uses npm instead of pnpm** - should be fixed in a future PR
-4. **Package manager is pnpm@9.0.0** - always use pnpm for dependency operations
+4. **Package manager is pnpm@10.0.0** - always use pnpm for dependency operations
 5. **When adding dependencies:** Use `pnpm add <package>` to auto-update lockfile
 
 ---
