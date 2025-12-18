@@ -25,7 +25,10 @@
     "test:playwright:chromium": "playwright test --project=chromium",
     "test:playwright:firefox": "playwright test --project=firefox",
     "test:playwright:webkit": "playwright test --project=webkit",
-    "test:playwright:report": "playwright show-report"
+    "test:playwright:report": "playwright show-report",
+    "validate:env": "tsx scripts/validate-env.ts",
+    "verify:migrations": "tsx scripts/verify-migrations.ts",
+    "pre-deploy": "npm run validate:env && npm run verify:migrations && npm run test:all && npm run build"
   },
   "dependencies": {
     "@ai-sdk/openai": "^2.0.88",

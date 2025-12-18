@@ -2,10 +2,11 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Loader2, Wallet, TrendingUp, AlertCircle } from 'lucide-react';
+import { Loader2, Wallet, TrendingUp, AlertCircle, DollarSign } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import type { PriceMap } from '@/lib/prices';
 
 interface ProtocolData {
   protocol: string;
@@ -28,14 +29,24 @@ interface WalletPositions {
 interface ProtocolCardProps {
   name: string;
   data: ProtocolData;
+  prices?: PriceMap;
+  showUSD: boolean;
 }
 
-function ProtocolCard({ name, data }: ProtocolCardProps) {
+function ProtocolCard({ name, data, prices, showUSD }: ProtocolCardProps) {
+  // Helper to format values with USD
+  const formatValue = (amount: number, token: 'ETH' | 'STETH' | 'USDC') => {
+    if (!showUSD || !prices) {
+      return `${amount.toFixed(4)} ${token}`;
+    }
+    const usdValue = amount * (prices[token] || 0);
+    return `$${usdValue.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+  };
   return (
     <Card className="bg-gray-800/50 border-gray-700/50">
       <CardHeader className="pb-3">
         <CardTitle className="text-sm font-medium text-gray-300 flex items-center gap-2">
-          <TrendingUp className="w-4 h-4 text-red-500" />
+          <TrendingUp className="w-4 h-4 text-[rgb(var(--color-bee-gold))]" />
           {name}
         </CardTitle>
       </CardHeader>
@@ -45,11 +56,11 @@ function ProtocolCard({ name, data }: ProtocolCardProps) {
           <>
             <div className="flex justify-between text-xs">
               <span className="text-gray-400">Collateral:</span>
-              <span className="text-white font-medium">{parseFloat(data.totalCollateralETH).toFixed(4)} ETH</span>
+              <span className="text-white font-medium">{formatValue(parseFloat(data.totalCollateralETH), 'ETH')}</span>
             </div>
             <div className="flex justify-between text-xs">
               <span className="text-gray-400">Debt:</span>
-              <span className="text-white font-medium">{parseFloat(data.totalDebtETH).toFixed(4)} ETH</span>
+              <span className="text-white font-medium">{formatValue(parseFloat(data.totalDebtETH), 'ETH')}</span>
             </div>
             {(() => {
               const healthFactor = parseFloat(data.healthFactor);
@@ -114,7 +125,7 @@ function ProtocolCard({ name, data }: ProtocolCardProps) {
           <>
             <div className="flex justify-between text-xs">
               <span className="text-gray-400">Staked ETH:</span>
-              <span className="text-white font-medium">{parseFloat(data.stETH).toFixed(4)} stETH</span>
+              <span className="text-white font-medium">{formatValue(parseFloat(data.stETH), 'STETH')}</span>
             </div>
             <Badge variant="secondary" className="text-xs mt-2">
               {data.type}
@@ -136,6 +147,8 @@ function ProtocolCard({ name, data }: ProtocolCardProps) {
 export function DeFiPositions() {
   const router = useRouter();
   const [positions, setPositions] = useState<WalletPositions[]>([]);
+  const [prices, setPrices] = useState<PriceMap | undefined>();
+  const [showUSD, setShowUSD] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
@@ -152,6 +165,7 @@ export function DeFiPositions() {
         setError(data.error);
       } else {
         setPositions(data.positions || []);
+        setPrices(data.prices);
       }
     } catch (err) {
       setError('Failed to load DeFi positions');
@@ -190,23 +204,39 @@ export function DeFiPositions() {
     <Card className="bg-gradient-to-br from-gray-900 to-gray-800 border-gray-700/50">
       <CardHeader>
         <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="w-12 h-12 bg-red-600/20 rounded-xl flex items-center justify-center">
-              <TrendingUp className="w-6 h-6 text-red-500" />
+          <div className="flex items-center gap-3" role="region" aria-labelledby="defi-positions-title">
+            <div className="w-12 h-12 bg-[rgb(var(--color-bee-gold))]/20 rounded-xl flex items-center justify-center">
+              <TrendingUp className="w-6 h-6 text-[rgb(var(--color-bee-gold))]" />
             </div>
             <div>
-              <CardTitle className="text-xl font-bold text-white">DeFi Positions</CardTitle>
+              <CardTitle id="defi-positions-title" className="text-xl font-bold text-white">DeFi Positions</CardTitle>
               <p className="text-sm text-gray-400 mt-0.5">
                 Tracked across {positions?.length || 0} wallet{positions?.length !== 1 ? 's' : ''}
               </p>
             </div>
           </div>
-          <Button
-            className="bg-red-600 hover:bg-red-700 text-white"
-            onClick={() => router.push('/settings/wallets')}
-          >
-            Add Wallet
-          </Button>
+          <div className="flex gap-2">
+            {prices && (
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setShowUSD(!showUSD)}
+                aria-label={showUSD ? "Show native token amounts" : "Show USD values"}
+                aria-pressed={showUSD}
+                className="border-gray-600 hover:bg-gray-700"
+              >
+                <DollarSign className="w-4 h-4 mr-2" aria-hidden="true" />
+                {showUSD ? 'Show Native' : 'Show USD'}
+              </Button>
+            )}
+            <Button
+              className="bg-[rgb(var(--color-bee-gold))] hover:bg-[rgb(var(--color-bee-amber))] text-white"
+              onClick={() => router.push('/settings/wallets')}
+              aria-label="Add wallet to track DeFi positions"
+            >
+              Add Wallet
+            </Button>
+          </div>
         </div>
       </CardHeader>
 
@@ -219,8 +249,9 @@ export function DeFiPositions() {
               Add an Ethereum wallet address to start tracking your DeFi positions
             </p>
             <Button
-              className="bg-red-600 hover:bg-red-700 text-white"
+              className="bg-[rgb(var(--color-bee-gold))] hover:bg-[rgb(var(--color-bee-amber))] text-white"
               onClick={() => router.push('/settings/wallets')}
+              aria-label="Add your first wallet"
             >
               Add Your First Wallet
             </Button>
@@ -244,31 +275,31 @@ export function DeFiPositions() {
                 {walletData.protocols.aave &&
                   walletData.protocols.aave.totalCollateralETH != null &&
                   parseFloat(walletData.protocols.aave.totalCollateralETH) > 0 && (
-                    <ProtocolCard name="Aave" data={walletData.protocols.aave} />
+                    <ProtocolCard name="Aave" data={walletData.protocols.aave} prices={prices} showUSD={showUSD} />
                   )}
 
                 {walletData.protocols.uniswap &&
                   walletData.protocols.uniswap.totalPositions != null &&
                   walletData.protocols.uniswap.totalPositions > 0 && (
-                    <ProtocolCard name="Uniswap V3" data={walletData.protocols.uniswap} />
+                    <ProtocolCard name="Uniswap V3" data={walletData.protocols.uniswap} prices={prices} showUSD={showUSD} />
                   )}
 
                 {walletData.protocols.compound &&
                   walletData.protocols.compound.supplied != null &&
                   parseFloat(walletData.protocols.compound.supplied) > 0 && (
-                    <ProtocolCard name="Compound" data={walletData.protocols.compound} />
+                    <ProtocolCard name="Compound" data={walletData.protocols.compound} prices={prices} showUSD={showUSD} />
                   )}
 
                 {walletData.protocols.lido &&
                   walletData.protocols.lido.stETH != null &&
                   parseFloat(walletData.protocols.lido.stETH) > 0 && (
-                    <ProtocolCard name="Lido" data={walletData.protocols.lido} />
+                    <ProtocolCard name="Lido" data={walletData.protocols.lido} prices={prices} showUSD={showUSD} />
                   )}
 
                 {walletData.protocols.curve &&
                   walletData.protocols.curve.positions &&
                   walletData.protocols.curve.positions.length > 0 && (
-                    <ProtocolCard name="Curve" data={walletData.protocols.curve} />
+                    <ProtocolCard name="Curve" data={walletData.protocols.curve} prices={prices} showUSD={showUSD} />
                   )}
               </div>
 

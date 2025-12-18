@@ -99,6 +99,14 @@
   --color-ring: 255 255 255;
   --color-success: 34 197 94;
   --color-warning: 251 191 36;
+  
+  /* Bee Theme Colors */
+  --color-bee-gold: 245 158 11;       /* #F59E0B - Primary gold */
+  --color-bee-amber: 217 119 6;       /* #D97706 - Dark amber */
+  --color-bee-honey: 252 211 77;      /* #FCD34D - Light honey */
+  --color-bee-black: 31 41 55;        /* #1F2937 - Bee black */
+  --color-bee-yellow: 253 224 71;     /* #FDE047 - Bright yellow */
+  
   --color-chart-1: var(--chart-1);
   --color-chart-2: var(--chart-2);
   --color-chart-3: var(--chart-3);

@@ -173,9 +173,10 @@ export function WalletManager() {
                 {!adding && (
                     <Button
                         onClick={() => setAdding(true)}
-                        className="bg-gradient-to-r from-red-600 to-red-500"
+                        className="bg-gradient-to-r from-[rgb(var(--color-bee-gold))] to-[rgb(var(--color-bee-amber))]"
+                        aria-label="Add new wallet to track DeFi positions"
                     >
-                        <Plus className="w-4 h-4 mr-2" />
+                        <Plus className="w-4 h-4 mr-2" aria-hidden="true" />
                         Add Wallet
                     </Button>
                 )}
@@ -183,7 +184,7 @@ export function WalletManager() {
 
             {/* Error message */}
             {error && (
-                <div className="p-4 bg-red-500/10 border border-red-500/20 rounded-lg text-red-400 text-sm">
+                <div className="p-4 bg-red-500/10 border border-red-500/20 rounded-lg text-red-400 text-sm" role="alert" aria-live="polite">
                     {error}
                 </div>
             )}
@@ -194,40 +195,47 @@ export function WalletManager() {
                     <h3 className="text-lg font-semibold text-white">Add New Wallet</h3>
 
                     <div>
-                        <label className="block text-sm font-medium text-white/80 mb-2">
+                        <label htmlFor="wallet-address" className="block text-sm font-medium text-white/80 mb-2">
                             Wallet Address
                         </label>
                         <Input
+                            id="wallet-address"
                             type="text"
                             value={newAddress}
                             onChange={(e) => setNewAddress(e.target.value)}
                             placeholder="0x..."
                             className="bg-white/5 border-white/10 text-white"
+                            aria-label="Wallet address"
+                            aria-describedby="wallet-address-help"
+                            aria-invalid={!!error}
                         />
-                        <p className="text-xs text-white/40 mt-1">
+                        <p id="wallet-address-help" className="text-xs text-white/40 mt-1">
                             Ethereum address (0x followed by 40 hex characters)
                         </p>
                     </div>
 
                     <div>
-                        <label className="block text-sm font-medium text-white/80 mb-2">
+                        <label htmlFor="wallet-label" className="block text-sm font-medium text-white/80 mb-2">
                             Label (optional)
                         </label>
                         <Input
+                            id="wallet-label"
                             type="text"
                             value={newLabel}
                             onChange={(e) => setNewLabel(e.target.value)}
                             placeholder="My Main Wallet"
                             className="bg-white/5 border-white/10 text-white"
+                            aria-label="Wallet label (optional)"
                         />
                     </div>
 
                     <div className="flex gap-2">
                         <Button
                             onClick={handleAddWallet}
-                            className="bg-gradient-to-r from-red-600 to-red-500"
+                            className="bg-gradient-to-r from-[rgb(var(--color-bee-gold))] to-[rgb(var(--color-bee-amber))]"
+                            aria-label="Save wallet"
                         >
-                            <Check className="w-4 h-4 mr-2" />
+                            <Check className="w-4 h-4 mr-2" aria-hidden="true" />
                             Add Wallet
                         </Button>
                         <Button
@@ -238,8 +246,9 @@ export function WalletManager() {
                                 setError('')
                             }}
                             variant="outline"
+                            aria-label="Cancel adding wallet"
                         >
-                            <X className="w-4 h-4 mr-2" />
+                            <X className="w-4 h-4 mr-2" aria-hidden="true" />
                             Cancel
                         </Button>
                     </div>
