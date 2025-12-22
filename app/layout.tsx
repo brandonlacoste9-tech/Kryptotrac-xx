@@ -11,6 +11,8 @@ import { ErrorBoundary } from "@/components/error/error-boundary"
 import { AtlasDock } from "@/components/atlas/atlas-dock"
 import { ChatWidget } from "@/components/ChatWidget"
 import Script from "next/script"
+import { ColonyProvider } from '@/components/providers/colony-provider'
+import { Toaster } from 'sonner'
 
 const _geist = Geist({ subsets: ["latin"] })
 const _geistMono = Geist_Mono({ subsets: ["latin"] })
@@ -78,6 +80,7 @@ export default function RootLayout({
         <meta name="mobile-web-app-capable" content="yes" />
       </head>
       <body className="bg-black text-white antialiased">
+                <ColonyProvider>
         <ErrorBoundary>
           <Header />
           {children}
@@ -98,6 +101,8 @@ export default function RootLayout({
             }
           `}
         </Script>
+                          </ColonyProvider>
+                <Toaster />
       </body>
     </html>
   )
