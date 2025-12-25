@@ -10,10 +10,10 @@ export interface Product {
 export const PRODUCTS: Product[] = [
   {
     id: "pro",
-    name: "KryptoTrac Pro",
-    description: "Unlimited alerts and advanced analytics",
+    name: "PRO_FIRMWARE",
+    description: "Full hardware acceleration and AI access",
     priceId: process.env.STRIPE_PRICE_ID_PRO_MONTHLY || "price_pro_monthly",
-    priceInCents: 900, // $9.00
+    priceInCents: 499, // $4.99
     features: [
       "Unlimited price alerts",
       "Email notifications",

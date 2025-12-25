@@ -120,14 +120,16 @@ async function main() {
     // Check required tables
     console.log('📋 Checking tables:');
     const tables = [
-        'user_profiles',
-        'user_wallets',
-        'portfolios',
-        'holdings',
+        'profiles',
+        'user_portfolios',
+        'user_watchlists',
         'price_alerts',
-        'user_referrals',
+        'referrals',
         'bb_tips',
-        'atlas_memory',
+        'atlas_conversations',
+        'atlas_messages',
+        'atlas_rate_limits',
+        'user_wallets',
     ];
 
     for (const table of tables) {

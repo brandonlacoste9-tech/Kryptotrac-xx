@@ -6,6 +6,10 @@ import { useState } from "react"
 import { createBrowserClient } from "@/lib/supabase/client"
 import { useRouter } from 'next/navigation'
 import Link from "next/link"
+import { HardwareContainer } from "@/components/shared/hardware-container"
+import { motion } from "framer-motion"
+import { Lock, Cpu, ArrowRight } from "lucide-react"
+import { Button } from "@/components/ui/button"
 
 export default function LoginPage() {
   const [email, setEmail] = useState("")
@@ -55,91 +59,110 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-6">
-      <div className="w-full max-w-md">
-        <div className="glass-card p-8 space-y-6">
-          <div className="text-center space-y-2">
-            <h1 className="text-3xl font-bold text-white">Welcome Back</h1>
-            <p className="text-white/60">Sign in to your KryptoTrac account</p>
+    <HardwareContainer>
+      <div className="flex flex-col items-center justify-center min-h-[60vh] gap-8">
+        
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="text-center space-y-2"
+        >
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-primary/20 bg-primary/5 text-primary text-xs font-mono mb-4">
+             <Lock className="w-3 h-3" />
+             SECURE_GATEWAY_V1
           </div>
+          <h1 className="text-3xl font-bold tracking-tighter text-white">AUTHENTICATE</h1>
+          <p className="text-muted-foreground font-mono text-xs">Enter credentials to access neural net.</p>
+        </motion.div>
 
-          <form onSubmit={handleLogin} className="space-y-4">
-            <div>
-              <label className="block text-sm font-medium text-white/80 mb-2">Email</label>
-              <input
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="w-full px-4 py-2 bg-white/5 border border-white/10 rounded-lg text-white placeholder:text-white/40 focus:outline-none focus:ring-2 focus:ring-red-500/50"
-                placeholder="you@example.com"
-                required
-              />
+        <motion.div 
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ delay: 0.1 }}
+          className="w-full max-w-sm"
+        >
+          <div className="glass-panel p-6 border border-white/10 rounded-xl relative overflow-hidden">
+            {/* Corner Accents */}
+            <div className="absolute top-0 left-0 w-2 h-2 border-t border-l border-primary/50" />
+            <div className="absolute top-0 right-0 w-2 h-2 border-t border-r border-primary/50" />
+            <div className="absolute bottom-0 left-0 w-2 h-2 border-b border-l border-primary/50" />
+            <div className="absolute bottom-0 right-0 w-2 h-2 border-b border-r border-primary/50" />
+
+            <form onSubmit={handleLogin} className="space-y-4 relative z-10">
+              <div className="space-y-1">
+                <label className="text-[10px] font-mono text-primary uppercase tracking-wider">Identity // Email</label>
+                <input
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  className="w-full px-4 py-3 bg-black/50 border border-white/10 rounded text-white placeholder:text-white/20 focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/20 font-mono text-sm"
+                  placeholder="OPTIONAL_ID..."
+                  required
+                />
+              </div>
+
+              <div className="space-y-1">
+                <label className="text-[10px] font-mono text-primary uppercase tracking-wider">Key // Password</label>
+                <input
+                  type="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className="w-full px-4 py-3 bg-black/50 border border-white/10 rounded text-white placeholder:text-white/20 focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/20 font-mono text-sm"
+                  placeholder="••••••••"
+                  required
+                />
+              </div>
+
+              {error && (
+                <div className="p-3 bg-red-500/10 border-l-2 border-red-500 text-red-500 text-xs font-mono">{error}</div>
+              )}
+
+              <Button
+                type="submit"
+                disabled={loading}
+                className="w-full py-6 bg-primary/10 hover:bg-primary/20 border border-primary/20 text-primary font-bold tracking-wider hover:shadow-[0_0_15px_rgba(var(--primary),0.3)] transition-all"
+              >
+                {loading ? "DECRYPTING..." : "INIT_SESSION"}
+              </Button>
+            </form>
+
+            <div className="my-6 flex items-center gap-4">
+              <div className="h-px bg-white/5 flex-1" />
+              <span className="text-[10px] text-muted-foreground font-mono">ALT_ACCESS</span>
+              <div className="h-px bg-white/5 flex-1" />
             </div>
 
-            <div>
-              <label className="block text-sm font-medium text-white/80 mb-2">Password</label>
-              <input
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className="w-full px-4 py-2 bg-white/5 border border-white/10 rounded-lg text-white placeholder:text-white/40 focus:outline-none focus:ring-2 focus:ring-red-500/50"
-                placeholder="••••••••"
-                required
-              />
-            </div>
-
-            {error && (
-              <div className="p-3 bg-red-500/10 border border-red-500/20 rounded-lg text-red-400 text-sm">{error}</div>
-            )}
-
-            <button
-              type="submit"
+            <Button
+              type="button"
+              variant="outline"
+              onClick={handleGoogleLogin}
               disabled={loading}
-              className="w-full py-3 bg-gradient-to-r from-red-600 to-red-500 rounded-lg font-medium text-white shadow-lg shadow-red-500/50 hover:shadow-red-500/70 transition-all disabled:opacity-50"
+              className="w-full border-white/10 bg-white/5 hover:bg-white/10 text-white font-mono text-xs h-10"
             >
-              {loading ? "Signing in..." : "Sign In"}
-            </button>
-          </form>
+              <Cpu className="w-4 h-4 mr-2 text-white/50" />
+              AUTH_GOOGLE
+            </Button>
 
-          <div className="relative">
-            <div className="absolute inset-0 flex items-center">
-              <div className="w-full border-t border-white/10"></div>
-            </div>
-            <div className="relative flex justify-center text-sm">
-              <span className="px-2 bg-black text-white/60">or continue with</span>
+            <div className="mt-6 text-center">
+              <Link 
+                href="/auth/magic-link"
+                className="text-[10px] text-muted-foreground hover:text-primary transition-colors font-mono border-b border-transparent hover:border-primary/50 pb-0.5"
+              >
+                USE_MAGIC_LINK_PROTOCOL
+              </Link>
             </div>
           </div>
 
-          <button
-            type="button"
-            onClick={handleGoogleLogin}
-            disabled={loading}
-            className="w-full py-3 bg-white hover:bg-gray-100 border border-gray-300 rounded-lg font-medium text-gray-700 flex items-center justify-center gap-3 transition-all disabled:opacity-50"
-          >
-            <svg className="w-5 h-5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-              <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
-              <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
-              <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/>
-              <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
-            </svg>
-            Continue with Google
-          </button>
+          <div className="mt-6 text-center">
+             <Link href="/auth/signup" className="group inline-flex items-center gap-2 text-xs font-mono text-muted-foreground hover:text-white transition-colors">
+               <span>NO_CREDENTIALS_FOUND</span>
+               <span className="text-primary group-hover:underline decoration-primary/50 underline-offset-4">REGISTER_NEW_ID</span>
+               <ArrowRight className="w-3 h-3 text-primary group-hover:translate-x-1 transition-transform" />
+             </Link>
+          </div>
 
-          <Link 
-            href="/auth/magic-link"
-            className="block w-full py-3 bg-white/5 border border-white/10 rounded-lg font-medium text-white text-center hover:bg-white/10 transition-all"
-          >
-            Sign in with Magic Link
-          </Link>
-
-          <p className="text-center text-sm text-white/60">
-            Don't have an account?{" "}
-            <Link href="/auth/signup" className="text-red-400 hover:text-red-300">
-              Sign up
-            </Link>
-          </p>
-        </div>
+        </motion.div>
       </div>
-    </div>
+    </HardwareContainer>
   )
 }

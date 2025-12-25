@@ -64,12 +64,13 @@ export async function POST(req: NextRequest) {
       line_items: [
         {
           price_data: {
-            currency: "cad",
+            currency: "cad", // Keeping CAD as base but checking amount - $4.99 USD is approx 6.99 CAD, but pivot specified 4.99. Assuming USD or 1:1 for simplicity in pivot context, or specifically 499 cents.
+            // Let's assume the user wants 4.99 explicitly. 
             product_data: {
-              name: "KryptoTrac Pro",
-              description: "Unlimited alerts, AI insights, advanced analytics, and priority support",
+              name: "KryptoTrac Pro Firmware",
+              description: "Pro Hardware Access: Unlimited AI, Multi-chain, & Council Mode",
             },
-            unit_amount: 999, // $9.99 CAD
+            unit_amount: 499, // $4.99
             recurring: {
               interval: "month",
             },

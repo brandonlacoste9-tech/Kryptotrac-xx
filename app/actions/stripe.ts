@@ -14,9 +14,9 @@ export async function createCheckoutSession(plan: "starter" | "pro" | "elite", b
     }
 
     const pricing = {
-      starter: { monthly: 500, yearly: 5000, name: "KryptoTrac Starter" },
-      pro: { monthly: 1000, yearly: 10000, name: "KryptoTrac Pro" },
-      elite: { monthly: 2000, yearly: 20000, name: "KryptoTrac Elite" },
+      starter: { monthly: 0, yearly: 0, name: "KryptoTrac Core" }, // Free tier
+      pro: { monthly: 499, yearly: 4999, name: "PRO_FIRMWARE Upgrade" }, // $4.99/mo
+      elite: { monthly: 1999, yearly: 19999, name: "Legacy Elite" }, // Deprecated or higher tier
     }
 
     const selectedPlan = pricing[plan]
