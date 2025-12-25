@@ -432,6 +432,19 @@ This project is licensed under the MIT License - see the [LICENSE](./LICENSE) fi
 - 🐛 **Bug Reports**: [Open an issue](https://github.com/brandonlacoste9-tech/Kryptotrac-xx/issues)
 - 💬 **Questions**: [Discussions](https://github.com/brandonlacoste9-tech/Kryptotrac-xx/discussions)
 
+## 🤖 Automation
+
+This project includes automated GitHub Actions workflows for streamlined development:
+
+### Security PR Automation
+Automatically handles security PRs from trusted sources (Dependabot, GitHub Security, Vercel):
+- Auto-resolves dependency file conflicts
+- Runs lint and tests
+- Attempts automated fixes
+- Auto-merges when all checks pass (production mode)
+
+**Documentation**: See [Security PR Automation Guide](.github/workflows/README-SECURITY-PR-AUTOMATION.md) for detailed configuration and usage.
+
 ## 🙏 Acknowledgments
 
 - Built with [v0](https://v0.dev) by Vercel
