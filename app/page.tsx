@@ -13,8 +13,12 @@ export default function HomePage() {
   return (
     <HardwareContainer>
        {/* Background Internals (Always there but revealed by transparency) */}
+       {/* ⚡ Bolt: Optimization - The `active` prop is now tied to `transparencyMode`.
+            This ensures the heavy canvas animation only runs when it's actually visible,
+            saving significant CPU cycles when the glass mode is off.
+       */}
        <BlockchainInternals 
-          active={true} 
+          active={transparencyMode}
           className={`transition-opacity duration-1000 ${transparencyMode ? "opacity-100" : "opacity-0"}`}
           opacity={0.4}
        />
