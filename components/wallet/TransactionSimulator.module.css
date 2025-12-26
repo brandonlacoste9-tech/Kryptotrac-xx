@@ -1,0 +1,137 @@
+/* Core Variables for that "Electric" look */
+.cyberContainer {
+  --neon-blue: #00f3ff;
+  --neon-red: #ff0055;
+  --circuit-bg: #0a0b1e;
+  --grid-color: rgba(0, 243, 255, 0.1);
+
+  position: relative;
+  background-color: var(--circuit-bg);
+  border: 1px solid var(--neon-blue);
+  box-shadow: 0 0 15px rgba(0, 243, 255, 0.2), inset 0 0 20px rgba(0, 243, 255, 0.05);
+  padding: 20px;
+  font-family: 'Courier New', monospace; /* The "Terminal" font */
+  color: var(--neon-blue);
+  overflow: hidden;
+  border-radius: 8px;
+
+  /* The "Circuit Board" Background Pattern */
+  background-image:
+    linear-gradient(var(--grid-color) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid-color) 1px, transparent 1px);
+  background-size: 20px 20px;
+  transition: all 0.3s ease;
+}
+
+/* Red Alert Mode for Failed Simulations */
+.dangerState {
+  --neon-blue: var(--neon-red);
+  --grid-color: rgba(255, 0, 85, 0.1);
+  box-shadow: 0 0 15px rgba(255, 0, 85, 0.3);
+  border-color: var(--neon-red);
+}
+
+.headerPlate {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid var(--neon-blue);
+  padding-bottom: 8px;
+  margin-bottom: 16px;
+  letter-spacing: 2px;
+  font-size: 0.75rem;
+  opacity: 0.8;
+  text-transform: uppercase;
+}
+
+.statusLight {
+  width: 8px;
+  height: 8px;
+  background-color: var(--neon-blue);
+  border-radius: 50%;
+  box-shadow: 0 0 8px var(--neon-blue);
+  animation: pulse 2s infinite;
+}
+
+.gridContent {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 20px;
+}
+
+.microLabel {
+  font-size: 0.6rem;
+  opacity: 0.6;
+  margin-bottom: 8px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.assetRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 1.1rem;
+  font-weight: bold;
+  text-shadow: 0 0 5px var(--neon-blue);
+  padding: 8px;
+  background: rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(0, 243, 255, 0.1);
+  margin-bottom: 8px;
+}
+
+.plusIcon { color: #00ff9d; } /* Matrix Green */
+.minusIcon { color: var(--neon-red); }
+
+/* Decorative "Circuit Traces" */
+.circuitLineTop, .circuitLineBottom {
+  position: absolute;
+  height: 1px;
+  background: var(--neon-blue);
+  width: 30px;
+  right: 0;
+  opacity: 0.5;
+}
+
+.circuitLineTop { top: 40px; }
+.circuitLineBottom { bottom: 40px; }
+
+/* Input Styles override */
+.cyberInput {
+  background: rgba(0, 0, 0, 0.3) !important;
+  border: 1px solid var(--neon-blue) !important;
+  color: var(--neon-blue) !important;
+  font-family: 'Courier New', monospace !important;
+  box-shadow: inset 0 0 5px rgba(0, 243, 255, 0.1);
+}
+
+.cyberInput:focus {
+  box-shadow: 0 0 10px rgba(0, 243, 255, 0.2), inset 0 0 5px rgba(0, 243, 255, 0.1);
+}
+
+.cyberButton {
+  background: rgba(0, 243, 255, 0.1) !important;
+  border: 1px solid var(--neon-blue) !important;
+  color: var(--neon-blue) !important;
+  font-family: 'Courier New', monospace !important;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  transition: all 0.2s ease;
+}
+
+.cyberButton:hover:not(:disabled) {
+  background: var(--neon-blue) !important;
+  color: #000 !important;
+  box-shadow: 0 0 15px var(--neon-blue);
+}
+
+.cyberButton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+@keyframes pulse {
+  0% { opacity: 0.4; }
+  50% { opacity: 1; }
+  100% { opacity: 0.4; }
+}

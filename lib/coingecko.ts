@@ -86,6 +86,7 @@ export interface CoinSearchResult {
   name: string
   thumb: string
   large: string
+  current_price?: number // Added optional current_price
 }
 
 export interface CoinPrice {
@@ -131,6 +132,9 @@ export async function searchCoins(query: string): Promise<CoinSearchResult[]> {
     throw error
   }
 }
+
+// Alias for compatibility
+export const searchCoinGecko = searchCoins;
 
 export async function getCoinPrice(coinId: string): Promise<number> {
   const cacheKey = `price-${coinId}`

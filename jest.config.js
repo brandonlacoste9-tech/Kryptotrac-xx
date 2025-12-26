@@ -21,21 +21,41 @@ const customJestConfig = {
   projects: [
     {
       displayName: 'unit',
-      testEnvironment: 'node',
+      testEnvironment: 'jsdom',
       testMatch: ['**/tests/unit/**/*.test.{ts,tsx}'],
       setupFilesAfterEnv: ['<rootDir>/jest.setup.js'],
+      transform: {
+        '^.+\\.(ts|tsx)$': ['babel-jest', { presets: ['next/babel'] }],
+      },
+      moduleNameMapper: {
+        '^@/(.*)$': '<rootDir>/$1',
+        '\\.(css|less|scss|sass)$': 'identity-obj-proxy',
+      },
     },
     {
       displayName: 'integration',
       testEnvironment: 'node',
       testMatch: ['**/tests/integration/**/*.test.ts'],
       setupFilesAfterEnv: ['<rootDir>/jest.setup.js'],
+      transform: {
+        '^.+\\.(ts|tsx)$': ['babel-jest', { presets: ['next/babel'] }],
+      },
+      moduleNameMapper: {
+        '^@/(.*)$': '<rootDir>/$1',
+      },
     },
     {
       displayName: 'e2e',
       testEnvironment: 'jsdom',
       testMatch: ['**/tests/e2e/**/*.test.ts'],
       setupFilesAfterEnv: ['<rootDir>/jest.setup.js'],
+      transform: {
+        '^.+\\.(ts|tsx)$': ['babel-jest', { presets: ['next/babel'] }],
+      },
+      moduleNameMapper: {
+        '^@/(.*)$': '<rootDir>/$1',
+        '\\.(css|less|scss|sass)$': 'identity-obj-proxy',
+      },
     },
   ],
 
@@ -51,6 +71,7 @@ const customJestConfig = {
   // Module name mapper for path aliases
   moduleNameMapper: {
     '^@/(.*)$': '<rootDir>/$1',
+    '\\.(css|less|scss|sass)$': 'identity-obj-proxy',
   },
 
   // Coverage configuration
@@ -66,7 +87,7 @@ const customJestConfig = {
   ],
 
   // Coverage thresholds (optional - adjust as needed)
-  coverageThresholds: {
+  coverageThreshold: {
     global: {
       branches: 50,
       functions: 50,

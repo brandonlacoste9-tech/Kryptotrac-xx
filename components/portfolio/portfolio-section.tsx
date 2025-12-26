@@ -4,112 +4,67 @@ import { useState, useEffect } from "react"
 import { createBrowserClient } from "@/lib/supabase/client"
 import { Plus, Trash2, TrendingUp, TrendingDown } from 'lucide-react'
 import { Button } from "@/components/ui/button"
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { PortfolioShareCard } from "@/components/share/portfolio-share-card"
-
-interface Holding {
-  id: string
-  coin_id: string
-  coin_name: string
-  coin_symbol: string
-  coin_image: string
-  quantity: number
-  purchase_price: number
-  purchase_date: string
-  current_price?: number
-}
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
+import { searchCoinGecko } from "@/lib/coingecko"
+import Decimal from "decimal.js"
 
 export function PortfolioSection() {
-  const [holdings, setHoldings] = useState<Holding[]>([])
+  const [holdings, setHoldings] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
-  const [dialogOpen, setDialogOpen] = useState(false)
   const [searchQuery, setSearchQuery] = useState("")
   const [searchResults, setSearchResults] = useState<any[]>([])
   const [selectedCoin, setSelectedCoin] = useState<any>(null)
   const [quantity, setQuantity] = useState("")
   const [purchasePrice, setPurchasePrice] = useState("")
   const [purchaseDate, setPurchaseDate] = useState("")
+  const [isAddOpen, setIsAddOpen] = useState(false)
   const [user, setUser] = useState<any>(null)
-  const [isPro, setIsPro] = useState(false)
 
   const supabase = createBrowserClient()
 
   useEffect(() => {
-    loadUserAndSubscription()
+    checkUser()
   }, [])
 
   useEffect(() => {
     if (user) {
       loadHoldings()
-      const interval = setInterval(loadHoldings, 30000)
-      return () => clearInterval(interval)
     }
   }, [user])
 
-  async function loadUserAndSubscription() {
-    const { data: { user } } = await supabase.auth.getUser()
-    setUser(user)
-
-    if (user) {
-        const { data: sub } = await supabase
-            .from('user_subscriptions')
-            .select('status')
-            .eq('user_id', user.id)
-            .in('status', ['active', 'trialing'])
-            .single()
-        
-        if (sub) {
-            setIsPro(true)
-        }
-    }
+  async function checkUser() {
+    const { data } = await supabase.auth.getUser()
+    setUser(data.user)
   }
 
   async function loadHoldings() {
+    if (!user) return
     const { data } = await supabase.from("user_portfolios").select("*").eq("user_id", user.id)
-
     if (data) {
-      const holdingsWithPrices = await Promise.all(
-        data.map(async (holding) => {
-          try {
-            const response = await fetch(
-              `https://api.coingecko.com/api/v3/simple/price?ids=${holding.coin_id}&vs_currencies=usd`,
-            )
-            const priceData = await response.json()
-            return {
-              ...holding,
-              current_price: priceData[holding.coin_id]?.usd || 0,
-            }
-          } catch (error) {
-            return { ...holding, current_price: 0 }
-          }
-        }),
-      )
-      setHoldings(holdingsWithPrices)
+        // Sort by value (descending)
+        const sorted = data
+            .sort((a, b) => {
+                const valA = new Decimal(a.quantity).times(a.current_price || 0).toNumber()
+                const valB = new Decimal(b.quantity).times(b.current_price || 0).toNumber()
+                return valB - valA
+            })
+      setHoldings(sorted)
     }
     setLoading(false)
   }
 
   async function searchCoins(query: string) {
-    if (!query) {
-      setSearchResults([])
-      return
-    }
-
-    try {
-      const response = await fetch(`https://api.coingecko.com/api/v3/search?query=${query}`)
-      const data = await response.json()
-      setSearchResults(data.coins.slice(0, 5))
-    } catch (error) {
-      console.error("Search failed:", error)
-    }
+    if (query.length < 2) return
+    const results = await searchCoinGecko(query)
+    setSearchResults(results)
   }
 
   async function addHolding() {
-    if (!selectedCoin || !quantity || !purchasePrice) return
+    if (!user || !selectedCoin || !quantity || !purchasePrice) return
 
-    const { error } = await supabase.from("user_portfolios").insert({
+    const newHolding = {
       user_id: user.id,
       coin_id: selectedCoin.id,
       coin_name: selectedCoin.name,
@@ -117,78 +72,74 @@ export function PortfolioSection() {
       coin_image: selectedCoin.large,
       quantity: parseFloat(quantity),
       purchase_price: parseFloat(purchasePrice),
-      purchase_date: purchaseDate || new Date().toISOString(),
-    })
+      purchase_date: purchaseDate ? new Date(purchaseDate).toISOString() : new Date().toISOString(),
+      current_price: selectedCoin.current_price || parseFloat(purchasePrice), // Fallback
+    }
+
+    const { error } = await supabase.from("user_portfolios").insert([newHolding])
 
     if (!error) {
-      loadHoldings()
-      setDialogOpen(false)
+      setIsAddOpen(false)
       setSelectedCoin(null)
       setQuantity("")
       setPurchasePrice("")
       setPurchaseDate("")
       setSearchQuery("")
-      setSearchResults([])
+      loadHoldings()
     }
   }
 
   async function deleteHolding(id: string) {
-    await supabase.from("user_portfolios").delete().eq("id", id)
-    loadHoldings()
+    const { error } = await supabase.from("user_portfolios").delete().eq("id", id)
+    if (!error) {
+      loadHoldings()
+    }
   }
 
-  const totalValue = holdings.reduce((sum, h) => sum + (h.current_price || 0) * h.quantity, 0)
-  const totalCost = holdings.reduce((sum, h) => sum + h.purchase_price * h.quantity, 0)
-  const totalGain = totalValue - totalCost
-  const totalGainPercent = totalCost > 0 ? (totalGain / totalCost) * 100 : 0
+  // Safe Math with Decimal.js
+  const totalValue = holdings.reduce((sum, h) => {
+      const val = new Decimal(h.quantity).times(h.current_price || 0)
+      return new Decimal(sum).plus(val).toNumber()
+  }, 0)
 
-  if (!user) {
-    return null
-  }
+  const totalCost = holdings.reduce((sum, h) => {
+      const val = new Decimal(h.quantity).times(h.purchase_price)
+      return new Decimal(sum).plus(val).toNumber()
+  }, 0)
 
-  if (loading) {
-    return <div className="text-white/60 font-mono animate-pulse">INITIALIZING_PORTFOLIO_MODULE...</div>
-  }
+  const totalGain = new Decimal(totalValue).minus(totalCost).toNumber()
+  const totalGainPercent = totalCost > 0 ? new Decimal(totalGain).div(totalCost).times(100).toNumber() : 0
 
-  // Prepare top holdings for share card
-  const topHoldings = holdings
-    .map(h => ({
-        coin_id: h.coin_id,
-        coin_symbol: h.coin_symbol,
-        quantity: h.quantity,
-        current_price: h.current_price || 0,
-        purchase_price: h.purchase_price
-    }))
-    .sort((a, b) => (b.quantity * b.current_price) - (a.quantity * a.current_price))
+  if (loading) return <div className="text-white/60 text-center font-mono py-8">INITIALIZING_SECURE_CONNECTION...</div>
 
   return (
-    <div className="space-y-4">
-      <div className="flex items-center justify-between">
-        <h2 className="text-2xl font-bold text-white font-mono tracking-tighter">PORTFOLIO_STATUS</h2>
+    <div className="bg-black/40 backdrop-blur-xl border border-white/10 rounded-2xl p-6">
+      <div className="flex items-center justify-between mb-6">
+        <div>
+            <h2 className="text-xl font-bold text-white uppercase tracking-widest flex items-center gap-2">
+                <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse"/>
+                Asset_Database
+            </h2>
+            <p className="text-white/40 text-xs font-mono mt-1">SECURE_VAULT_ACCESS_GRANTED</p>
+        </div>
+
         <div className="flex gap-2">
-            <PortfolioShareCard 
-                totalValue={totalValue}
-                totalProfitLoss={totalGain}
-                profitLossPercentage={totalGainPercent}
-                topHoldings={topHoldings}
-                isPro={isPro}
-            />
-            <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+            <Dialog open={isAddOpen} onOpenChange={setIsAddOpen}>
             <DialogTrigger asChild>
-                <Button className="bg-red-600 hover:bg-red-700 font-mono tracking-wider">
+                <Button className="bg-red-600 hover:bg-red-700 text-white font-mono text-xs uppercase tracking-wider">
                 <Plus className="w-4 h-4 mr-2" />
-                ADD_ASSET
+                Add_Asset
                 </Button>
             </DialogTrigger>
-            <DialogContent className="bg-black/95 border-red-900/30 backdrop-blur-xl">
+            <DialogContent className="bg-black/90 border-white/10 text-white">
                 <DialogHeader>
-                <DialogTitle className="text-white font-mono text-xl">ADD_NEW_ASSET</DialogTitle>
+                <DialogTitle className="font-mono uppercase tracking-widest text-red-500">Add New Asset</DialogTitle>
                 </DialogHeader>
-                <div className="space-y-4 font-mono">
+                <div className="space-y-4 pt-4">
                 {!selectedCoin ? (
                     <>
                     <Input
-                        placeholder="SEARCH_COIN_DATABASE..."
+                        placeholder="SEARCH_PROTOCOL..."
                         value={searchQuery}
                         onChange={(e) => {
                         setSearchQuery(e.target.value)
@@ -305,10 +256,10 @@ export function PortfolioSection() {
 
       <div className="space-y-3">
         {holdings.map((holding) => {
-          const currentValue = (holding.current_price || 0) * holding.quantity
-          const costBasis = holding.purchase_price * holding.quantity
-          const gain = currentValue - costBasis
-          const gainPercent = costBasis > 0 ? (gain / costBasis) * 100 : 0
+          const currentValue = new Decimal(holding.quantity).times(holding.current_price || 0).toNumber()
+          const costBasis = new Decimal(holding.quantity).times(holding.purchase_price).toNumber()
+          const gain = new Decimal(currentValue).minus(costBasis).toNumber()
+          const gainPercent = costBasis > 0 ? new Decimal(gain).div(costBasis).times(100).toNumber() : 0
 
           return (
             <div

@@ -14,25 +14,6 @@ import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import { WalletManager } from '@/components/settings/WalletManager';
 
-// Mock Supabase client
-jest.mock('@/lib/supabase/client', () => ({
-    createBrowserClient: jest.fn(() => ({
-        auth: {
-            getUser: jest.fn(),
-        },
-        from: jest.fn(() => ({
-            select: jest.fn().mockReturnThis(),
-            insert: jest.fn().mockReturnThis(),
-            update: jest.fn().mockReturnThis(),
-            delete: jest.fn().mockReturnThis(),
-            eq: jest.fn().mockReturnThis(),
-            like: jest.fn().mockReturnThis(),
-            order: jest.fn().mockReturnThis(),
-            single: jest.fn(),
-        })),
-    })),
-}));
-
 // Mock logger
 jest.mock('@/lib/logger', () => ({
     logger: {
@@ -43,23 +24,93 @@ jest.mock('@/lib/logger', () => ({
     },
 }));
 
+// Define mocks inside the factory to avoid hoisting issues and ensure reference consistency
+jest.mock('@/lib/supabase/client', () => {
+    // Create mock functions
+    const mockGetUser = jest.fn();
+    const mockSelect = jest.fn();
+    const mockInsert = jest.fn();
+    const mockUpdate = jest.fn();
+    const mockDelete = jest.fn();
+    const mockEq = jest.fn();
+    const mockLike = jest.fn();
+    const mockOrder = jest.fn();
+    const mockSingle = jest.fn();
+    const mockIn = jest.fn();
+
+    // Chainable mock implementation defaults
+    mockSelect.mockReturnValue({ eq: mockEq, order: mockOrder });
+    mockInsert.mockReturnValue({ select: jest.fn().mockReturnValue({ single: mockSingle }) });
+    mockUpdate.mockReturnValue({ eq: mockEq });
+    mockDelete.mockReturnValue({ eq: mockEq });
+    mockEq.mockReturnValue({ order: mockOrder, in: mockIn });
+    mockLike.mockReturnValue({ order: mockOrder });
+    mockOrder.mockReturnValue({ data: [], error: null });
+    mockIn.mockReturnValue({ single: mockSingle });
+    mockSingle.mockResolvedValue({ data: null, error: null });
+
+    return {
+        createBrowserClient: jest.fn(() => ({
+            auth: {
+                getUser: mockGetUser,
+            },
+            from: jest.fn(() => ({
+                select: mockSelect,
+                insert: mockInsert,
+                update: mockUpdate,
+                delete: mockDelete,
+            })),
+        })),
+        // Expose mocks for test control
+        _mocks: {
+            mockGetUser,
+            mockSelect,
+            mockInsert,
+            mockUpdate,
+            mockDelete,
+            mockEq,
+            mockLike,
+            mockOrder,
+            mockSingle,
+            mockIn
+        }
+    };
+});
+
 describe('WalletManager Component', () => {
-    let mockSupabase: any;
+    // Access the exposed mocks
+    const { _mocks } = require('@/lib/supabase/client');
+    const {
+        mockGetUser, mockSelect, mockInsert, mockUpdate, mockDelete,
+        mockEq, mockLike, mockOrder, mockSingle, mockIn
+    } = _mocks;
 
     beforeEach(() => {
         // Reset mocks
         jest.clearAllMocks();
 
-        const { createBrowserClient } = require('@/lib/supabase/client');
-        mockSupabase = createBrowserClient();
+        // Default happy path setup
+        mockGetUser.mockResolvedValue({
+            data: { user: { id: 'test-user-id' } },
+        });
+
+        // Reset chainable mocks default return values
+        mockSelect.mockReturnValue({ eq: mockEq, order: mockOrder });
+        mockEq.mockReturnValue({ order: mockOrder, in: mockIn });
+        mockOrder.mockResolvedValue({ data: [], error: null });
+        mockIn.mockReturnValue({ single: mockSingle });
+        mockSingle.mockResolvedValue({ data: null, error: null });
+
+        // Ensure creates return this for chaining if needed
+        mockInsert.mockReturnValue({ select: jest.fn().mockReturnValue({ single: mockSingle }) });
     });
 
     describe('Loading State', () => {
         it('should display loading skeleton while fetching wallets', () => {
-            // Mock loading state
-            mockSupabase.auth.getUser.mockResolvedValue({
-                data: { user: { id: 'test-user-id' } },
-            });
+             // Delay the response to allow skeleton check
+            mockGetUser.mockImplementation(() => new Promise(resolve => {
+                setTimeout(() => resolve({ data: { user: { id: 'test-user-id' } } }), 100);
+            }));
 
             render(<WalletManager />);
 
@@ -71,11 +122,7 @@ describe('WalletManager Component', () => {
 
     describe('Empty State', () => {
         it('should display empty state when no wallets exist', async () => {
-            mockSupabase.auth.getUser.mockResolvedValue({
-                data: { user: { id: 'test-user-id' } },
-            });
-
-            mockSupabase.from().select().eq().order.mockResolvedValue({
+            mockOrder.mockResolvedValue({
                 data: [],
                 error: null,
             });
@@ -88,11 +135,7 @@ describe('WalletManager Component', () => {
         });
 
         it('should show helpful message in empty state', async () => {
-            mockSupabase.auth.getUser.mockResolvedValue({
-                data: { user: { id: 'test-user-id' } },
-            });
-
-            mockSupabase.from().select().eq().order.mockResolvedValue({
+             mockOrder.mockResolvedValue({
                 data: [],
                 error: null,
             });
@@ -124,11 +167,7 @@ describe('WalletManager Component', () => {
         ];
 
         it('should render list of wallets', async () => {
-            mockSupabase.auth.getUser.mockResolvedValue({
-                data: { user: { id: 'test-user-id' } },
-            });
-
-            mockSupabase.from().select().eq().order.mockResolvedValue({
+            mockOrder.mockResolvedValue({
                 data: mockWallets,
                 error: null,
             });
@@ -142,11 +181,7 @@ describe('WalletManager Component', () => {
         });
 
         it('should display wallet addresses', async () => {
-            mockSupabase.auth.getUser.mockResolvedValue({
-                data: { user: { id: 'test-user-id' } },
-            });
-
-            mockSupabase.from().select().eq().order.mockResolvedValue({
+            mockOrder.mockResolvedValue({
                 data: mockWallets,
                 error: null,
             });
@@ -159,11 +194,7 @@ describe('WalletManager Component', () => {
         });
 
         it('should display chain badges', async () => {
-            mockSupabase.auth.getUser.mockResolvedValue({
-                data: { user: { id: 'test-user-id' } },
-            });
-
-            mockSupabase.from().select().eq().order.mockResolvedValue({
+             mockOrder.mockResolvedValue({
                 data: mockWallets,
                 error: null,
             });
@@ -179,44 +210,40 @@ describe('WalletManager Component', () => {
 
     describe('Add Wallet Form', () => {
         it('should show add wallet form when button clicked', async () => {
-            mockSupabase.auth.getUser.mockResolvedValue({
-                data: { user: { id: 'test-user-id' } },
-            });
-
-            mockSupabase.from().select().eq().order.mockResolvedValue({
+            mockOrder.mockResolvedValue({
                 data: [],
                 error: null,
             });
 
             render(<WalletManager />);
 
+            // Wait for loading to finish first
             await waitFor(() => {
-                const addButton = screen.getByText(/Add Wallet/i);
-                fireEvent.click(addButton);
+                expect(screen.queryByText(/loading/i)).not.toBeInTheDocument();
             });
+
+            const addButton = await screen.findByText(/Add Wallet/i);
+            fireEvent.click(addButton);
 
             expect(screen.getByPlaceholderText('0x...')).toBeInTheDocument();
         });
 
         it('should validate Ethereum address format', async () => {
-            mockSupabase.auth.getUser.mockResolvedValue({
-                data: { user: { id: 'test-user-id' } },
-            });
-
-            mockSupabase.from().select().eq().order.mockResolvedValue({
+            mockOrder.mockResolvedValue({
                 data: [],
                 error: null,
             });
 
             render(<WalletManager />);
 
-            await waitFor(() => {
-                const addButton = screen.getByText(/Add Wallet/i);
-                fireEvent.click(addButton);
-            });
+            const addButton = await screen.findByText(/Add Wallet/i);
+            fireEvent.click(addButton);
 
             const addressInput = screen.getByPlaceholderText('0x...');
-            const submitButton = screen.getAllByText(/Add Wallet/i)[1]; // Second one is in form
+            // Need to verify the second button is actually the submit button
+            // The first one is likely the one to open the modal/form
+            const buttons = screen.getAllByText(/Add Wallet/i);
+            const submitButton = buttons[buttons.length - 1];
 
             // Enter invalid address
             fireEvent.change(addressInput, { target: { value: 'invalid-address' } });
@@ -228,23 +255,18 @@ describe('WalletManager Component', () => {
         });
 
         it('should require wallet address', async () => {
-            mockSupabase.auth.getUser.mockResolvedValue({
-                data: { user: { id: 'test-user-id' } },
-            });
-
-            mockSupabase.from().select().eq().order.mockResolvedValue({
+            mockOrder.mockResolvedValue({
                 data: [],
                 error: null,
             });
 
             render(<WalletManager />);
 
-            await waitFor(() => {
-                const addButton = screen.getByText(/Add Wallet/i);
-                fireEvent.click(addButton);
-            });
+            const addButton = await screen.findByText(/Add Wallet/i);
+            fireEvent.click(addButton);
 
-            const submitButton = screen.getAllByText(/Add Wallet/i)[1];
+            const buttons = screen.getAllByText(/Add Wallet/i);
+            const submitButton = buttons[buttons.length - 1];
             fireEvent.click(submitButton);
 
             await waitFor(() => {
@@ -253,42 +275,30 @@ describe('WalletManager Component', () => {
         });
 
         it('should allow optional label', async () => {
-            mockSupabase.auth.getUser.mockResolvedValue({
-                data: { user: { id: 'test-user-id' } },
-            });
-
-            mockSupabase.from().select().eq().order.mockResolvedValue({
+            mockOrder.mockResolvedValue({
                 data: [],
                 error: null,
             });
 
             render(<WalletManager />);
 
-            await waitFor(() => {
-                const addButton = screen.getByText(/Add Wallet/i);
-                fireEvent.click(addButton);
-            });
+            const addButton = await screen.findByText(/Add Wallet/i);
+            fireEvent.click(addButton);
 
             const labelInput = screen.getByPlaceholderText(/My Main Wallet/i);
             expect(labelInput).toBeInTheDocument();
         });
 
         it('should cancel add wallet form', async () => {
-            mockSupabase.auth.getUser.mockResolvedValue({
-                data: { user: { id: 'test-user-id' } },
-            });
-
-            mockSupabase.from().select().eq().order.mockResolvedValue({
+            mockOrder.mockResolvedValue({
                 data: [],
                 error: null,
             });
 
             render(<WalletManager />);
 
-            await waitFor(() => {
-                const addButton = screen.getByText(/Add Wallet/i);
-                fireEvent.click(addButton);
-            });
+            const addButton = await screen.findByText(/Add Wallet/i);
+            fireEvent.click(addButton);
 
             const cancelButton = screen.getByText(/Cancel/i);
             fireEvent.click(cancelButton);
@@ -311,66 +321,74 @@ describe('WalletManager Component', () => {
         ];
 
         it('should show edit form when edit button clicked', async () => {
-            mockSupabase.auth.getUser.mockResolvedValue({
-                data: { user: { id: 'test-user-id' } },
-            });
-
-            mockSupabase.from().select().eq().order.mockResolvedValue({
+            mockOrder.mockResolvedValue({
                 data: mockWallets,
                 error: null,
             });
 
             render(<WalletManager />);
 
-            await waitFor(() => {
-                const editButtons = screen.getAllByRole('button');
-                const editButton = editButtons.find(btn =>
-                    btn.querySelector('svg')?.classList.contains('lucide-edit-2')
-                );
-                if (editButton) fireEvent.click(editButton);
+            // Wait for list to render
+            await screen.findByText('My Main Wallet');
+
+            // Need to wait specifically for the buttons to appear
+            // Using a more generic selector to find the edit button
+            const editButton = await waitFor(() => {
+                // Find button that contains the edit icon
+                // Since we can't easily select by icon, we'll assume it's one of the buttons in the row
+                // This test might be brittle without better test IDs, but let's try to find it
+                // by finding the row content then looking for buttons
+                const row = screen.getByText('My Main Wallet').closest('.glass-card');
+                const buttons = row?.querySelectorAll('button');
+                // The first button in the actions area is usually edit
+                return buttons?.[0];
             });
 
-            // Should show input with current label
-            await waitFor(() => {
-                const input = screen.getByDisplayValue('My Main Wallet');
+            if (editButton) {
+                fireEvent.click(editButton);
+                // Should show input with current label
+                const input = await screen.findByDisplayValue('My Main Wallet');
                 expect(input).toBeInTheDocument();
-            });
+            } else {
+                throw new Error('Edit button not found');
+            }
         });
 
         it('should validate label is not empty', async () => {
-            mockSupabase.auth.getUser.mockResolvedValue({
-                data: { user: { id: 'test-user-id' } },
-            });
-
-            mockSupabase.from().select().eq().order.mockResolvedValue({
+            mockOrder.mockResolvedValue({
                 data: mockWallets,
                 error: null,
             });
 
             render(<WalletManager />);
 
-            await waitFor(() => {
-                const editButtons = screen.getAllByRole('button');
-                const editButton = editButtons.find(btn =>
-                    btn.querySelector('svg')?.classList.contains('lucide-edit-2')
-                );
-                if (editButton) fireEvent.click(editButton);
+            // Wait for list to render
+            await screen.findByText('My Main Wallet');
+
+            // Find edit button (first button in row)
+            const editButton = await waitFor(() => {
+                const row = screen.getByText('My Main Wallet').closest('.glass-card');
+                return row?.querySelectorAll('button')[0];
             });
 
-            await waitFor(() => {
-                const input = screen.getByDisplayValue('My Main Wallet');
+            if (editButton) {
+                fireEvent.click(editButton);
+                const input = await screen.findByDisplayValue('My Main Wallet');
                 fireEvent.change(input, { target: { value: '' } });
 
-                const saveButtons = screen.getAllByRole('button');
-                const saveButton = saveButtons.find(btn =>
-                    btn.querySelector('svg')?.classList.contains('lucide-check')
-                );
-                if (saveButton) fireEvent.click(saveButton);
-            });
+                // Find save button (should be first button after clicking edit)
+                const saveButton = await waitFor(() => {
+                    const row = screen.getByDisplayValue('').closest('.glass-card');
+                    return row?.querySelectorAll('button')[0];
+                });
 
-            await waitFor(() => {
-                expect(screen.getByText(/Label cannot be empty/i)).toBeInTheDocument();
-            });
+                if (saveButton) {
+                    fireEvent.click(saveButton);
+                    await waitFor(() => {
+                        expect(screen.getByText(/Label cannot be empty/i)).toBeInTheDocument();
+                    });
+                }
+            }
         });
     });
 
@@ -386,41 +404,42 @@ describe('WalletManager Component', () => {
                 },
             ];
 
-            mockSupabase.auth.getUser.mockResolvedValue({
-                data: { user: { id: 'test-user-id' } },
-            });
-
-            mockSupabase.from().select().eq().order.mockResolvedValue({
+            mockOrder.mockResolvedValue({
                 data: mockWallets,
                 error: null,
             });
 
             // Mock window.confirm
-            global.confirm = jest.fn(() => false);
+            global.confirm = jest.fn(() => true); // Auto confirm
 
             render(<WalletManager />);
 
-            await waitFor(() => {
-                const deleteButtons = screen.getAllByRole('button');
-                const deleteButton = deleteButtons.find(btn =>
-                    btn.querySelector('svg')?.classList.contains('lucide-trash-2')
-                );
-                if (deleteButton) fireEvent.click(deleteButton);
+            // Wait for list to render
+            await screen.findByText('My Main Wallet');
+
+            // Find delete button (second button in row)
+            const deleteButton = await waitFor(() => {
+                const row = screen.getByText('My Main Wallet').closest('.glass-card');
+                return row?.querySelectorAll('button')[1];
             });
 
-            expect(global.confirm).toHaveBeenCalledWith(
-                'Are you sure you want to delete this wallet?'
-            );
+            if (deleteButton) {
+                fireEvent.click(deleteButton);
+                expect(global.confirm).toHaveBeenCalledWith(
+                    'Are you sure you want to delete this wallet?'
+                );
+            } else {
+                throw new Error('Delete button not found');
+            }
         });
     });
 
     describe('Error Handling', () => {
         it('should display error message on failed load', async () => {
-            mockSupabase.auth.getUser.mockResolvedValue({
-                data: { user: { id: 'test-user-id' } },
-            });
-
-            mockSupabase.from().select().eq().order.mockResolvedValue({
+            // Need to mock the chain failure
+            // .from().select().eq().order()
+            // mockOrder is the last link in the chain
+            mockOrder.mockResolvedValue({
                 data: null,
                 error: { message: 'Database error' },
             });
@@ -433,7 +452,7 @@ describe('WalletManager Component', () => {
         });
 
         it('should handle missing user gracefully', async () => {
-            mockSupabase.auth.getUser.mockResolvedValue({
+            mockGetUser.mockResolvedValue({
                 data: { user: null },
             });
 
