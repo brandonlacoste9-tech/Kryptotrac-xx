@@ -75,6 +75,7 @@
     "cmdk": "1.0.4",
     "crypto": "1.0.1",
     "date-fns": "latest",
+    "decimal.js": "^10.6.0",
     "embla-carousel-react": "8.5.1",
     "ethers": "^6.13.0",
     "framer-motion": "latest",

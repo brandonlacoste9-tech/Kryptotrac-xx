@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react"
 import { createBrowserClient } from "@/lib/supabase/client"
+import { TrendingUp, PieChart, Activity } from 'lucide-react'
 import { Line, Pie } from "react-chartjs-2"
 import {
   Chart as ChartJS,
@@ -9,22 +10,36 @@ import {
   LinearScale,
   PointElement,
   LineElement,
-  ArcElement,
   Title,
   Tooltip,
   Legend,
-  Filler,
+  ArcElement,
 } from "chart.js"
-import { TrendingUp, TrendingDown, PieChart, Activity } from 'lucide-react'
+import { User } from "@supabase/supabase-js"
 
-ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, ArcElement, Title, Tooltip, Legend, Filler)
+ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend, ArcElement)
+
+interface Snapshot {
+  snapshot_date: string
+  total_value: number
+}
+
+interface Holding {
+  id: string
+  coin_id: string
+  coin_name: string
+  coin_image: string
+  current_price?: number
+  purchase_price: number
+  quantity: number
+}
 
 export default function AnalyticsPage() {
-  const [snapshots, setSnapshots] = useState<any[]>([])
-  const [holdings, setHoldings] = useState<any[]>([])
+  const [snapshots, setSnapshots] = useState<Snapshot[]>([])
+  const [holdings, setHoldings] = useState<Holding[]>([])
   const [loading, setLoading] = useState(true)
   const [timeframe, setTimeframe] = useState<"7d" | "30d" | "90d">("30d")
-  const [user, setUser] = useState<any>(null)
+  const [user, setUser] = useState<User | null>(null)
 
   const supabase = createBrowserClient()
 
