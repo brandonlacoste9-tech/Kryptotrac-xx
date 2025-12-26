@@ -1,31 +1,6 @@
 
 import { ethers } from 'ethers';
-
-export interface SimulationResult {
-  success: boolean;
-  assetChanges: AssetChange[];
-  gasUsed: string;
-  error?: string;
-  simulationId: string;
-}
-
-export interface AssetChange {
-  assetType: 'NATIVE' | 'ERC20' | 'ERC721' | 'ERC1155';
-  changeType: 'IN' | 'OUT';
-  address: string;
-  name: string;
-  symbol: string;
-  amount: string;
-  decimals: number;
-  logo?: string;
-}
-
-export interface TransactionParams {
-  from: string;
-  to: string;
-  value: string;
-  data: string;
-}
+import { SimulationResult, TransactionParams } from '@/types/simulation';
 
 // Mock simulator for now since we don't have Alchemy keys
 export async function simulateTransaction(params: TransactionParams): Promise<SimulationResult> {

@@ -6,7 +6,8 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { AlertTriangle, CheckCircle, ArrowRight, Shield, Activity, Loader2 } from "lucide-react"
-import { simulateTransaction, SimulationResult } from "@/lib/simulation/alchemy"
+import { simulateTransaction } from "@/lib/simulation/alchemy"
+import { SimulationResult } from "@/types/simulation"
 
 export function TransactionSimulator() {
   const [toAddress, setToAddress] = useState('')
