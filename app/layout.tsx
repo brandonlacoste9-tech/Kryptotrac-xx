@@ -9,7 +9,6 @@ import { Footer } from "@/components/layout/footer"
 import { FeedbackPrompt } from "@/components/feedback/feedback-prompt"
 import { ErrorBoundary } from "@/components/error/error-boundary"
 import { AtlasDock } from "@/components/atlas/atlas-dock"
-import { ChatWidget } from "@/components/ChatWidget"
 import Script from "next/script"
 import { ColonyProvider } from '@/components/providers/colony-provider'
 import { Toaster } from 'sonner'
@@ -85,7 +84,7 @@ export default function RootLayout({
           <Header />
           {children}
           <FeedbackPrompt />
-          <ChatWidget />
+          <AtlasDock />
           <Footer />
         </ErrorBoundary>
         <Analytics />
