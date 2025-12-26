@@ -13,6 +13,9 @@ export default function HomePage() {
   return (
     <HardwareContainer>
        {/* Background Internals (Always there but revealed by transparency) */}
+       {/* ⚡ Bolt: The BlockchainInternals animation is expensive. By linking its `active` state
+           to `transparencyMode`, we ensure the computationally heavy canvas animation only runs
+           when it's actually visible to the user, saving significant CPU cycles. */}
        {/* ⚡ Bolt: Optimization - The `active` prop is now tied to `transparencyMode`.
             This ensures the heavy canvas animation only runs when it's actually visible,
             saving significant CPU cycles when the glass mode is off.
