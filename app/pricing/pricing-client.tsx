@@ -1,182 +1,201 @@
 "use client"
 
-import { useState } from "react"
-import { Check, Zap, Shield, CreditCard, Star, TrendingUp, Bell, Bot, BarChart3, Download } from 'lucide-react'
+import { useState, useEffect } from "react"
+import { Check, Star, Zap, Bot, BarChart3, TrendingUp, Shield, CreditCard, Lock } from 'lucide-react'
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import Link from "next/link"
+import { HardwareContainer } from "@/components/shared/hardware-container"
+import { Badge } from "@/components/ui/badge"
+import { trackEvent } from "@/lib/analytics"
 
 export default function PricingClient() {
   const [billingCycle, setBillingCycle] = useState<"monthly" | "yearly">("monthly")
 
+  useEffect(() => {
+    trackEvent("upgrade_view", { 
+        source: document.referrer, 
+        timestamp: new Date().toISOString() 
+    })
+  }, [])
+
   const tiers = {
     free: {
-      name: "Free",
+      name: "CORE_OS",
       price: { monthly: 0, yearly: 0 },
-      description: "Perfect for getting started",
-      cta: "Start Free",
+      description: "Essential Telemetry",
+      cta: "INITIALIZE SYSTEM",
       features: [
-        "Track up to 5 coins",
-        "3 price alerts",
-        "1 DeFi wallet",
-        "20 BB AI queries per day",
-        "Basic portfolio dashboard",
-        "Real-time price updates",
-        "Community support",
+        "Track 5 Assets",
+        "3 Signal Alerts",
+        "1 DeFi Protocol",
+        "20 AI Queries/Day",
+        "Basic Telemetry",
+        "Community Comms",
       ],
     },
     pro: {
-      name: "Pro",
-      price: { monthly: 12, yearly: 120 },
-      description: "Best Value - Everything Unlimited",
+      name: "PRO_FIRMWARE",
+      price: { monthly: 4.99, yearly: 49.99 },
+      description: "Unrestricted Hardware Access",
       popular: true,
-      cta: "Upgrade to Pro",
+      cta: "INSTALL UPGRADE",
       features: [
-        "Unlimited coins & price alerts",
-        "10 DeFi wallets tracked",
-        "Unlimited BB AI queries",
-        "Council Mode (multi-AI perspectives)",
-        "AI-generated insights (daily/weekly)",
-        "Email digests & notifications",
-        "Full analytics dashboard",
-        "Portfolio snapshots & history",
-        "Export data (CSV, PDF)",
-        "Priority support (24h response)",
-        "Ad-free experience",
-        "Early access to new features",
+        "Unlimited Asset Tracking",
+        "Unlimited DeFi Protocols",
+        "Unlimited AI Neural Net",
+        "Council Mode (Multi-Agent)",
+        "Deep Chain Analysis",
+        "Priority Support Channel",
+        "Ad-Blocker Enabled",
+        "Early Beta Access",
       ],
     },
   }
 
   const getPrice = (tier: keyof typeof tiers) => {
     return billingCycle === "yearly"
-      ? Math.floor(tiers[tier].price.yearly / 12)
+      ? (tiers[tier].price.yearly / 12).toFixed(2)
       : tiers[tier].price.monthly
   }
 
-  const getSavings = (tier: keyof typeof tiers) => {
-    if (billingCycle === "monthly" || tier === "free") return null
-    const monthlyCost = tiers[tier].price.monthly * 12
-    const yearlyCost = tiers[tier].price.yearly
-    return monthlyCost - yearlyCost
+  const handleTierSelect = (tierKey: string) => {
+    trackEvent("begin_checkout", {
+        tier: tierKey,
+        billing_cycle: billingCycle,
+        price: tierKey === 'pro' ? getPrice('pro') : 0
+    })
   }
 
   return (
-    <div className="min-h-screen py-20 px-4">
-      <div className="max-w-7xl mx-auto">
-        {/* Hero Section */}
-        <div className="text-center mb-12">
-          <div className="inline-flex items-center gap-2 bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 px-4 py-2 rounded-full text-sm font-medium mb-4">
-            <Star className="w-4 h-4 fill-emerald-400" />
-            60% cheaper than competitors • No credit card required
-          </div>
-          <h1 className="text-5xl font-bold mb-4 bg-gradient-to-r from-red-500 to-red-700 bg-clip-text text-transparent">
-            Simple Pricing. Powerful Features.
+    <HardwareContainer>
+      <div className="space-y-8 pb-20">
+        
+        {/* Header */}
+        <div className="text-center space-y-4 pt-10">
+          <Badge variant="outline" className="text-cyan-400 border-cyan-500/50 bg-cyan-500/10 animate-pulse font-mono tracking-widest">
+            <Zap className="w-3 h-3 mr-1" />
+            SYSTEM UPDATE AVAILABLE
+          </Badge>
+          <h1 className="text-4xl md:text-5xl font-bold tracking-tighter text-white glitch-text" data-text="SELECT CONFIGURATION">
+            SELECT CONFIGURATION
           </h1>
-          <p className="text-gray-400 text-lg max-w-2xl mx-auto">
-            Get AI-powered crypto insights without the enterprise pricing.
-            <br />
-            <span className="text-white font-semibold">Start free, upgrade when you're ready.</span>
+          <p className="text-gray-400 font-mono text-sm max-w-md mx-auto">
+            Upgrade your KryptoTrac firmware for maximum performance and AI throughput.
           </p>
         </div>
 
         {/* Billing Toggle */}
-        <div className="flex justify-center mb-12">
-          <div className="inline-flex items-center gap-4 bg-black/40 backdrop-blur-xl border border-white/10 rounded-full p-1">
+        <div className="flex justify-center">
+          <div className="inline-flex items-center gap-2 p-1 rounded-full border border-white/10 bg-black/40 backdrop-blur glass-panel">
             <button
               onClick={() => setBillingCycle("monthly")}
-              className={`px-6 py-2 rounded-full font-medium transition-all ${billingCycle === "monthly"
-                  ? "bg-white/10 text-white"
-                  : "text-gray-400 hover:text-white"
-                }`}
+              className={`px-4 py-1.5 rounded-full text-xs font-mono transition-all ${
+                billingCycle === "monthly" ? "bg-cyan-500 text-black font-bold shadow-[0_0_15px_rgba(6,182,212,0.5)]" : "text-gray-400 hover:text-white"
+              }`}
             >
-              Monthly
+              MONTHLY
             </button>
             <button
               onClick={() => setBillingCycle("yearly")}
-              className={`px-6 py-2 rounded-full font-medium transition-all flex items-center gap-2 ${billingCycle === "yearly"
-                  ? "bg-white/10 text-white"
-                  : "text-gray-400 hover:text-white"
-                }`}
+              className={`px-4 py-1.5 rounded-full text-xs font-mono transition-all flex items-center gap-2 ${
+                billingCycle === "yearly" ? "bg-cyan-500 text-black font-bold shadow-[0_0_15px_rgba(6,182,212,0.5)]" : "text-gray-400 hover:text-white"
+              }`}
             >
-              Yearly
-              <span className="text-xs bg-emerald-500/20 text-emerald-400 px-2 py-0.5 rounded-full">
-                Save $24/year
+              YEARLY
+              <span className="text-[10px] bg-black/30 text-white px-1.5 py-0.5 rounded ml-1 border border-white/10">
+                -17%
               </span>
             </button>
           </div>
         </div>
 
         {/* Pricing Cards */}
-        <div className="grid lg:grid-cols-2 gap-8 max-w-5xl mx-auto mb-16">
+        <div className="grid md:grid-cols-2 gap-8 max-w-5xl mx-auto items-stretch">
           {Object.entries(tiers).map(([key, tier]) => {
             const tierKey = key as keyof typeof tiers
             const price = getPrice(tierKey)
-            const savings = getSavings(tierKey)
-
+            
             return (
-              <Card
+              <Card 
                 key={key}
-                className={`relative p-8 backdrop-blur-xl rounded-2xl transition-all ${tier.popular
-                    ? "bg-gradient-to-br from-red-950/40 to-black/40 border-2 border-red-500/50 shadow-[0_0_50px_rgba(239,68,68,0.3)] hover:shadow-[0_0_80px_rgba(239,68,68,0.5)] scale-105"
-                    : "bg-black/40 border border-white/10 hover:border-white/20"
-                  }`}
+                className={`relative p-8 overflow-hidden flex flex-col group transition-all duration-500 ${
+                  tier.popular 
+                    ? "bg-black/80 border-cyan-500/50 shadow-[0_0_50px_rgba(6,182,212,0.15)] hover:shadow-[0_0_80px_rgba(6,182,212,0.25)] scale-105 z-10 block ring-1 ring-cyan-400/30" 
+                    : "bg-black/40 border-white/10 hover:border-white/30 hover:bg-black/60 scale-100 z-0 border-dashed"
+                }`}
               >
-                {tier.popular && (
-                  <div className="absolute -top-4 left-1/2 -translate-x-1/2">
-                    <div className="bg-gradient-to-r from-red-600 to-red-500 text-white px-6 py-1.5 rounded-full text-sm font-semibold flex items-center gap-1.5 shadow-lg">
-                      <Zap className="w-4 h-4" />
-                      {tier.description}
-                    </div>
-                  </div>
+                {/* Visual Effects Layer */}
+                {tier.popular ? (
+                    <>
+                        <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwJSIgaGVpZ2h0PSI0IiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjxyZWN0IHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEiIGZpbGw9InJnYmEoNiwgMTgyLCAyMTIsIDAuMSkiLz48L3N2Zz4=')] opacity-30 pointer-events-none" />
+                        <div className="absolute -top-20 -right-20 w-40 h-40 bg-cyan-500/20 blur-[60px] rounded-full pointer-events-none group-hover:bg-cyan-400/30 transition-all duration-500" />
+                        <div className="absolute top-0 right-0 bg-cyan-500 text-black text-[10px] font-bold px-4 py-1.5 rounded-bl-xl font-mono flex items-center gap-1 shadow-[0_0_15px_rgba(6,182,212,0.4)]">
+                        <Star className="w-3 h-3 fill-current animate-pulse" />
+                        RECOMMENDED_BUILD
+                        </div>
+                    </>
+                ) : (
+                    <div className="absolute inset-0 bg-[linear-gradient(45deg,transparent_25%,rgba(255,255,255,0.02)_50%,transparent_75%)] bg-[length:10px_10px] opacity-20 pointer-events-none" />
                 )}
 
-                <div className="mb-8">
-                  <h3 className="text-2xl font-bold text-white mb-3">{tier.name}</h3>
-                  <div className="flex items-baseline gap-2 mb-2">
-                    <span className="text-5xl font-bold text-white">
+                <div className="mb-8 space-y-4 relative z-10">
+                  <div className="flex items-center justify-between">
+                     <h3 className={`text-xl font-bold font-mono tracking-wider flex items-center gap-2 ${tier.popular ? "text-cyan-400 drop-shadow-[0_0_10px_rgba(6,182,212,0.5)]" : "text-gray-400"}`}>
+                        {tierKey === 'pro' && <Zap className="w-5 h-5" />}
+                        {tier.name}
+                     </h3>
+                     {tierKey === 'free' && <div className="text-[10px] uppercase border border-white/20 px-2 py-0.5 rounded text-white/40 font-mono">Starter Kit</div>}
+                  </div>
+                  
+                  <div className="flex items-baseline gap-1">
+                    <span className={`text-5xl font-bold tracking-tighter ${tier.popular ? "text-white text-shadow-neon" : "text-gray-300"}`}>
                       ${price}
                     </span>
-                    {tierKey !== "free" && (
-                      <span className="text-gray-400 text-lg">/month</span>
-                    )}
+                    {tierKey !== "free" && <span className="text-gray-500 text-sm font-mono uppercase">/month</span>}
                   </div>
-                  {savings && (
-                    <p className="text-sm text-emerald-400 font-medium">
-                      💰 Save ${savings} per year
-                    </p>
-                  )}
-                  {tierKey === "free" && (
-                    <p className="text-sm text-gray-400">Forever free, no card required</p>
-                  )}
-                  {billingCycle === "yearly" && tierKey === "pro" && (
-                    <p className="text-sm text-gray-300 mt-1">
-                      Billed ${tiers.pro.price.yearly} annually
-                    </p>
-                  )}
+                  <p className="text-xs text-gray-500 font-mono border-l-2 border-white/10 pl-3">{tier.description}</p>
                 </div>
 
-                <ul className="space-y-3 mb-8 min-h-[420px]">
-                  {tier.features.map((feature, i) => (
-                    <li key={i} className="flex items-start gap-3">
-                      <Check
-                        className={`w-5 h-5 flex-shrink-0 mt-0.5 ${tier.popular ? "text-red-500" : "text-emerald-500"
-                          }`}
-                      />
-                      <span className="text-gray-300">{feature}</span>
-                    </li>
-                  ))}
-                </ul>
+                <div className="flex-1 mb-8 relative z-10">
+                    <div className="text-[10px] uppercase text-gray-600 font-mono mb-4 flex items-center gap-2">
+                        <div className="h-px bg-gray-800 flex-1" />
+                        SYSTEM_CAPABILITIES
+                        <div className="h-px bg-gray-800 flex-1" />
+                    </div>
+                    <ul className="space-y-4">
+                    {tier.features.map((feature, i) => (
+                        <li key={i} className="flex items-start gap-3 text-sm font-mono group/item">
+                        <div className={`mt-0.5 p-0.5 rounded-full transition-colors ${
+                            tier.popular 
+                            ? "bg-cyan-950 text-cyan-400 group-hover/item:bg-cyan-400 group-hover/item:text-black shadow-[0_0_10px_rgba(6,182,212,0.2)]" 
+                            : "bg-white/5 text-gray-500 group-hover/item:text-gray-300"
+                        }`}>
+                            <Check className="w-3 h-3" />
+                        </div>
+                        <span className={tier.popular ? "text-gray-200" : "text-gray-400"}>{feature}</span>
+                        </li>
+                    ))}
+                    </ul>
+                </div>
 
-                <Button
-                  className={`w-full py-6 text-lg font-semibold ${tier.popular
-                      ? "bg-gradient-to-r from-red-600 to-red-500 hover:from-red-500 hover:to-red-600 text-white shadow-lg shadow-red-500/50 hover:shadow-red-500/70"
-                      : "bg-white/10 hover:bg-white/20 text-white border border-white/20 hover:border-white/30"
-                    }`}
+                <Button 
+                  onClick={() => handleTierSelect(key)}
+                  className={`w-full font-mono font-bold tracking-widest relative overflow-hidden h-12 transition-all duration-300 ${
+                     tier.popular 
+                     ? "bg-cyan-600 hover:bg-cyan-500 text-black border-none hover:shadow-[0_0_30px_rgba(6,182,212,0.4)]" 
+                     : "bg-transparent hover:bg-white/5 border border-white/20 text-gray-400 hover:text-white hover:border-white/40"
+                  }`}
                   asChild
                 >
                   <Link href={tierKey === "free" ? "/auth/signup" : `/auth/signup?plan=pro&cycle=${billingCycle}`}>
-                    {tier.cta}
+                    {tier.popular && (
+                        <div className="absolute inset-0 bg-white/20 translate-x-[-100%] animate-shimmer skew-x-12" />
+                    )}
+                    <span className="relative z-10 flex items-center justify-center gap-2">
+                        {tier.cta} 
+                        <span className="text-lg leading-none">&rsaquo;</span>
+                    </span>
                   </Link>
                 </Button>
               </Card>
@@ -184,105 +203,26 @@ export default function PricingClient() {
           })}
         </div>
 
-        {/* Trust Indicators */}
-        <div className="flex flex-wrap justify-center items-center gap-8 mb-16 text-gray-400 text-sm">
-          <div className="flex items-center gap-2">
-            <Star className="w-5 h-5 text-yellow-500 fill-yellow-500" />
-            <span>Trusted by 10,000+ crypto traders</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <Shield className="w-5 h-5 text-emerald-500" />
-            <span>Bank-level encryption</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <CreditCard className="w-5 h-5 text-blue-500" />
-            <span>Cancel anytime, no questions asked</span>
-          </div>
+        {/* Feature Comparison / Why */}
+        <div className="grid grid-cols-3 gap-4 max-w-4xl mx-auto pt-8 border-t border-white/5">
+             <div className="text-center space-y-2 p-4 rounded-xl bg-white/5 border border-white/5 hover:border-cyan-500/20 transition-colors group">
+               <Bot className="w-6 h-6 mx-auto text-cyan-400 group-hover:scale-110 transition-transform" />
+               <h4 className="text-xs font-bold text-white font-mono">NEURAL_NET</h4>
+               <p className="text-[10px] text-gray-500 font-mono">Competitors charge $49/mo.</p>
+             </div>
+             <div className="text-center space-y-2 p-4 rounded-xl bg-white/5 border border-white/5 hover:border-cyan-500/20 transition-colors group">
+               <TrendingUp className="w-6 h-6 mx-auto text-cyan-400 group-hover:scale-110 transition-transform" />
+               <h4 className="text-xs font-bold text-white font-mono">DEFI_OPS</h4>
+               <p className="text-[10px] text-gray-500 font-mono">Competitors charge $99/mo.</p>
+             </div>
+             <div className="text-center space-y-2 p-4 rounded-xl bg-white/5 border border-white/5 hover:border-cyan-500/20 transition-colors group">
+               <BarChart3 className="w-6 h-6 mx-auto text-cyan-400 group-hover:scale-110 transition-transform" />
+               <h4 className="text-xs font-bold text-white font-mono">ANALYTICS</h4>
+               <p className="text-[10px] text-gray-500 font-mono">Included in Firmware.</p>
+             </div>
         </div>
 
-        {/* Competitive Comparison */}
-        <div className="max-w-4xl mx-auto mb-16">
-          <h2 className="text-3xl font-bold text-center mb-8 text-white">
-            Why KryptoTrac Beats The Competition
-          </h2>
-          <div className="grid md:grid-cols-3 gap-6">
-            <Card className="p-6 bg-black/40 backdrop-blur-xl border border-white/10">
-              <Bot className="w-10 h-10 text-red-500 mb-4" />
-              <h3 className="font-bold text-white mb-2">AI-Powered Insights</h3>
-              <p className="text-gray-400 text-sm">
-                BB AI gives you daily insights competitors charge $49/mo for. Ours is included at $12/mo.
-              </p>
-            </Card>
-            <Card className="p-6 bg-black/40 backdrop-blur-xl border border-white/10">
-              <TrendingUp className="w-10 h-10 text-emerald-500 mb-4" />
-              <h3 className="font-bold text-white mb-2">DeFi Tracking</h3>
-              <p className="text-gray-400 text-sm">
-                Track Aave, Uniswap, Lido positions. Others charge $99/mo for this.
-              </p>
-            </Card>
-            <Card className="p-6 bg-black/40 backdrop-blur-xl border border-white/10">
-              <BarChart3 className="w-10 h-10 text-blue-500 mb-4" />
-              <h3 className="font-bold text-white mb-2">Full Analytics</h3>
-              <p className="text-gray-400 text-sm">
-                Portfolio snapshots, P&L tracking, export data. Usually $29/mo elsewhere.
-              </p>
-            </Card>
-          </div>
-        </div>
-
-        {/* FAQ */}
-        <div className="mt-20 max-w-3xl mx-auto">
-          <h2 className="text-3xl font-bold text-center mb-10 text-white">Frequently Asked Questions</h2>
-          <div className="space-y-6">
-            <Card className="p-6 bg-black/40 backdrop-blur-xl border border-white/10">
-              <h3 className="font-semibold text-white mb-2">Can I switch between monthly and yearly billing?</h3>
-              <p className="text-gray-400">
-                Yes! Upgrade to yearly anytime to save $24/year. You'll be credited for time left on your monthly plan.
-              </p>
-            </Card>
-            <Card className="p-6 bg-black/40 backdrop-blur-xl border border-white/10">
-              <h3 className="font-semibold text-white mb-2">What happens if I downgrade from Pro to Free?</h3>
-              <p className="text-gray-400">
-                Your data is never deleted. You'll keep access to unlimited coins/alerts through the end of your billing period, then revert to Free limits.
-              </p>
-            </Card>
-            <Card className="p-6 bg-black/40 backdrop-blur-xl border border-white/10">
-              <h3 className="font-semibold text-white mb-2">Do you offer refunds?</h3>
-              <p className="text-gray-400">
-                Yes! We offer a 14-day money-back guarantee. If you're not satisfied, email us for a full refund, no questions asked.
-              </p>
-            </Card>
-            <Card className="p-6 bg-black/40 backdrop-blur-xl border border-white/10">
-              <h3 className="font-semibold text-white mb-2">Is my data secure with KryptoTrac?</h3>
-              <p className="text-gray-400">
-                Absolutely. We use bank-level encryption (AES-256), never store exchange API keys with write access, and never see your private keys. Your portfolio data is stored securely via Supabase with Row Level Security.
-              </p>
-            </Card>
-          </div>
-        </div>
-
-        {/* Final CTA */}
-        <div className="mt-20 text-center">
-          <div className="inline-block bg-gradient-to-br from-red-950/40 to-black/40 border-2 border-red-500/50 rounded-2xl p-8 backdrop-blur-xl">
-            <h3 className="text-2xl font-bold text-white mb-3">Ready to track smarter?</h3>
-            <p className="text-gray-300 mb-6">Join 10,000+ traders using KryptoTrac</p>
-            <div className="flex gap-4 justify-center">
-              <Button
-                className="bg-white/10 hover:bg-white/20 text-white border border-white/20"
-                asChild
-              >
-                <Link href="/auth/signup">Start Free</Link>
-              </Button>
-              <Button
-                className="bg-gradient-to-r from-red-600 to-red-500 hover:from-red-500 hover:to-red-600 text-white shadow-lg shadow-red-500/50"
-                asChild
-              >
-                <Link href="/auth/signup?plan=pro">Go Pro - $12/month</Link>
-              </Button>
-            </div>
-          </div>
-        </div>
       </div>
-    </div>
+    </HardwareContainer>
   )
 }

@@ -5,7 +5,9 @@ import { createBrowserClient } from '@/lib/supabase/client'
 import { logger } from '@/lib/logger'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { Trash2, Plus, Wallet, Edit2, Check, X } from 'lucide-react'
+import { Trash2, Plus, Wallet, Edit2, Check, X, Lock } from 'lucide-react'
+import Link from 'next/link'
+import { Badge } from '@/components/ui/badge'
 
 interface UserWallet {
     id: string
@@ -29,11 +31,13 @@ export function WalletManager() {
     // Edit wallet state
     const [editLabel, setEditLabel] = useState('')
 
+    const [isPro, setIsPro] = useState(false)
+
     useEffect(() => {
-        loadWallets()
+        loadWalletsAndSubscription()
     }, [])
 
-    async function loadWallets() {
+    async function loadWalletsAndSubscription() {
         setLoading(true)
         const supabase = createBrowserClient()
 
@@ -44,17 +48,30 @@ export function WalletManager() {
             return
         }
 
-        const { data, error: fetchError } = await supabase
-            .from('user_wallets')
-            .select('*')
-            .eq('user_id', user.id)
-            .order('created_at', { ascending: false })
+        // Parallel fetch for wallets and subscription
+        const [walletsResult, subResult] = await Promise.all([
+            supabase
+                .from('user_wallets')
+                .select('*')
+                .eq('user_id', user.id)
+                .order('created_at', { ascending: false }),
+            supabase
+                .from('user_subscriptions')
+                .select('status, plan_id')
+                .eq('user_id', user.id)
+                .in('status', ['active', 'trialing'])
+                .single()
+        ])
 
-        if (fetchError) {
-            logger.error('Failed to load wallets', { error: fetchError })
+        if (walletsResult.error) {
+            logger.error('Failed to load wallets', { error: walletsResult.error })
             setError('Failed to load wallets')
         } else {
-            setWallets(data || [])
+            setWallets(walletsResult.data || [])
+        }
+
+        if (subResult.data) {
+            setIsPro(true)
         }
 
         setLoading(false)
@@ -171,14 +188,29 @@ export function WalletManager() {
                 </div>
 
                 {!adding && (
-                    <Button
-                        onClick={() => setAdding(true)}
-                        className="bg-gradient-to-r from-[rgb(var(--color-bee-gold))] to-[rgb(var(--color-bee-amber))]"
-                        aria-label="Add new wallet to track DeFi positions"
-                    >
-                        <Plus className="w-4 h-4 mr-2" aria-hidden="true" />
-                        Add Wallet
-                    </Button>
+                    <>
+                        {wallets.length < 5 || isPro ? (
+                           <Button
+                                onClick={() => setAdding(true)}
+                                className="bg-gradient-to-r from-[rgb(var(--color-bee-gold))] to-[rgb(var(--color-bee-amber))]"
+                                aria-label="Add new wallet to track DeFi positions"
+                            >
+                                <Plus className="w-4 h-4 mr-2" aria-hidden="true" />
+                                Add Wallet
+                            </Button>
+                        ) : (
+                            <Button
+                                asChild
+                                variant="outline"
+                                className="border-red-500/50 text-red-400 hover:bg-red-500/10 hover:text-red-300"
+                            >
+                                <Link href="/pricing">
+                                    <Lock className="w-4 h-4 mr-2" />
+                                    MEMORY FULL (5/5)
+                                </Link>
+                            </Button>
+                        )}
+                    </>
                 )}
             </div>
 

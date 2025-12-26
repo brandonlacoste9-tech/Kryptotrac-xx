@@ -7,9 +7,6 @@
  * Note: Uses CommonJS (require) to match jest.config.js
  */
 
-// Load environment variables for testing
-require('dotenv').config({ path: '.env.local' })
-
 // Extend Jest matchers with @testing-library/jest-dom
 require('@testing-library/jest-dom')
 

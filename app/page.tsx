@@ -1,235 +1,146 @@
-import { HeroWithFire } from "@/components/hero/hero-with-fire"
-import { Testimonials } from "@/components/landing/testimonials"
-import { Shield, Zap, Globe, TrendingUp, DollarSign, Users } from 'lucide-react'
-import { Card } from "@/components/ui/card"
+"use client";
+import { useState } from "react";
+import { HardwareContainer } from "@/components/shared/hardware-container";
+import { Shield, Zap, Globe, Cpu, Radio, Fingerprint, Lock } from 'lucide-react';
+import { Card } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { motion } from "framer-motion";
+import { BlockchainInternals } from "@/components/visuals/blockchain-internals";
 
 export default function HomePage() {
+  const [transparencyMode, setTransparencyMode] = useState(false)
+
   return (
-    <main className="min-h-screen bg-black text-white">
-      {/* Hero Section with Fire Effect */}
-      <HeroWithFire />
+    <HardwareContainer>
+       {/* Background Internals (Always there but revealed by transparency) */}
+       {/* ⚡ Bolt: Optimization - The `active` prop is now tied to `transparencyMode`.
+            This ensures the heavy canvas animation only runs when it's actually visible,
+            saving significant CPU cycles when the glass mode is off.
+       */}
+       <BlockchainInternals 
+          active={transparencyMode}
+          className={`transition-opacity duration-1000 ${transparencyMode ? "opacity-100" : "opacity-0"}`}
+          opacity={0.4}
+       />
 
-      {/* Features Section */}
-      <section className="py-20 px-4 border-t border-white/10">
-        <div className="max-w-6xl mx-auto">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold mb-4">
-              Why Choose KryptoTrac?
-            </h2>
-            <p className="text-gray-400 text-lg max-w-2xl mx-auto">
-              Built for crypto investors worldwide with powerful features and unbeatable pricing
-            </p>
+      <div className={`space-y-12 relative z-10 transition-all duration-500 ${transparencyMode ? "bg-black/20 backdrop-blur-none" : ""}`}>
+        
+        {/* Boot Sequence / Hero */}
+        <section className="text-center pt-10 pb-6 relative">
+          <div className="absolute top-0 right-0">
+             <Button 
+                variant="ghost" 
+                size="sm" 
+                onClick={() => setTransparencyMode(!transparencyMode)}
+                className={`text-[10px] font-mono border border-white/10 ${transparencyMode ? "bg-cyan-500/20 text-cyan-400 border-cyan-500/50" : "text-gray-500"}`}
+             >
+                {transparencyMode ? "■ GLASS_MODE_ON" : "□ GLASS_MODE_OFF"}
+             </Button>
           </div>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-            <Card className="p-6 bg-black/40 backdrop-blur-xl border border-white/10 hover:border-red-500/30 transition-all">
-              <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-red-500 to-orange-500 flex items-center justify-center mb-4">
-                <Globe className="w-6 h-6 text-white" />
-              </div>
-              <h3 className="text-xl font-semibold mb-2">100+ Languages</h3>
-              <p className="text-gray-400">BB speaks your language. Get crypto insights in over 100 languages with our AI assistant.</p>
-            </Card>
+          <motion.div 
+             initial={{ opacity: 0, scale: 0.9 }}
+             animate={{ opacity: 1, scale: 1 }}
+             transition={{ delay: 0.5, duration: 0.5 }}
+             className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-primary/20 bg-primary/5 text-primary text-xs font-mono mb-6"
+          >
+             <span className="relative flex h-2 w-2">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-primary"></span>
+             </span>
+             SYSTEM_READY_V2.0
+          </motion.div>
 
-            <Card className="p-6 bg-black/40 backdrop-blur-xl border border-white/10 hover:border-red-500/30 transition-all">
-              <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center mb-4">
-                <Zap className="w-6 h-6 text-white" />
-              </div>
-              <h3 className="text-xl font-semibold mb-2">Real-Time Tracking</h3>
-              <p className="text-gray-400">Track 20,000+ cryptocurrencies with live price updates and proactive alerts.</p>
-            </Card>
-
-            <Card className="p-6 bg-black/40 backdrop-blur-xl border border-white/10 hover:border-red-500/30 transition-all">
-              <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-blue-500 to-cyan-500 flex items-center justify-center mb-4">
-                <Shield className="w-6 h-6 text-white" />
-              </div>
-              <h3 className="text-xl font-semibold mb-2">Privacy First</h3>
-              <p className="text-gray-400">Your data stays yours. No selling information to third parties, ever.</p>
-            </Card>
-
-            <Card className="p-6 bg-black/40 backdrop-blur-xl border border-white/10 hover:border-red-500/30 transition-all">
-              <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-green-500 to-emerald-500 flex items-center justify-center mb-4">
-                <TrendingUp className="w-6 h-6 text-white" />
-              </div>
-              <h3 className="text-xl font-semibold mb-2">Smart Analytics</h3>
-              <p className="text-gray-400">Advanced portfolio analytics and insights to help you make better investment decisions.</p>
-            </Card>
-          </div>
-        </div>
-      </section>
-
-      {/* Testimonials Section */}
-      <Testimonials />
-
-      {/* Pricing Teaser Section */}
-      <section className="py-20 px-4 border-t border-white/10 bg-gradient-to-b from-black to-red-950/20">
-        <div className="max-w-6xl mx-auto">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold mb-4 bg-gradient-to-r from-red-500 to-orange-500 bg-clip-text text-transparent">
-              Simple, Transparent Pricing
-            </h2>
-            <p className="text-gray-400 text-lg">
-              From free forever to unlimited everything. Choose what works for you.
-            </p>
-          </div>
-
-          <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
-            <Card className="p-8 bg-black/40 backdrop-blur-xl border border-white/10 hover:border-white/20 transition-all">
-              <h3 className="text-2xl font-bold mb-2">Free</h3>
-              <div className="mb-4">
-                <span className="text-5xl font-bold">$0</span>
-                <span className="text-gray-400">/month</span>
-              </div>
-              <p className="text-sm text-gray-400 mb-6">Forever free, no card required</p>
-              <ul className="space-y-3 text-gray-400 mb-8 min-h-[280px]">
-                <li className="flex items-start">
-                  <span className="text-green-500 mr-2">✓</span>
-                  <span>Track up to 5 coins</span>
-                </li>
-                <li className="flex items-start">
-                  <span className="text-green-500 mr-2">✓</span>
-                  <span>3 price alerts</span>
-                </li>
-                <li className="flex items-start">
-                  <span className="text-green-500 mr-2">✓</span>
-                  <span>1 DeFi wallet</span>
-                </li>
-                <li className="flex items-start">
-                  <span className="text-green-500 mr-2">✓</span>
-                  <span>20 BB AI queries per day</span>
-                </li>
-                <li className="flex items-start">
-                  <span className="text-green-500 mr-2">✓</span>
-                  <span>Basic portfolio dashboard</span>
-                </li>
-                <li className="flex items-start">
-                  <span className="text-green-500 mr-2">✓</span>
-                  <span>Community support</span>
-                </li>
-              </ul>
-              <a
-                href="/auth/signup"
-                className="block w-full text-center py-3 px-4 rounded-lg border border-white/20 hover:bg-white/10 transition-all font-medium"
-              >
-                Get Started
-              </a>
-            </Card>
-
-            <Card className="p-8 bg-gradient-to-b from-red-600/20 to-orange-600/20 backdrop-blur-xl border-2 border-red-500 relative overflow-hidden scale-105">
-              <div className="absolute top-4 right-4 bg-gradient-to-r from-red-600 to-red-500 text-white text-xs font-bold px-4 py-1.5 rounded-full">
-                BEST VALUE
-              </div>
-              <h3 className="text-2xl font-bold mb-2">Pro</h3>
-              <div className="mb-4">
-                <span className="text-5xl font-bold">$12</span>
-                <span className="text-gray-400">/month</span>
-              </div>
-              <p className="text-sm text-gray-300 mb-6">Everything unlimited</p>
-              <ul className="space-y-3 text-gray-300 mb-8 min-h-[280px]">
-                <li className="flex items-start">
-                  <span className="text-green-400 mr-2">✓</span>
-                  <span>Unlimited coins & price alerts</span>
-                </li>
-                <li className="flex items-start">
-                  <span className="text-green-400 mr-2">✓</span>
-                  <span>10 DeFi wallets tracked</span>
-                </li>
-                <li className="flex items-start">
-                  <span className="text-green-400 mr-2">✓</span>
-                  <span>Unlimited BB AI queries</span>
-                </li>
-                <li className="flex items-start">
-                  <span className="text-green-400 mr-2">✓</span>
-                  <span>Council Mode (multi-AI perspectives)</span>
-                </li>
-                <li className="flex items-start">
-                  <span className="text-green-400 mr-2">✓</span>
-                  <span>AI-generated insights (daily/weekly)</span>
-                </li>
-                <li className="flex items-start">
-                  <span className="text-green-400 mr-2">✓</span>
-                  <span>Portfolio snapshots & export data</span>
-                </li>
-                <li className="flex items-start">
-                  <span className="text-green-400 mr-2">✓</span>
-                  <span>Priority support (24h response)</span>
-                </li>
-                <li className="flex items-start">
-                  <span className="text-green-400 mr-2">✓</span>
-                  <span>Ad-free experience</span>
-                </li>
-              </ul>
-              <a
-                href="/pricing"
-                className="block w-full text-center py-3 px-4 rounded-lg bg-gradient-to-r from-red-600 to-red-500 hover:from-red-500 hover:to-red-600 transition-all font-semibold shadow-lg shadow-red-500/50"
-              >
-                Upgrade to Pro
-              </a>
-            </Card>
-          </div>
-
-          <div className="mt-8 text-center text-gray-400 text-sm">
-            <p>All plans include 2 months free on yearly billing</p>
-          </div>
-        </div>
-      </section>
-
-      {/* Trust & Stats Section */}
-      <section className="py-16 px-4 border-t border-white/10">
-        <div className="max-w-4xl mx-auto">
-          <div className="grid md:grid-cols-3 gap-8 text-center">
-            <div>
-              <div className="flex justify-center mb-2">
-                <Users className="w-8 h-8 text-red-500" />
-              </div>
-              <div className="text-3xl font-bold mb-1">20,000+</div>
-              <div className="text-gray-400">Cryptocurrencies Tracked</div>
-            </div>
-            <div>
-              <div className="flex justify-center mb-2">
-                <Globe className="w-8 h-8 text-red-500" />
-              </div>
-              <div className="text-3xl font-bold mb-1">100+</div>
-              <div className="text-gray-400">Languages Supported</div>
-            </div>
-            <div>
-              <div className="flex justify-center mb-2">
-                <DollarSign className="w-8 h-8 text-red-500" />
-              </div>
-              <div className="text-3xl font-bold mb-1">$12</div>
-              <div className="text-gray-400">vs $29-49 Competitors</div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Final CTA Section */}
-      <section className="py-20 px-4 border-t border-white/10 bg-gradient-to-b from-red-950/20 to-black">
-        <div className="max-w-4xl mx-auto text-center">
-          <h2 className="text-4xl md:text-5xl font-bold mb-6">
-            Ready to Track Smarter?
-          </h2>
-          <p className="text-xl text-gray-400 mb-8 max-w-2xl mx-auto">
-            Join crypto investors worldwide who trust KryptoTrac for real-time tracking and AI-powered insights.
+          <h1 className="text-5xl md:text-6xl font-bold tracking-tighter mb-4 neon-text">
+            POCKET<br/>SIZE<br/>POWER.
+          </h1>
+          
+          <p className="text-muted-foreground text-sm font-mono max-w-[280px] mx-auto mb-8">
+            The advanced crypto tracker that fits in your pocket. AI-powered. Hardware-grade security.
           </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <a
-              href="/auth/signup"
-              className="inline-flex items-center justify-center px-8 py-3 rounded-lg bg-gradient-to-r from-red-600 to-red-500 hover:from-red-500 hover:to-red-600 transition-all font-semibold text-lg shadow-lg shadow-red-500/50"
-            >
-              Start Free Today
-            </a>
-            <a
-              href="/pricing"
-              className="inline-flex items-center justify-center px-8 py-3 rounded-lg border border-white/20 hover:bg-white/10 transition-all font-medium text-lg"
-            >
-              View Pricing
-            </a>
+
+          <div className="flex flex-col gap-4 max-w-xs mx-auto">
+             <Button className="h-12 rounded-xl bg-cyan-500 text-black font-bold text-lg hover:shadow-[0_0_20px_rgba(6,182,212,0.5)] transition-all">
+               INITIALIZE SYSTEM ($0)
+             </Button>
+             <p className="text-[10px] text-muted-foreground">NO CREDIT CARD REQUIRED • HARDWARE ENCRYPTION</p>
           </div>
-          <p className="mt-6 text-sm text-gray-500">
-            No credit card required · Free forever plan available
-          </p>
-        </div>
-      </section>
-    </main>
-  )
+        </section>
+
+        {/* System Specs (Features) */}
+        <section className="space-y-4">
+          <div className="flex items-center justify-between px-2">
+            <h2 className="text-sm font-mono text-muted-foreground">SYSTEM_SPECS</h2>
+            <div className="h-px bg-white/10 flex-1 ml-4" />
+          </div>
+
+          <div className="grid grid-cols-2 gap-3">
+             {[
+               { icon: Cpu, label: "AI Core", sub: "Neural Engine 24/7", color: "text-cyan-400" },
+               { icon: Radio, label: "100+ Langs", sub: "Universal Translator", color: "text-purple-400" },
+               { icon: Fingerprint, label: "DeFi Ops", sub: "Deep Chain Analysis", color: "text-green-400" },
+               { icon: Lock, label: "Private", sub: "Local-First Data", color: "text-yellow-400" }
+             ].map((spec, i) => (
+               <Card 
+                  key={i} 
+                  className={`p-4 flex flex-col items-center text-center gap-2 transition-all duration-300 ${
+                      transparencyMode 
+                        ? "bg-black/10 border-white/5 backdrop-blur-none" 
+                        : "glass-panel hover:bg-white/5"
+                  }`}
+               >
+                 <spec.icon className={`w-6 h-6 ${spec.color}`} />
+                 <span className="text-xs font-bold text-white">{spec.label}</span>
+                 <span className="text-[10px] text-muted-foreground leading-tight">{spec.sub}</span>
+               </Card>
+             ))}
+          </div>
+        </section>
+
+        {/* Pricing Interface */}
+        <section className="space-y-4 pb-10">
+          <div className="flex items-center justify-between px-2">
+            <h2 className="text-sm font-mono text-muted-foreground">AVAILABLE_UPGRADES</h2>
+            <div className="h-px bg-white/10 flex-1 ml-4" />
+          </div>
+
+          <Card className={`relative overflow-hidden border-cyan-500/30 transition-all duration-500 ${transparencyMode ? "bg-black/20" : "bg-black/60"}`}>
+             {/* Scanning Line Animation */}
+             <div className="absolute inset-0 bg-gradient-to-b from-transparent via-cyan-500/10 to-transparent h-[50%] animate-scan pointer-events-none" />
+             
+             <div className="p-6 relative z-10">
+               <div className="flex justify-between items-start mb-4">
+                 <div>
+                   <h3 className="text-xl font-bold text-white">PRO_FIRMWARE</h3>
+                   <span className="text-[10px] font-mono text-cyan-400 bg-cyan-500/10 px-2 py-0.5 rounded border border-cyan-500/20">EARLY ACCESS</span>
+                 </div>
+                 <div className="text-right">
+                   <span className="text-3xl font-bold text-white text-shadow-neon">$4.99</span>
+                   <span className="text-[10px] text-muted-foreground block">/ MO</span>
+                 </div>
+               </div>
+
+               <div className="space-y-3 mb-6">
+                 {['Unlimited AI Queries', 'Multi-Chain Tracking', 'Priority Neural Net'].map((feat) => (
+                   <div key={feat} className="flex items-center gap-2 text-xs text-gray-300">
+                     <span className="w-1.5 h-1.5 bg-cyan-500 rounded-full shadow-[0_0_5px_rgba(6,182,212,1)]" />
+                     {feat}
+                   </div>
+                 ))}
+               </div>
+
+               <Button className="w-full bg-cyan-950/30 border border-cyan-500/30 hover:bg-cyan-500 hover:text-black hover:border-cyan-400 transition-all duration-300 font-mono text-xs h-10 text-cyan-400">
+                 INSTALL_UPDATE &gt;&gt;
+               </Button>
+             </div>
+          </Card>
+        </section>
+
+      </div>
+    </HardwareContainer>
+  );
 }
+
+// Add custom animation for scanning line if not present in tailwind config
+// We can assume standard tailwind setup, but 'animate-scan' might be missing. 
+// Using basic classes for now or relying on motion if needed in future steps.

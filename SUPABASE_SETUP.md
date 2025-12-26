@@ -30,8 +30,10 @@ NEXT_PUBLIC_SUPABASE_URL=https://hiuemmkhwiaarpdyncgj.supabase.co
 NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-public-key-here
 SUPABASE_SERVICE_ROLE_KEY=your-service-role-secret-key-here
 
-# CoinGecko API (already configured)
-COINGECKO_API_KEY=CG-3SvnagJo5kkEe7DAMPwPsc1U
+# CoinGecko API
+# IMPORTANT: Do not hardcode the API key here.
+# Store it in your .env.local file.
+COINGECKO_API_KEY=your-coingecko-api-key-here
 
 # Other required keys...
 # (Add Stripe, etc. as needed)
