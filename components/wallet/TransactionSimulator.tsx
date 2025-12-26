@@ -8,6 +8,7 @@ import { Label } from "@/components/ui/label"
 import { AlertTriangle, CheckCircle, ArrowRight, Shield, Activity, Loader2 } from "lucide-react"
 import { simulateTransaction } from "@/lib/simulation/alchemy"
 import { SimulationResult } from "@/types/simulation"
+import styles from './TransactionSimulator.module.css'
 
 export function TransactionSimulator() {
   const [toAddress, setToAddress] = useState('')
@@ -39,98 +40,104 @@ export function TransactionSimulator() {
     }
   }
 
+  const isDanger = result && !result.success;
+
   return (
-    <div className="bg-black/40 backdrop-blur-xl border border-white/10 rounded-2xl p-6 max-w-md w-full mx-auto">
-      <div className="flex items-center justify-between mb-6">
-        <div>
-          <h2 className="text-xl font-bold text-white uppercase tracking-widest flex items-center gap-2">
-            <Shield className="w-5 h-5 text-cyan-400" />
-            Simulate_Tx
-          </h2>
-          <p className="text-white/40 text-xs font-mono mt-1">Safety Check Before Signing</p>
-        </div>
+    <div className={`${styles.cyberContainer} ${isDanger ? styles.dangerState : ''} max-w-md w-full mx-auto`}>
+      {/* Decorative Circuit Lines */}
+      <div className={styles.circuitLineTop} />
+      <div className={styles.circuitLineBottom} />
+
+      <div className={styles.headerPlate}>
+        <span className="flex items-center gap-2">
+          <Shield className="w-4 h-4" />
+          SIM_PROTOCOL_V1
+        </span>
+        <div className={styles.statusLight} />
       </div>
 
-      <div className="space-y-4">
+      <div className="space-y-4 mb-6">
         <div>
-          <Label className="text-white/60 text-xs uppercase tracking-wider">Recipient Address</Label>
+          <Label className={styles.microLabel}>TARGET_ADDRESS_HEX</Label>
           <Input
             value={toAddress}
             onChange={(e) => setToAddress(e.target.value)}
             placeholder="0x..."
-            className="bg-white/5 border-white/10 text-white font-mono mt-1"
+            className={styles.cyberInput}
           />
         </div>
 
         <div>
-          <Label className="text-white/60 text-xs uppercase tracking-wider">Amount (ETH)</Label>
+          <Label className={styles.microLabel}>VALUE_ETH</Label>
           <Input
             type="number"
             value={amount}
             onChange={(e) => setAmount(e.target.value)}
             placeholder="0.0"
-            className="bg-white/5 border-white/10 text-white font-mono mt-1"
+            className={styles.cyberInput}
           />
         </div>
 
         <Button
           onClick={handleSimulate}
           disabled={simulating || !toAddress || !amount}
-          className="w-full bg-cyan-600 hover:bg-cyan-700 text-white font-mono uppercase tracking-wider"
+          className={`w-full ${styles.cyberButton}`}
         >
           {simulating ? (
             <>
               <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-              Simulating...
+              PROCESSING...
             </>
           ) : (
             <>
               <Activity className="w-4 h-4 mr-2" />
-              Run Simulation
+              EXECUTE_SIMULATION
             </>
           )}
         </Button>
       </div>
 
       {result && (
-        <div className={`mt-6 p-4 rounded-xl border ${result.success ? 'bg-green-500/10 border-green-500/30' : 'bg-red-500/10 border-red-500/30'}`}>
-          <div className="flex items-center gap-2 mb-3">
+        <div className={`mt-6 pt-4 border-t ${isDanger ? 'border-red-500/30' : 'border-cyan-500/30'}`}>
+          <div className="flex items-center gap-2 mb-4">
             {result.success ? (
               <CheckCircle className="w-5 h-5 text-green-400" />
             ) : (
               <AlertTriangle className="w-5 h-5 text-red-400" />
             )}
-            <span className={`font-bold uppercase tracking-wider ${result.success ? 'text-green-400' : 'text-red-400'}`}>
-              {result.success ? 'Likely Success' : 'Likely Failure'}
+            <span className={`font-bold tracking-widest ${result.success ? 'text-green-400' : 'text-red-400'}`}>
+              {result.success ? 'SIMULATION_CLEAN' : 'CRITICAL_FAILURE'}
             </span>
           </div>
 
           {result.error && (
-            <p className="text-red-300 text-sm font-mono mb-2">{result.error}</p>
+            <p className="text-red-400 text-sm font-mono mb-4 border border-red-500/30 p-2 bg-red-500/10">
+              ERR: {result.error}
+            </p>
           )}
 
           {result.assetChanges.length > 0 && (
             <div className="space-y-2">
-              <p className="text-white/60 text-xs uppercase tracking-widest mb-2">Asset Changes:</p>
+              <p className={styles.microLabel}>DETECTED_ASSET_FLOW:</p>
               {result.assetChanges.map((change, idx) => (
-                <div key={idx} className="flex items-center justify-between bg-black/20 p-2 rounded border border-white/5">
+                <div key={idx} className={styles.assetRow}>
                   <div className="flex items-center gap-2">
-                    <span className={`text-xs px-1.5 py-0.5 rounded ${change.changeType === 'OUT' ? 'bg-red-500/20 text-red-400' : 'bg-green-500/20 text-green-400'}`}>
-                      {change.changeType}
+                    <span className={change.changeType === 'IN' ? styles.plusIcon : styles.minusIcon}>
+                      {change.changeType === 'IN' ? '+' : '-'}
                     </span>
-                    <span className="text-white font-mono text-sm">{change.amount} {change.symbol}</span>
+                    <span>{change.amount} {change.symbol}</span>
                   </div>
                   {change.changeType === 'OUT' && (
-                    <ArrowRight className="w-4 h-4 text-white/20" />
+                    <ArrowRight className="w-4 h-4 opacity-50" />
                   )}
                 </div>
               ))}
             </div>
           )}
 
-          <div className="mt-3 pt-3 border-t border-white/10 flex justify-between text-xs font-mono text-white/40">
-            <span>Gas: {result.gasUsed}</span>
-            <span>ID: {result.simulationId.slice(0, 8)}...</span>
+          <div className="mt-4 pt-2 flex justify-between text-[10px] opacity-50 font-mono border-t border-dashed border-cyan-500/30">
+            <span>GAS_EST: {result.gasUsed}</span>
+            <span>SID: {result.simulationId.slice(0, 8)}</span>
           </div>
         </div>
       )}
