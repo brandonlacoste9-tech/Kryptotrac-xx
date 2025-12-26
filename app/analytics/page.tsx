@@ -16,6 +16,7 @@ import {
   ArcElement,
 } from "chart.js"
 import { User } from "@supabase/supabase-js"
+import Decimal from "decimal.js"
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend, ArcElement)
 
@@ -110,10 +111,19 @@ export default function AnalyticsPage() {
     )
   }
 
-  const totalValue = holdings.reduce((sum, h) => sum + (h.current_price || 0) * h.quantity, 0)
-  const totalCost = holdings.reduce((sum, h) => sum + h.purchase_price * h.quantity, 0)
-  const totalGain = totalValue - totalCost
-  const totalGainPercent = totalCost > 0 ? (totalGain / totalCost) * 100 : 0
+  // Safe Math with Decimal.js
+  const totalValue = holdings.reduce((sum, h) => {
+    const val = new Decimal(h.quantity).times(h.current_price || 0)
+    return new Decimal(sum).plus(val).toNumber()
+  }, 0)
+
+  const totalCost = holdings.reduce((sum, h) => {
+    const val = new Decimal(h.quantity).times(h.purchase_price)
+    return new Decimal(sum).plus(val).toNumber()
+  }, 0)
+
+  const totalGain = new Decimal(totalValue).minus(totalCost).toNumber()
+  const totalGainPercent = totalCost > 0 ? new Decimal(totalGain).div(totalCost).times(100).toNumber() : 0
 
   const lineChartData = {
     labels: snapshots.map((s) => new Date(s.snapshot_date).toLocaleDateString()),
@@ -133,7 +143,7 @@ export default function AnalyticsPage() {
     labels: holdings.map((h) => h.coin_name),
     datasets: [
       {
-        data: holdings.map((h) => (h.current_price || 0) * h.quantity),
+        data: holdings.map((h) => new Decimal(h.current_price || 0).times(h.quantity).toNumber()),
         backgroundColor: [
           "rgba(239, 68, 68, 0.8)",
           "rgba(249, 115, 22, 0.8)",
@@ -265,16 +275,19 @@ export default function AnalyticsPage() {
               <h2 className="text-xl font-bold mb-4">Top Holdings</h2>
               <div className="space-y-4">
                 {holdings
-                  .sort((a, b) => (b.current_price || 0) * b.quantity - (a.current_price || 0) * a.quantity)
+                  .sort((a, b) => {
+                    const valA = new Decimal(a.quantity).times(a.current_price || 0).toNumber()
+                    const valB = new Decimal(b.quantity).times(b.current_price || 0).toNumber()
+                    return valB - valA
+                  })
                   .slice(0, 5)
                   .map((holding) => {
-                    const value = (holding.current_price || 0) * holding.quantity
-                    const percentage = totalValue > 0 ? (value / totalValue) * 100 : 0
-                    const gain = value - holding.purchase_price * holding.quantity
-                    const gainPercent =
-                      holding.purchase_price * holding.quantity > 0
-                        ? (gain / (holding.purchase_price * holding.quantity)) * 100
-                        : 0
+                    const value = new Decimal(holding.quantity).times(holding.current_price || 0).toNumber()
+                    const percentage = totalValue > 0 ? new Decimal(value).div(totalValue).times(100).toNumber() : 0
+
+                    const cost = new Decimal(holding.quantity).times(holding.purchase_price).toNumber()
+                    const gain = new Decimal(value).minus(cost).toNumber()
+                    const gainPercent = cost > 0 ? new Decimal(gain).div(cost).times(100).toNumber() : 0
 
                     return (
                       <div key={holding.id} className="flex items-center gap-4">
