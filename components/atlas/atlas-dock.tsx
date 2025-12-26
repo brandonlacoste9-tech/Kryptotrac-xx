@@ -20,6 +20,15 @@ export function AtlasDock() {
     const checkTips = async () => {
       try {
         const res = await fetch('/api/bb/tips')
+
+        // Silently handle unauthorized (guest) or other non-ok states
+        if (!res.ok) {
+          if (res.status === 401) return
+          // eslint-disable-next-line no-console
+          console.warn('[APEX Dock] Failed to fetch tips:', res.status)
+          return
+        }
+
         const data = await res.json()
         if (data.tips && data.tips.length > 0) {
           setUnreadTips(data.tips.length)
@@ -29,7 +38,7 @@ export function AtlasDock() {
         }
       } catch (error) {
         // eslint-disable-next-line no-console
-        console.error('[APEX Dock] Failed to check tips:', error)
+        console.error('[APEX Dock] Error checking tips:', error)
       }
     }
 
