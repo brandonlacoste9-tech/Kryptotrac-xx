@@ -1,0 +1,54 @@
+{
+  "sorted_middleware": [
+    "/api/og/portfolio/route"
+  ],
+  "middleware": {},
+  "instrumentation": null,
+  "functions": {
+    "/api/og/portfolio/route": {
+      "files": [
+        "server/middleware-build-manifest.js",
+        "server/interception-route-rewrite-manifest.js",
+        "server/server-reference-manifest.js",
+        "server/app/api/og/portfolio/route_client-reference-manifest.js",
+        "server/edge/chunks/4f6d9__next-internal_server_app_api_og_portfolio_route_actions_4e090eee.js",
+        "server/edge/chunks/[root-of-the-server]__6e61f44c._.js",
+        "server/edge/chunks/1cfab_next_dist_esm_build_templates_edge-app-route_15aa9579.js",
+        "server/edge/chunks/3d031__pnpm_05dbf78f._.js",
+        "server/edge/chunks/1cfab_next_dist_compiled_@vercel_og_293f258e._.js",
+        "server/edge/chunks/turbopack-Kryptotrac-xx-1_edge-wrapper_e3b60092.js"
+      ],
+      "name": "app/api/og/portfolio/route",
+      "page": "/api/og/portfolio/route",
+      "matchers": [
+        {
+          "regexp": "^/api/og/portfolio(?:/)?$",
+          "originalSource": "/api/og/portfolio"
+        }
+      ],
+      "wasm": [
+        {
+          "name": "wasm_fdb56e4cc5936d29",
+          "filePath": "server/edge/chunks/1cfab_next_dist_compiled_@vercel_og_resvg_23ace1ce.wasm"
+        },
+        {
+          "name": "wasm_1ccdc983b1fd9f87",
+          "filePath": "server/edge/chunks/1cfab_next_dist_compiled_@vercel_og_yoga_23ace1ce.wasm"
+        }
+      ],
+      "assets": [
+        {
+          "name": "server/edge/assets/noto-sans-v27-latin-regular.bdfa676c.ttf",
+          "filePath": "server/edge/assets/noto-sans-v27-latin-regular.bdfa676c.ttf"
+        }
+      ],
+      "env": {
+        "__NEXT_BUILD_ID": "uA3tUGXWZ9OVST3Zof3r6",
+        "NEXT_SERVER_ACTIONS_ENCRYPTION_KEY": "dt5QxvGLWqEuYzDwm0a0DzgLf+5M8lPQGzra27A2qSA=",
+        "__NEXT_PREVIEW_MODE_ID": "a06aac3103976ee8c2283a08c26e362d",
+        "__NEXT_PREVIEW_MODE_ENCRYPTION_KEY": "2677014ee2a2a6f99a88328f6b1272c02bd07e2294a62036953b5e4c40f0ccd5",
+        "__NEXT_PREVIEW_MODE_SIGNING_KEY": "cf444b51ad91557ab3748d76dbb57a3392939bf18dd163ca2f60daaa25b3f3fd"
+      }
+    }
+  }
+}

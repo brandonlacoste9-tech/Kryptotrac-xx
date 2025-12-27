@@ -1,368 +1,347 @@
-# Quick Reference Guide
+# Quick Reference Guide - Bug & Feature Tracking
 
-Essential commands and information for KryptoTrac developers.
+Quick reference for common tasks in the Zyeuté V3 bug and feature tracking system.
 
-## Installation & Setup
+## 🚀 Common Tasks
 
-```bash
-# Clone repository
-git clone https://github.com/brandonlacoste9-tech/Kryptotrac-xx.git
-cd Kryptotrac-xx
-
-# Install dependencies
-npm install
-
-# Set up environment
-cp .env.example .env.local
-# Edit .env.local with your keys
-
-# Start development server
-npm run dev
-```
-
-## Essential Commands
-
-### Development
-```bash
-npm run dev          # Start dev server (http://localhost:3000)
-npm run build        # Build for production
-npm run start        # Run production build locally
-```
-
-### Code Quality
-```bash
-npm run lint         # Run ESLint
-npm run lint -- --fix # Auto-fix linting issues
-```
-
-### Testing
-```bash
-npm run test                    # Run all tests
-npm run test:watch              # Watch mode
-npm run test:e2e                # E2E tests only
-npm run test:integration        # Integration tests only
-npm run test:all                # With coverage report
-```
-
-## Project Structure
-
-```
-Kryptotrac-xx/
-├── app/                    # Next.js App Router
-│   ├── api/               # API routes
-│   ├── auth/              # Auth pages (login, signup)
-│   ├── dashboard/         # Main app dashboard
-│   ├── atlas/             # BB chat interface
-│   └── pricing/           # Subscription plans
-├── components/            # React components
-│   ├── ui/               # Reusable UI components
-│   ├── atlas/            # BB-related components
-│   └── watchlist/        # Portfolio components
-├── lib/                   # Utility functions
-│   ├── supabase/         # Database clients
-│   ├── coingecko.ts      # Crypto API
-│   └── utils.ts          # Helper functions
-├── config/                # Configuration files
-├── scripts/               # Database migrations
-├── tests/                 # Test files
-├── public/                # Static assets
-└── styles/                # Global styles
-```
-
-## Key Files
-
-| File | Purpose |
-|------|---------|
-| `app/layout.tsx` | Root layout, providers |
-| `app/page.tsx` | Landing page |
-| `middleware.ts` | Auth middleware |
-| `next.config.mjs` | Next.js configuration |
-| `tsconfig.json` | TypeScript configuration |
-| `.env.local` | Environment variables (local) |
-| `.env.example` | Environment template |
-
-## Environment Variables
-
-### Required
-```env
-# Supabase
-NEXT_PUBLIC_SUPABASE_URL=https://xxx.supabase.co
-NEXT_PUBLIC_SUPABASE_ANON_KEY=xxx
-SUPABASE_SERVICE_ROLE_KEY=xxx
-
-# Stripe (optional)
-NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=pk_test_xxx
-STRIPE_SECRET_KEY=sk_test_xxx
-STRIPE_WEBHOOK_SECRET=whsec_xxx
-```
-
-### Optional
-```env
-COINGECKO_API_KEY=xxx
-NEXT_PUBLIC_SENTRY_DSN=xxx
-```
-
-## Database Migrations
-
-Run in this order:
-1. `PRE_LAUNCH_SECURITY_FIX.sql`
-2. `LAUNCH_READY_MIGRATION.sql`
-3. `013_add_bb_tips_table.sql`
-4. `014_add_onboarding_and_credits.sql`
-5. `015_add_referral_rpc.sql`
+### Report a Bug
 
 ```bash
-# Using Supabase CLI
-supabase db execute scripts/PRE_LAUNCH_SECURITY_FIX.sql
-supabase db execute scripts/LAUNCH_READY_MIGRATION.sql
-# ... etc
+# Via Web
+1. Go to: https://github.com/brandonlacoste9-tech/zyeute-v3/issues/new/choose
+2. Select "🐛 Bug Report"
+3. Fill out the form
+4. Submit
+
+# Via GitHub CLI
+gh issue create --title "[BUG] Brief description" \
+  --body "Detailed description" \
+  --label "bug,high"
 ```
 
-## Common Tasks
-
-### Add a New Page
-```typescript
-// app/my-page/page.tsx
-export default function MyPage() {
-  return <div>My Page Content</div>
-}
-```
-
-### Add an API Route
-```typescript
-// app/api/my-route/route.ts
-export async function GET(request: Request) {
-  return Response.json({ message: "Hello" })
-}
-```
-
-### Create a Component
-```typescript
-// components/my-component.tsx
-interface MyComponentProps {
-  title: string
-}
-
-export function MyComponent({ title }: MyComponentProps) {
-  return <div>{title}</div>
-}
-```
-
-### Query Supabase
-```typescript
-import { createClient } from '@/lib/supabase/client'
-
-const supabase = createClient()
-const { data, error } = await supabase
-  .from('table_name')
-  .select('*')
-  .eq('user_id', userId)
-```
-
-### Add Stripe Checkout
-```typescript
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!)
-const session = await stripe.checkout.sessions.create({
-  // ... checkout config
-})
-```
-
-## Debugging
-
-### Check Logs
-```bash
-# Development server logs
-# Check terminal where `npm run dev` is running
-
-# Production logs
-# Check Vercel Dashboard → Deployments → [deployment] → Logs
-```
-
-### Common Issues
-
-| Issue | Solution |
-|-------|----------|
-| Port 3000 in use | `lsof -ti:3000 \| xargs kill -9` |
-| Module not found | `rm -rf node_modules && npm install` |
-| Build fails | Check `npm run build` output |
-| Tests fail | Check `.env.local` has test keys |
-| Hot reload broken | Restart dev server |
-
-## Git Workflow
+### Request a Feature
 
 ```bash
-# Create feature branch
-git checkout -b feature/my-feature
+# Via Web
+1. Go to: https://github.com/brandonlacoste9-tech/zyeute-v3/issues/new/choose
+2. Select "✨ Feature Request"
+3. Fill out the form
+4. Submit
 
-# Make changes, commit
-git add .
-git commit -m "feat: add my feature"
-
-# Push and create PR
-git push origin feature/my-feature
+# Via GitHub CLI
+gh issue create --title "[FEATURE] Brief description" \
+  --body "Detailed description" \
+  --label "feature,medium"
 ```
 
-## Deployment
+### Check Issue Status
 
-### Vercel (Recommended)
 ```bash
-# Install Vercel CLI
-npm i -g vercel
+# List all open bugs
+gh issue list --label bug
 
-# Deploy
-vercel
+# List critical issues
+gh issue list --label critical
 
-# Production
-vercel --prod
+# List issues assigned to you
+gh issue list --assignee @me
+
+# List in-progress items
+gh issue list --label "in progress"
 ```
 
-### Manual Build
+### Update an Issue
+
 ```bash
-npm run build
-npm run start
+# Add a label
+gh issue edit 123 --add-label "critical"
+
+# Assign to someone
+gh issue edit 123 --add-assignee username
+
+# Change status (via label)
+gh issue edit 123 --add-label "in progress"
+
+# Close issue
+gh issue close 123
 ```
 
-## Testing
+## 📋 Label Reference
 
-### Write a Test
-```typescript
-// tests/e2e/my-feature.test.ts
-import { expect, test } from '@jest/globals'
+### Quick Label Guide
 
-test('my feature works', () => {
-  expect(true).toBe(true)
-})
-```
+| Label | When to Use |
+|-------|-------------|
+| `bug` | Something is broken |
+| `feature` | Requesting new functionality |
+| `enhancement` | Improving existing feature |
+| `critical` | Urgent, production broken |
+| `high` | Important, needs attention soon |
+| `medium` | Normal priority |
+| `low` | Nice to have |
+| `in progress` | Currently working on it |
+| `blocked` | Can't proceed |
+| `fixed` | Completed, awaiting verification |
+| `wontfix` | Not going to address |
 
-### Run Specific Tests
+### Apply Multiple Labels
+
 ```bash
-npm run test -- my-feature.test.ts
-npm run test -- --testNamePattern="my test"
+# Add several labels at once
+gh issue edit 123 --add-label "bug,critical,in progress"
 ```
 
-## Code Style
+## 🎯 Project Board
 
-### TypeScript
-```typescript
-// Use interfaces for props
-interface ComponentProps {
-  title: string
-  count: number
-}
+### Quick Board Reference
 
-// Use proper types
-const fetchData = async (): Promise<Data[]> => {
-  // ...
-}
+| Column | Meaning |
+|--------|---------|
+| **Backlog** | Identified, not prioritized |
+| **Todo** | Ready to work on |
+| **In Progress** | Actively being developed |
+| **Review** | In code review/testing |
+| **Done** | Completed and merged |
+| **Blocked** | Waiting on dependencies |
 
-// Avoid 'any'
-const value: string = "hello" // Good
-const value: any = "hello"    // Avoid
-```
+### Common Workflows
 
-### Components
-```typescript
-// Use named exports
-export function MyComponent() { }
+**Starting work on an issue:**
+1. Assign yourself: `gh issue edit 123 --add-assignee @me`
+2. Add label: `gh issue edit 123 --add-label "in progress"`
+3. Move to "In Progress" on board (may auto-move)
 
-// Use TypeScript props
-export function MyComponent({ title }: { title: string }) { }
-```
+**Completing work:**
+1. Open PR and link issue: "Fixes #123"
+2. PR will auto-move to "Review"
+3. When merged, auto-moves to "Done"
 
-### API Routes
-```typescript
-// Use proper HTTP methods
-export async function GET() { }
-export async function POST() { }
+## 📊 Useful Queries
 
-// Return proper responses
-return Response.json({ data })
-return new Response("Error", { status: 500 })
-```
+### Find Work to Do
 
-## Useful Links
-
-| Resource | URL |
-|----------|-----|
-| Live App | https://kryptotrac-xx.vercel.app |
-| Supabase Dashboard | https://supabase.com/dashboard |
-| Stripe Dashboard | https://dashboard.stripe.com |
-| Vercel Dashboard | https://vercel.com/dashboard |
-| CoinGecko API Docs | https://www.coingecko.com/en/api/documentation |
-| Next.js Docs | https://nextjs.org/docs |
-| Radix UI Docs | https://www.radix-ui.com/docs |
-
-## Keyboard Shortcuts (VS Code)
-
-| Shortcut | Action |
-|----------|--------|
-| `Cmd/Ctrl + P` | Quick file open |
-| `Cmd/Ctrl + Shift + P` | Command palette |
-| `Cmd/Ctrl + B` | Toggle sidebar |
-| `Cmd/Ctrl + J` | Toggle terminal |
-| `Cmd/Ctrl + \`` | Open terminal |
-| `F2` | Rename symbol |
-| `Cmd/Ctrl + D` | Select next occurrence |
-
-## Tips & Tricks
-
-### Fast Iteration
 ```bash
-# Use watch mode for tests
-npm run test:watch
+# Good first issues
+gh issue list --label "good first issue"
 
-# Keep dev server running
-npm run dev
-# Edit files, save, see changes instantly
+# Help wanted
+gh issue list --label "help wanted"
+
+# Unassigned high priority
+gh issue list --label high --json number,title,assignees | \
+  jq '.[] | select(.assignees | length == 0)'
+
+# My assigned issues
+gh issue list --assignee @me --state open
 ```
 
-### Debug API Routes
-```typescript
-// Add console.logs
-console.log('Request:', request)
-console.log('Data:', data)
+### Check Progress
 
-// Check logs in terminal
-```
-
-### Check Database
-```sql
--- In Supabase SQL Editor
-SELECT * FROM profiles LIMIT 10;
-SELECT * FROM user_watchlists WHERE user_id = 'xxx';
-```
-
-### Test Webhooks Locally
 ```bash
-# Install Stripe CLI
-stripe listen --forward-to localhost:3000/api/webhooks/stripe
+# Issues opened this week
+gh issue list --search "created:>=2024-12-07"
 
-# In another terminal, trigger events
-stripe trigger payment_intent.succeeded
+# Issues closed this week
+gh issue list --state closed --search "closed:>=2024-12-07"
+
+# Blocked items
+gh issue list --label blocked
+
+# Overdue items (no activity in 7 days)
+gh issue list --search "updated:<2024-12-07"
 ```
 
-## Performance Tips
+## 🔍 Search Patterns
 
-1. **Use Next.js Image**: `import Image from 'next/image'`
-2. **Lazy load components**: `const Component = lazy(() => import('./Component'))`
-3. **Cache API calls**: Use React Query or SWR
-4. **Optimize images**: Use WebP format
-5. **Add database indexes**: For frequently queried columns
+### GitHub Issue Search Syntax
 
-## Security Checklist
+```bash
+# By label
+gh issue list --search "label:bug"
+gh issue list --search "label:critical label:bug"
 
-- [ ] Never commit `.env.local`
-- [ ] Use environment variables for secrets
-- [ ] Validate all user input
-- [ ] Use RLS policies in Supabase
-- [ ] Test with Stripe test keys first
-- [ ] Enable HTTPS in production
-- [ ] Use `SUPABASE_SERVICE_ROLE_KEY` only server-side
+# By date
+gh issue list --search "created:>=2024-12-01"
+gh issue list --search "updated:<2024-12-01"
 
-## Need More Help?
+# By assignee
+gh issue list --search "assignee:username"
+gh issue list --search "no:assignee"
 
-- 📖 [Full Documentation](./README.md)
-- 🚀 [Getting Started](./GETTING_STARTED.md)
-- 🐛 [Troubleshooting](./TROUBLESHOOTING.md)
-- 💬 [GitHub Discussions](https://github.com/brandonlacoste9-tech/Kryptotrac-xx/discussions)
-- 🐞 [Open an Issue](https://github.com/brandonlacoste9-tech/Kryptotrac-xx/issues)
+# By status
+gh issue list --search "is:open"
+gh issue list --search "is:closed"
+
+# Combined
+gh issue list --search "is:open label:bug assignee:@me"
+```
+
+## 📝 Update BUG_TRACKER.md
+
+### Quick Update Template
+
+```markdown
+### Bug/Feature #X: Title
+
+| Property | Value |
+|----------|-------|
+| **Status** | 🔄 In Progress |
+| **Updated** | 2024-12-14 |
+
+**Recent Update**: Brief note about what changed
+```
+
+### Status Emojis
+
+- 🆕 Backlog
+- 📋 Todo
+- 🔄 In Progress
+- 👀 Review
+- ✅ Fixed/Done
+- 🚫 Blocked
+- ❌ Wontfix
+
+## ⚡ Quick Fixes
+
+### Issue Template Not Showing
+- Clear browser cache
+- Check file syntax: `yamllint .github/ISSUE_TEMPLATE/*.yml`
+- Verify files are in correct directory
+
+### Label Not Auto-Applying
+- Check template `labels:` field matches exactly
+- Ensure label exists in repo: `gh label list`
+
+### Board Not Updating
+- Check column automation settings
+- Manually move: Drag & drop on web interface
+
+## 🛠️ Installation & Setup
+
+### Install GitHub CLI (if needed)
+
+```bash
+# macOS
+brew install gh
+
+# Ubuntu/Debian
+sudo apt install gh
+
+# Windows
+winget install GitHub.cli
+
+# Login
+gh auth login
+```
+
+### Set Repository Context
+
+```bash
+# Clone repo
+git clone https://github.com/brandonlacoste9-tech/zyeute-v3.git
+cd zyeute-v3
+
+# Set as default repo for gh commands
+gh repo set-default
+```
+
+## 📚 Documentation Links
+
+### Essential Docs
+- [BUG_TRACKER.md](../BUG_TRACKER.md) - Live issue tracking
+- [LABELS.md](LABELS.md) - Complete label guide
+- [SAMPLE_ISSUES.md](SAMPLE_ISSUES.md) - Example issues
+- [PROJECT_BOARD.md](PROJECT_BOARD.md) - Board documentation
+- [MAINTENANCE.md](MAINTENANCE.md) - Maintenance procedures
+- [CONTRIBUTING.md](../CONTRIBUTING.md) - Contribution guide
+
+### Quick Links
+- [Create Issue](https://github.com/brandonlacoste9-tech/zyeute-v3/issues/new/choose)
+- [View All Issues](https://github.com/brandonlacoste9-tech/zyeute-v3/issues)
+- [Project Board](https://github.com/brandonlacoste9-tech/zyeute-v3/projects)
+- [Discussions](https://github.com/brandonlacoste9-tech/zyeute-v3/discussions)
+
+## 💡 Tips & Tricks
+
+### For Developers
+- Always link PRs to issues: "Fixes #123" in PR description
+- Update issue comments with progress notes
+- Add screenshots when fixing UI bugs
+- Test thoroughly before moving to Review
+
+### For Project Managers
+- Review new issues daily
+- Keep BUG_TRACKER.md updated
+- Groom backlog weekly
+- Communicate blockers immediately
+
+### For Everyone
+- Search before creating duplicate issues
+- Use clear, descriptive titles
+- Add all relevant context upfront
+- Be responsive to questions/feedback
+- Keep discussions professional and constructive
+
+## 🎓 Training Resources
+
+### New to GitHub Issues?
+- [GitHub Issues Docs](https://docs.github.com/en/issues)
+- [GitHub CLI Manual](https://cli.github.com/manual/)
+- [Markdown Guide](https://www.markdownguide.org/)
+
+### New to Zyeuté V3?
+- Read [README.md](../README.md)
+- Review [CONTRIBUTING.md](../CONTRIBUTING.md)
+- Browse existing issues to understand patterns
+- Start with "good first issue" labeled items
+
+## 🆘 Getting Help
+
+**Can't find what you need?**
+
+1. Check [MAINTENANCE.md](MAINTENANCE.md) for detailed procedures
+2. Search [closed issues](https://github.com/brandonlacoste9-tech/zyeute-v3/issues?q=is%3Aissue+is%3Aclosed) for similar cases
+3. Ask in [Discussions](https://github.com/brandonlacoste9-tech/zyeute-v3/discussions)
+4. Contact project maintainers
+
+**Common Questions:**
+
+Q: How do I get assigned to an issue?
+A: Comment on the issue expressing interest, or assign yourself with `gh issue edit NUMBER --add-assignee @me`
+
+Q: How do I know what to work on?
+A: Check "good first issue" and "help wanted" labels, or ask in discussions
+
+Q: How long should I wait for review?
+A: Typically 1-3 days. If longer, add a comment requesting review
+
+Q: Can I work on something not in the tracker?
+A: Yes! Create an issue first to discuss, then proceed if approved
+
+## 📞 Contacts
+
+- **Project Repository**: [zyeute-v3](https://github.com/brandonlacoste9-tech/zyeute-v3)
+- **Issue Tracker**: [Issues](https://github.com/brandonlacoste9-tech/zyeute-v3/issues)
+- **Discussions**: [Discussions](https://github.com/brandonlacoste9-tech/zyeute-v3/discussions)
+
+---
+
+## 🔖 Bookmarks
+
+Save these for quick access:
+- 📝 [Create New Issue](https://github.com/brandonlacoste9-tech/zyeute-v3/issues/new/choose)
+- 🐛 [View Bugs](https://github.com/brandonlacoste9-tech/zyeute-v3/issues?q=is%3Aissue+is%3Aopen+label%3Abug)
+- ✨ [View Features](https://github.com/brandonlacoste9-tech/zyeute-v3/issues?q=is%3Aissue+is%3Aopen+label%3Afeature)
+- 🔴 [Critical Issues](https://github.com/brandonlacoste9-tech/zyeute-v3/issues?q=is%3Aissue+is%3Aopen+label%3Acritical)
+- 📊 [Project Board](https://github.com/brandonlacoste9-tech/zyeute-v3/projects)
+- 📋 [BUG_TRACKER.md](../BUG_TRACKER.md)
+
+---
+
+**Version**: 1.0  
+**Last Updated**: December 14, 2024  
+**Print-friendly**: Yes - Keep handy for reference!
+
+---
+
+*Made with ❤️ for Quebec | Fait avec ❤️ pour le Québec 🇨🇦⚜️*

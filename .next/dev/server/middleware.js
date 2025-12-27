@@ -1,0 +1,10 @@
+var R=require("./chunks/[turbopack]_runtime.js")("server/middleware.js")
+R.c("server/chunks/1cfab_next_44addf31._.js")
+R.c("server/chunks/ed60d_@opentelemetry_api_build_esm_eaa3d788._.js")
+R.c("server/chunks/b67b1_@supabase_realtime-js_dist_module_cd4655b3._.js")
+R.c("server/chunks/db4f9_@supabase_storage-js_dist_module_99843f43._.js")
+R.c("server/chunks/e62ec_@supabase_auth-js_dist_module_7ad984b3._.js")
+R.c("server/chunks/3d031__pnpm_a00f8473._.js")
+R.c("server/chunks/[root-of-the-server]__8cd49177._.js")
+R.m("[project]/Kryptotrac-xx-1/node_modules/.pnpm/next@16.0.10_@babel+core@7.28.5_@opentelemetry+api@1.9.0_@playwright+test@1.57.0_react-dom@19_63zoi4wc6wwg4seoasebox6ruu/node_modules/next/dist/esm/build/templates/middleware.js { INNER_MIDDLEWARE_MODULE => \"[project]/Kryptotrac-xx-1/proxy.ts [middleware] (ecmascript)\" } [middleware] (ecmascript)")
+module.exports=R.m("[project]/Kryptotrac-xx-1/node_modules/.pnpm/next@16.0.10_@babel+core@7.28.5_@opentelemetry+api@1.9.0_@playwright+test@1.57.0_react-dom@19_63zoi4wc6wwg4seoasebox6ruu/node_modules/next/dist/esm/build/templates/middleware.js { INNER_MIDDLEWARE_MODULE => \"[project]/Kryptotrac-xx-1/proxy.ts [middleware] (ecmascript)\" } [middleware] (ecmascript)").exports

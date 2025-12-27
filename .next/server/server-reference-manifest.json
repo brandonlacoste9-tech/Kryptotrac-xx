@@ -1,0 +1,21 @@
+{
+  "node": {
+    "603ff138660e11181c7c89749bd99574338107b249": {
+      "workers": {
+        "app/upgrade/page": {
+          "moduleId": 80089,
+          "async": false,
+          "exportedName": "createCheckoutSession",
+          "filename": "Kryptotrac-xx-1/app/actions/stripe.ts"
+        }
+      },
+      "layer": {
+        "app/upgrade/page": "action-browser"
+      },
+      "filename": "Kryptotrac-xx-1/app/actions/stripe.ts",
+      "exportedName": "createCheckoutSession"
+    }
+  },
+  "edge": {},
+  "encryptionKey": "dt5QxvGLWqEuYzDwm0a0DzgLf+5M8lPQGzra27A2qSA="
+}
