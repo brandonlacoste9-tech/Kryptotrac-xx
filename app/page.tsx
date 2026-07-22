@@ -61,6 +61,20 @@ export default function MarketsPage() {
         : (data as MarketCoin[])
       setCoins(list)
       setUpdatedAt(new Date())
+      // seed price cache for portfolio offline use
+      try {
+        const map: Record<string, { usd?: number; cad?: number }> = {}
+        for (const c of list) {
+          map[c.id] =
+            currency === "cad"
+              ? { cad: c.current_price }
+              : { usd: c.current_price }
+        }
+        const { mergePriceCache } = await import("@/lib/price-cache")
+        mergePriceCache(map)
+      } catch {
+        /* ignore */
+      }
     } catch (e) {
       setError(e instanceof Error ? e.message : "Failed to load")
     } finally {
@@ -387,6 +401,33 @@ export default function MarketsPage() {
                     </td>
                     <td className="px-3 py-3 text-right">
                       <div className="inline-flex items-center gap-0.5">
+                        <button
+                          type="button"
+                          onClick={() => {
+                            addHolding(
+                              {
+                                id: c.id,
+                                symbol: c.symbol,
+                                name: c.name,
+                                amount: 1,
+                                costBasisUsd:
+                                  currency === "usd"
+                                    ? c.current_price
+                                    : undefined,
+                              },
+                              {
+                                priceUsd:
+                                  currency === "usd"
+                                    ? c.current_price
+                                    : undefined,
+                              }
+                            )
+                          }}
+                          className="rounded-md px-1.5 py-1 text-[10px] font-semibold text-accent hover:bg-accent/10"
+                          title="Quick add 1 unit to portfolio"
+                        >
+                          +1
+                        </button>
                         <button
                           type="button"
                           onClick={() => setCompareIds(toggleCompareId(c.id))}

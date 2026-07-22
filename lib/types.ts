@@ -53,17 +53,36 @@ export type Holding = {
   costBasisUsd?: number
 }
 
+export type TxType = "buy" | "sell" | "adjust"
+
+export type Transaction = {
+  id: string
+  coinId: string
+  symbol: string
+  name: string
+  type: TxType
+  amount: number
+  /** Price per unit in USD at time of tx (optional) */
+  priceUsd?: number
+  /** Total USD for this fill (amount * price or cost entered) */
+  totalUsd?: number
+  note?: string
+  createdAt: string
+}
+
 export type PortfolioState = {
   holdings: Holding[]
   watchlist: string[]
+  transactions: Transaction[]
 }
 
 export type ChartPoint = [number, number] // [timestamp ms, price]
 
 export type PortfolioBackup = {
-  version: 1
+  version: 1 | 2
   exportedAt: string
   currency?: QuoteCurrency
   holdings: Holding[]
   watchlist: string[]
+  transactions?: Transaction[]
 }

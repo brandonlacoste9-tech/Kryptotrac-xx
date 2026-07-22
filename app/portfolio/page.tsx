@@ -20,11 +20,19 @@ import { AllocationChart } from "@/components/allocation-chart"
 import { PortfolioBackup } from "@/components/portfolio-backup"
 import { ErrorBanner } from "@/components/error-banner"
 import { PortfolioHistoryChart } from "@/components/portfolio-history-chart"
+import { TransactionList } from "@/components/transaction-list"
+import { SellHoldingForm } from "@/components/sell-holding-form"
+import { SharePortfolio } from "@/components/share-portfolio"
 import {
   loadHistory,
   recordHistoryValue,
   type HistoryPoint,
 } from "@/lib/portfolio-history"
+import {
+  cacheAgeLabel,
+  loadPriceCache,
+  mergePriceCache,
+} from "@/lib/price-cache"
 
 const REFRESH_MS = 75_000
 
@@ -37,6 +45,9 @@ export default function PortfolioPage() {
   const [loading, setLoading] = useState(false)
   const [updatedAt, setUpdatedAt] = useState<Date | null>(null)
   const [history, setHistory] = useState<HistoryPoint[]>([])
+  const [fromCache, setFromCache] = useState(false)
+  const [cacheAt, setCacheAt] = useState<number | null>(null)
+  const [sellId, setSellId] = useState<string | null>(null)
 
   const ids = holdings.map((h) => h.id).join(",")
 
@@ -51,10 +62,23 @@ export default function PortfolioPage() {
       const res = await fetch(`/api/prices?ids=${encodeURIComponent(ids)}`)
       const data = await res.json()
       if (!res.ok) throw new Error(data.error || "Failed to load prices")
-      setPrices(data as PriceMap)
+      const merged = mergePriceCache(data as PriceMap)
+      setPrices(merged)
       setUpdatedAt(new Date())
+      setFromCache(false)
+      setCacheAt(null)
     } catch (e) {
-      setError(e instanceof Error ? e.message : "Failed to load prices")
+      const cached = loadPriceCache()
+      if (cached?.prices) {
+        setPrices(cached.prices)
+        setFromCache(true)
+        setCacheAt(cached.at)
+        setError(
+          `${e instanceof Error ? e.message : "Failed"} — showing cached prices`
+        )
+      } else {
+        setError(e instanceof Error ? e.message : "Failed to load prices")
+      }
     } finally {
       setLoading(false)
     }
@@ -160,14 +184,26 @@ export default function PortfolioPage() {
           </h1>
           <p className="mt-1 text-sm text-muted">
             Stored only in this browser · never uploaded
-            {updatedAt && (
+            {updatedAt && !fromCache && (
               <span className="ml-2 text-xs">
                 · prices {updatedAt.toLocaleTimeString()}
               </span>
             )}
+            {fromCache && cacheAt && (
+              <span className="ml-2 text-xs text-warning">
+                · offline cache {cacheAgeLabel(cacheAt)}
+              </span>
+            )}
           </p>
         </div>
-        <PortfolioBackup />
+        <div className="flex flex-col items-stretch sm:items-end gap-2">
+          <PortfolioBackup />
+          <SharePortfolio
+            prices={prices}
+            totalValue={totalValue}
+            totalPnlPct={totalPnlPct}
+          />
+        </div>
       </div>
 
       <div className="grid gap-3 sm:grid-cols-3">
@@ -206,6 +242,8 @@ export default function PortfolioPage() {
         currency={currency}
         usdToCad={usdToCad}
       />
+
+      <TransactionList />
 
       {error && (
         <ErrorBanner
@@ -364,20 +402,46 @@ export default function PortfolioPage() {
                       {alloc != null ? `${alloc.toFixed(1)}%` : "—"}
                     </td>
                     <td className="px-3 py-3 text-right">
-                      <button
-                        type="button"
-                        onClick={() => removeHolding(h.id)}
-                        className="rounded-md p-1.5 text-muted hover:bg-danger/10 hover:text-danger"
-                        aria-label={`Remove ${h.symbol}`}
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </button>
+                      <div className="inline-flex items-center gap-0.5">
+                        <button
+                          type="button"
+                          onClick={() =>
+                            setSellId(sellId === h.id ? null : h.id)
+                          }
+                          className="rounded-md px-2 py-1 text-[11px] text-danger hover:bg-danger/10"
+                        >
+                          Sell
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => removeHolding(h.id)}
+                          className="rounded-md p-1.5 text-muted hover:bg-danger/10 hover:text-danger"
+                          aria-label={`Remove ${h.symbol}`}
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 )
               })}
             </tbody>
           </table>
+          {sellId &&
+            (() => {
+              const h = holdings.find((x) => x.id === sellId)
+              if (!h) return null
+              return (
+                <div className="p-3 border-t border-border">
+                  <SellHoldingForm
+                    coinId={h.id}
+                    symbol={h.symbol}
+                    maxAmount={h.amount}
+                    priceUsd={prices[h.id]?.usd}
+                  />
+                </div>
+              )
+            })()}
           <p className="px-3 py-2 text-[11px] text-muted border-t border-border">
             Cost basis is converted to USD for storage. Display follows your USD/CAD
             toggle. Amounts:{" "}

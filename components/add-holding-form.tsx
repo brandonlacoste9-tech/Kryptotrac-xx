@@ -49,7 +49,10 @@ export function AddHoldingForm({
       costBasisUsd = amt * currentPriceUsd
     }
 
-    addHolding({ id, symbol, name, amount: amt, costBasisUsd })
+    addHolding(
+      { id, symbol, name, amount: amt, costBasisUsd },
+      { priceUsd: currentPriceUsd }
+    )
     setAmount("")
     setCost("")
     setMsg(existing ? "Added to existing position" : "Position added")

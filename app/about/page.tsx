@@ -21,6 +21,7 @@ export default function AboutPage() {
         <li>Price alerts (browser notifications while the tab is open)</li>
         <li>USD &amp; CAD · multi-range charts · optional AdSense</li>
         <li>Light/dark theme · market heatmap · portfolio history</li>
+        <li>Buy/sell log · share snapshot · offline price cache</li>
         <li>Installable PWA · data stays in your browser</li>
       </ul>
       <p className="text-sm text-muted">
