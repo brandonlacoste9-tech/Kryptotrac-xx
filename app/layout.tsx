@@ -9,6 +9,7 @@ import { PwaRegister } from "@/components/pwa-register"
 import { AlertsWatcher } from "@/components/alerts-watcher"
 import { AdSenseScript } from "@/components/adsense-script"
 import { ADSENSE_ENABLED, ADSENSE_PUBLISHER_ID } from "@/lib/adsense"
+import { AppJsonLd } from "@/components/json-ld"
 import { siteUrl } from "@/lib/utils"
 import "./globals.css"
 
@@ -17,34 +18,42 @@ const base = siteUrl()
 export const metadata: Metadata = {
   metadataBase: new URL(base),
   title: {
-    default: "KryptoTrac — Crypto portfolio tracker",
+    default:
+      "KryptoTrac — Free private crypto portfolio tracker | Live CoinGecko prices",
     template: "%s · KryptoTrac",
   },
   description:
-    "Track your crypto holdings with live CoinGecko prices. Portfolio, markets, alerts, compare, USD & CAD — private in your browser.",
+    "Free private crypto portfolio tracker with live CoinGecko prices. USD & CAD, alerts, compare, watchlist — no account. Holdings stay in your browser.",
   keywords: [
-    "crypto",
-    "portfolio",
-    "bitcoin",
-    "ethereum",
-    "tracker",
+    "crypto portfolio tracker",
+    "private crypto portfolio",
+    "bitcoin portfolio",
+    "ethereum tracker",
+    "CAD crypto tracker",
+    "CoinGecko portfolio",
+    "free portfolio tracker",
     "kryptotrac",
-    "CAD",
   ],
+  authors: [{ name: "KryptoTrac" }],
+  creator: "KryptoTrac",
+  category: "finance",
   alternates: {
     canonical: base,
   },
   openGraph: {
-    title: "KryptoTrac — Crypto portfolio tracker",
-    description: "Live markets and a private browser-side portfolio. USD & CAD.",
+    title: "KryptoTrac — Free private crypto portfolio tracker",
+    description:
+      "Live markets and a browser-only portfolio. USD & CAD. No account required.",
     siteName: "KryptoTrac",
     type: "website",
     url: base,
+    locale: "en_CA",
   },
   twitter: {
     card: "summary_large_image",
-    title: "KryptoTrac — Crypto portfolio tracker",
-    description: "Live markets and a private browser-side portfolio.",
+    title: "KryptoTrac — Free private crypto portfolio tracker",
+    description:
+      "Live markets and a browser-only portfolio. USD & CAD. No account required.",
   },
   icons: {
     icon: [{ url: "/favicon.svg", type: "image/svg+xml" }],
@@ -94,6 +103,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <script dangerouslySetInnerHTML={{ __html: themeBoot }} />
       </head>
       <body className="min-h-dvh flex flex-col antialiased">
+        <AppJsonLd />
         <ThemeProvider>
           <CurrencyProvider>
             <PortfolioProvider>

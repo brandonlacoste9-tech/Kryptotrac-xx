@@ -1,225 +1,123 @@
-"use client"
+import type { Metadata } from "next"
+import CoinPageClient from "@/components/coin-page-client"
+import { CoinJsonLd } from "@/components/json-ld"
+import { cgFetch } from "@/lib/coingecko"
+import type { CoinDetail, MarketCoin } from "@/lib/types"
+import { siteUrl } from "@/lib/utils"
 
-import { useEffect, useState } from "react"
-import Image from "next/image"
-import Link from "next/link"
-import { useParams } from "next/navigation"
-import { ArrowLeft, Star } from "lucide-react"
-import type { CoinDetail } from "@/lib/types"
-import { formatMoney } from "@/lib/utils"
-import { ChangeBadge } from "@/components/change-badge"
-import { StatCard } from "@/components/stat-card"
-import { AddHoldingForm } from "@/components/add-holding-form"
-import { PriceChart } from "@/components/price-chart"
-import { AlertForm } from "@/components/alert-form"
-import { AdBanner } from "@/components/ad-unit"
-import { usePortfolio } from "@/lib/portfolio"
-import { useCurrency } from "@/lib/currency"
+type Props = { params: Promise<{ id: string }> }
 
-export default function CoinPage() {
-  const params = useParams()
-  const id = params.id as string
-  const [coin, setCoin] = useState<CoinDetail | null>(null)
-  const [error, setError] = useState("")
-  const [loading, setLoading] = useState(true)
-  const { toggleWatchlist, isWatched } = usePortfolio()
-  const { currency } = useCurrency()
+async function fetchCoin(id: string): Promise<CoinDetail | null> {
+  try {
+    return await cgFetch<CoinDetail>(`/coins/${encodeURIComponent(id)}`, {
+      localization: "false",
+      tickers: "false",
+      market_data: "true",
+      community_data: "false",
+      developer_data: "false",
+      sparkline: "false",
+    })
+  } catch {
+    return null
+  }
+}
 
-  useEffect(() => {
-    if (!id) return
-    let cancelled = false
-    ;(async () => {
-      setLoading(true)
-      setError("")
-      try {
-        const res = await fetch(`/api/coin/${encodeURIComponent(id)}`)
-        const data = await res.json()
-        if (!res.ok) throw new Error(data.error || "Failed to load coin")
-        if (!cancelled) setCoin(data as CoinDetail)
-      } catch (e) {
-        if (!cancelled)
-          setError(e instanceof Error ? e.message : "Failed to load")
-      } finally {
-        if (!cancelled) setLoading(false)
-      }
-    })()
-    return () => {
-      cancelled = true
+export async function generateStaticParams() {
+  try {
+    const markets = await cgFetch<MarketCoin[]>("/coins/markets", {
+      vs_currency: "usd",
+      order: "market_cap_desc",
+      per_page: "40",
+      page: "1",
+      sparkline: "false",
+    })
+    return markets.map((c) => ({ id: c.id }))
+  } catch {
+    return [
+      { id: "bitcoin" },
+      { id: "ethereum" },
+      { id: "solana" },
+      { id: "ripple" },
+      { id: "cardano" },
+    ]
+  }
+}
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { id } = await params
+  const coin = await fetchCoin(id)
+  const base = siteUrl()
+  if (!coin) {
+    return {
+      title: "Coin not found",
+      robots: { index: false },
     }
-  }, [id])
-
-  if (loading) {
-    return (
-      <div className="space-y-4">
-        <div className="h-8 w-40 animate-pulse rounded bg-card" />
-        <div className="h-40 animate-pulse rounded-xl bg-card" />
-      </div>
-    )
   }
+  const price = coin.market_data?.current_price?.usd
+  const change = coin.market_data?.price_change_percentage_24h
+  const priceStr =
+    price != null
+      ? `$${price.toLocaleString("en-US", { maximumFractionDigits: 6 })}`
+      : ""
+  const chStr =
+    change != null ? ` · 24h ${change >= 0 ? "+" : ""}${change.toFixed(2)}%` : ""
+  const title = `${coin.name} (${coin.symbol.toUpperCase()}) price${priceStr ? ` ${priceStr}` : ""}${chStr}`
+  const desc = `Live ${coin.name} (${coin.symbol.toUpperCase()}) price${priceStr ? ` is ${priceStr}` : ""}. Track charts, set alerts, and add to your private KryptoTrac portfolio — free, no account.`
+  const image = coin.image?.large || coin.image?.small
 
-  if (error || !coin) {
-    return (
-      <div className="space-y-4">
-        <Link
-          href="/"
-          className="inline-flex items-center gap-1 text-sm text-muted hover:text-accent"
-        >
-          <ArrowLeft className="h-4 w-4" /> Markets
-        </Link>
-        <div className="rounded-xl border border-danger/40 bg-danger/10 px-4 py-3 text-sm text-danger">
-          {error || "Coin not found"}
-        </div>
-      </div>
-    )
+  return {
+    title,
+    description: desc,
+    alternates: { canonical: `${base}/coin/${coin.id}` },
+    openGraph: {
+      title: `${coin.name} price · KryptoTrac`,
+      description: desc,
+      url: `${base}/coin/${coin.id}`,
+      type: "website",
+      ...(image ? { images: [{ url: image, alt: coin.name }] } : {}),
+    },
+    twitter: {
+      card: "summary",
+      title: `${coin.name} (${coin.symbol.toUpperCase()}) price`,
+      description: desc,
+      ...(image ? { images: [image] } : {}),
+    },
   }
+}
 
-  const md = coin.market_data
-  const priceUsd = md.current_price.usd
-  const price =
-    currency === "cad" && md.current_price.cad != null
-      ? md.current_price.cad
-      : priceUsd
-  // When CAD missing on detail, UI still shows USD price via chart in CAD
-  const displayPrice =
-    currency === "cad" && md.current_price.cad == null ? priceUsd : price
-  const watched = isWatched(coin.id)
-  const desc = coin.description?.en?.replace(/<[^>]+>/g, "").slice(0, 480)
-
-  function pick(
-    obj: { usd: number; cad?: number } | undefined
-  ): number | null {
-    if (!obj) return null
-    if (currency === "cad" && obj.cad != null) return obj.cad
-    return obj.usd
-  }
+export default async function CoinPage({ params }: Props) {
+  const { id } = await params
+  const coin = await fetchCoin(id)
+  const plain = coin?.description?.en?.replace(/<[^>]+>/g, "") ?? ""
 
   return (
-    <div className="space-y-6">
-      <Link
-        href="/"
-        className="inline-flex items-center gap-1 text-sm text-muted hover:text-accent"
-      >
-        <ArrowLeft className="h-4 w-4" /> Markets
-      </Link>
-
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-        <div className="flex items-center gap-4">
-          <Image
-            src={coin.image.large || coin.image.small}
-            alt=""
-            width={56}
-            height={56}
-            className="rounded-full"
-            unoptimized
-          />
-          <div>
-            <h1 className="text-2xl sm:text-3xl font-semibold tracking-tight">
-              {coin.name}{" "}
-              <span className="text-base font-normal uppercase text-muted">
-                {coin.symbol}
-              </span>
-            </h1>
-            <p className="text-sm text-muted">
-              Rank #{coin.market_cap_rank ?? "—"} ·{" "}
-              {formatMoney(displayPrice, currency === "cad" && md.current_price.cad == null ? "usd" : currency)}
-              <span className="ml-2">
-                <ChangeBadge value={md.price_change_percentage_24h} />
-              </span>
-            </p>
-          </div>
-        </div>
-        <button
-          type="button"
-          onClick={() => toggleWatchlist(coin.id)}
-          className="inline-flex items-center gap-2 self-start rounded-lg border border-border bg-card px-3 py-2 text-sm hover:border-warning/50"
-        >
-          <Star
-            className="h-4 w-4"
-            fill={watched ? "currentColor" : "none"}
-            style={watched ? { color: "var(--warning)" } : undefined}
-          />
-          {watched ? "Watching" : "Watch"}
-        </button>
-      </div>
-
-      <PriceChart coinId={coin.id} currency={currency} />
-
-      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-        <StatCard
-          label="Market cap"
-          value={formatMoney(pick(md.market_cap), currency, true)}
-        />
-        <StatCard
-          label="Volume 24h"
-          value={formatMoney(pick(md.total_volume), currency, true)}
-        />
-        <StatCard
-          label="24h high"
-          value={formatMoney(pick(md.high_24h), currency)}
-        />
-        <StatCard
-          label="24h low"
-          value={formatMoney(pick(md.low_24h), currency)}
-        />
-      </div>
-
-      <div className="grid gap-3 sm:grid-cols-2">
-        <StatCard
-          label="7d change"
-          value={
-            md.price_change_percentage_7d != null
-              ? `${md.price_change_percentage_7d.toFixed(2)}%`
-              : "—"
-          }
-          sub={<ChangeBadge value={md.price_change_percentage_7d} />}
-        />
-        <StatCard
-          label="ATH / ATL"
-          value={`${formatMoney(pick(md.ath), currency)} / ${formatMoney(pick(md.atl), currency)}`}
-        />
-      </div>
-
-      <div className="grid gap-4 lg:grid-cols-2">
-        <AddHoldingForm
+    <>
+      {coin && (
+        <CoinJsonLd
           id={coin.id}
-          symbol={coin.symbol}
           name={coin.name}
-          currentPriceUsd={priceUsd}
-        />
-        <AlertForm
-          coinId={coin.id}
           symbol={coin.symbol}
-          name={coin.name}
-          currentPrice={displayPrice}
+          description={plain}
+          image={coin.image?.large}
+          priceUsd={coin.market_data?.current_price?.usd}
         />
-      </div>
-
-      <div className="flex flex-wrap gap-2 text-xs">
-        <Link
-          href={`/compare?ids=${coin.id},bitcoin`}
-          className="rounded-lg border border-border px-3 py-1.5 hover:border-accent/40"
-        >
-          Compare vs BTC
-        </Link>
-        <Link
-          href={`/compare?ids=${coin.id},ethereum`}
-          className="rounded-lg border border-border px-3 py-1.5 hover:border-accent/40"
-        >
-          Compare vs ETH
-        </Link>
-      </div>
-
-      <AdBanner />
-
-      {desc && (
-        <section className="rounded-xl border border-border bg-card/50 p-5">
-          <h2 className="text-sm font-semibold mb-2">About</h2>
-          <p className="text-sm text-muted leading-relaxed">
-            {desc}
-            {coin.description.en.length > 480 ? "…" : ""}
-          </p>
-        </section>
       )}
-    </div>
+      {/* Crawlable summary for bots; interactive UI hydrates client */}
+      {coin && (
+        <article className="sr-only">
+          <h1>
+            {coin.name} ({coin.symbol.toUpperCase()}) price
+          </h1>
+          {coin.market_data?.current_price?.usd != null && (
+            <p>
+              Current price: ${coin.market_data.current_price.usd} USD. Market
+              cap rank: #{coin.market_cap_rank ?? "n/a"}.
+            </p>
+          )}
+          {plain && <p>{plain.slice(0, 500)}</p>}
+        </article>
+      )}
+      <CoinPageClient initialId={id} />
+    </>
   )
 }

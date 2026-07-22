@@ -1,8 +1,12 @@
 import type { Metadata } from "next"
 import Link from "next/link"
+import { siteUrl } from "@/lib/utils"
 
 export const metadata: Metadata = {
   title: "Privacy policy",
+  description:
+    "How KryptoTrac handles browser storage, CoinGecko market data, notifications, hosting logs, and Google AdSense advertising.",
+  alternates: { canonical: `${siteUrl()}/legal/privacy` },
 }
 
 export default function PrivacyPage() {
