@@ -1,3 +1,5 @@
+export type QuoteCurrency = "usd" | "cad"
+
 export type MarketCoin = {
   id: string
   symbol: string
@@ -18,22 +20,28 @@ export type CoinDetail = {
   image: { large: string; small: string; thumb: string }
   description: { en: string }
   market_data: {
-    current_price: { usd: number }
-    market_cap: { usd: number }
-    total_volume: { usd: number }
+    current_price: { usd: number; cad?: number }
+    market_cap: { usd: number; cad?: number }
+    total_volume: { usd: number; cad?: number }
     price_change_percentage_24h: number | null
     price_change_percentage_7d: number | null
-    high_24h: { usd: number }
-    low_24h: { usd: number }
-    ath: { usd: number }
-    atl: { usd: number }
+    high_24h: { usd: number; cad?: number }
+    low_24h: { usd: number; cad?: number }
+    ath: { usd: number; cad?: number }
+    atl: { usd: number; cad?: number }
   }
   market_cap_rank: number | null
 }
 
+/** CoinGecko simple/price shape for one or more quote currencies */
 export type PriceMap = Record<
   string,
-  { usd: number; usd_24h_change?: number }
+  {
+    usd?: number
+    cad?: number
+    usd_24h_change?: number
+    cad_24h_change?: number
+  }
 >
 
 export type Holding = {
@@ -41,11 +49,21 @@ export type Holding = {
   symbol: string
   name: string
   amount: number
-  /** Total USD paid for this position (optional) */
+  /** Total paid for this position, in USD (convert for CAD display) */
   costBasisUsd?: number
 }
 
 export type PortfolioState = {
+  holdings: Holding[]
+  watchlist: string[]
+}
+
+export type ChartPoint = [number, number] // [timestamp ms, price]
+
+export type PortfolioBackup = {
+  version: 1
+  exportedAt: string
+  currency?: QuoteCurrency
   holdings: Holding[]
   watchlist: string[]
 }

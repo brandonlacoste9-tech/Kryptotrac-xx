@@ -1,23 +1,47 @@
 import type { Metadata } from "next"
 import { PortfolioProvider } from "@/lib/portfolio"
+import { CurrencyProvider } from "@/lib/currency"
 import { SiteHeader } from "@/components/site-header"
 import { SiteFooter } from "@/components/site-footer"
+import { siteUrl } from "@/lib/utils"
 import "./globals.css"
 
+const base = siteUrl()
+
 export const metadata: Metadata = {
-  metadataBase: new URL("https://kryptotrac.com"),
+  metadataBase: new URL(base),
   title: {
     default: "KryptoTrac — Crypto portfolio tracker",
     template: "%s · KryptoTrac",
   },
   description:
-    "Track your crypto holdings with live CoinGecko prices. Portfolio, markets, and watchlist — private in your browser.",
-  keywords: ["crypto", "portfolio", "bitcoin", "ethereum", "tracker", "kryptotrac"],
+    "Track your crypto holdings with live CoinGecko prices. Portfolio, markets, and watchlist — private in your browser. USD & CAD.",
+  keywords: [
+    "crypto",
+    "portfolio",
+    "bitcoin",
+    "ethereum",
+    "tracker",
+    "kryptotrac",
+    "CAD",
+  ],
+  alternates: {
+    canonical: base,
+  },
   openGraph: {
     title: "KryptoTrac — Crypto portfolio tracker",
-    description: "Live markets and a private browser-side portfolio.",
+    description: "Live markets and a private browser-side portfolio. USD & CAD.",
     siteName: "KryptoTrac",
     type: "website",
+    url: base,
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "KryptoTrac — Crypto portfolio tracker",
+    description: "Live markets and a private browser-side portfolio.",
+  },
+  icons: {
+    icon: [{ url: "/favicon.svg", type: "image/svg+xml" }],
   },
 }
 
@@ -25,13 +49,15 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en">
       <body className="min-h-dvh flex flex-col antialiased">
-        <PortfolioProvider>
-          <SiteHeader />
-          <main className="flex-1 mx-auto w-full max-w-6xl px-4 py-6 sm:px-6 sm:py-8">
-            {children}
-          </main>
-          <SiteFooter />
-        </PortfolioProvider>
+        <CurrencyProvider>
+          <PortfolioProvider>
+            <SiteHeader />
+            <main className="flex-1 mx-auto w-full max-w-6xl px-4 py-6 sm:px-6 sm:py-8">
+              {children}
+            </main>
+            <SiteFooter />
+          </PortfolioProvider>
+        </CurrencyProvider>
       </body>
     </html>
   )

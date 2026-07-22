@@ -14,7 +14,7 @@ export async function GET(req: Request) {
 
     const data = await cgFetch<PriceMap>("/simple/price", {
       ids: ids.trim(),
-      vs_currencies: "usd",
+      vs_currencies: "usd,cad",
       include_24hr_change: "true",
     })
 

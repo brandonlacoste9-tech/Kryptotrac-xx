@@ -10,9 +10,11 @@ export async function GET(req: Request) {
     const perPage = searchParams.get("per_page") || "100"
     const page = searchParams.get("page") || "1"
     const sparkline = searchParams.get("sparkline") || "true"
+    const vs = (searchParams.get("vs") || "usd").toLowerCase()
+    const vs_currency = vs === "cad" ? "cad" : "usd"
 
     const data = await cgFetch<MarketCoin[]>("/coins/markets", {
-      vs_currency: "usd",
+      vs_currency,
       order: "market_cap_desc",
       per_page: perPage,
       page,

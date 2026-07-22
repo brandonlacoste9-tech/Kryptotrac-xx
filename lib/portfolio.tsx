@@ -9,7 +9,7 @@ import {
   useState,
   type ReactNode,
 } from "react"
-import type { Holding, PortfolioState } from "@/lib/types"
+import type { Holding, PortfolioBackup, PortfolioState } from "@/lib/types"
 
 const STORAGE_KEY = "kryptotrac-portfolio-v1"
 
@@ -20,11 +20,16 @@ type PortfolioContextValue = {
   holdings: Holding[]
   watchlist: string[]
   addHolding: (h: Omit<Holding, "amount"> & { amount: number }) => void
-  updateHolding: (id: string, patch: Partial<Pick<Holding, "amount" | "costBasisUsd">>) => void
+  updateHolding: (
+    id: string,
+    patch: Partial<Pick<Holding, "amount" | "costBasisUsd">>
+  ) => void
   removeHolding: (id: string) => void
   toggleWatchlist: (id: string) => void
   isWatched: (id: string) => boolean
   getHolding: (id: string) => Holding | undefined
+  exportBackup: () => PortfolioBackup
+  importBackup: (data: unknown, mode: "merge" | "replace") => { ok: boolean; message: string }
 }
 
 const PortfolioContext = createContext<PortfolioContextValue | null>(null)
@@ -94,7 +99,14 @@ export function PortfolioProvider({ children }: { children: ReactNode }) {
       setState((prev) => ({
         ...prev,
         holdings: prev.holdings
-          .map((x) => (x.id === id ? { ...x, ...patch } : x))
+          .map((x) => {
+            if (x.id !== id) return x
+            const next = { ...x, ...patch }
+            if (patch.costBasisUsd === undefined && "costBasisUsd" in patch) {
+              delete next.costBasisUsd
+            }
+            return next
+          })
           .filter((x) => x.amount > 0),
       }))
     },
@@ -130,6 +142,59 @@ export function PortfolioProvider({ children }: { children: ReactNode }) {
     [state.holdings]
   )
 
+  const exportBackup = useCallback((): PortfolioBackup => {
+    return {
+      version: 1,
+      exportedAt: new Date().toISOString(),
+      holdings: state.holdings,
+      watchlist: state.watchlist,
+    }
+  }, [state.holdings, state.watchlist])
+
+  const importBackup = useCallback((data: unknown, mode: "merge" | "replace") => {
+    try {
+      const parsed = data as PortfolioBackup
+      if (!parsed || parsed.version !== 1 || !Array.isArray(parsed.holdings)) {
+        return { ok: false, message: "Invalid backup file" }
+      }
+      const holdings = parsed.holdings.filter(
+        (h) => h && typeof h.id === "string" && typeof h.amount === "number" && h.amount > 0
+      )
+      const watchlist = Array.isArray(parsed.watchlist)
+        ? parsed.watchlist.filter((id) => typeof id === "string")
+        : []
+
+      if (mode === "replace") {
+        setState({ holdings, watchlist })
+        return { ok: true, message: `Restored ${holdings.length} holdings` }
+      }
+
+      setState((prev) => {
+        const map = new Map(prev.holdings.map((h) => [h.id, { ...h }]))
+        for (const h of holdings) {
+          const ex = map.get(h.id)
+          if (ex) {
+            map.set(h.id, {
+              ...ex,
+              amount: ex.amount + h.amount,
+              costBasisUsd:
+                h.costBasisUsd != null
+                  ? (ex.costBasisUsd ?? 0) + h.costBasisUsd
+                  : ex.costBasisUsd,
+            })
+          } else {
+            map.set(h.id, h)
+          }
+        }
+        const wl = new Set([...prev.watchlist, ...watchlist])
+        return { holdings: [...map.values()], watchlist: [...wl] }
+      })
+      return { ok: true, message: `Merged ${holdings.length} holdings` }
+    } catch {
+      return { ok: false, message: "Could not read backup" }
+    }
+  }, [])
+
   const value = useMemo(
     () => ({
       ready,
@@ -141,6 +206,8 @@ export function PortfolioProvider({ children }: { children: ReactNode }) {
       toggleWatchlist,
       isWatched,
       getHolding,
+      exportBackup,
+      importBackup,
     }),
     [
       ready,
@@ -152,6 +219,8 @@ export function PortfolioProvider({ children }: { children: ReactNode }) {
       toggleWatchlist,
       isWatched,
       getHolding,
+      exportBackup,
+      importBackup,
     ]
   )
 

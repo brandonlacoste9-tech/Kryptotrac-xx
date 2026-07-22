@@ -6,11 +6,13 @@ import Link from "next/link"
 import { Star } from "lucide-react"
 import { usePortfolio } from "@/lib/portfolio"
 import type { MarketCoin } from "@/lib/types"
-import { formatUsd } from "@/lib/utils"
+import { formatMoney } from "@/lib/utils"
 import { ChangeBadge } from "@/components/change-badge"
+import { useCurrency } from "@/lib/currency"
 
 export default function WatchlistPage() {
   const { ready, watchlist, toggleWatchlist } = usePortfolio()
+  const { currency } = useCurrency()
   const [coins, setCoins] = useState<MarketCoin[]>([])
   const [error, setError] = useState("")
   const [loading, setLoading] = useState(false)
@@ -26,18 +28,14 @@ export default function WatchlistPage() {
       setLoading(true)
       setError("")
       try {
-        // Fetch full markets and filter — free API has no multi-id markets endpoint easily
-        const res = await fetch("/api/markets?per_page=250&sparkline=false")
+        const res = await fetch(
+          `/api/markets?per_page=250&sparkline=false&vs=${currency}`
+        )
         const data = await res.json()
         if (!res.ok) throw new Error(data.error || "Failed to load")
         const set = new Set(watchlist)
         const list = (data as MarketCoin[]).filter((c) => set.has(c.id))
-        // Include watchlist ids missing from top 250 via prices-only rows
-        const found = new Set(list.map((c) => c.id))
         if (!cancelled) setCoins(list)
-        if (watchlist.some((id) => !found.has(id))) {
-          // leave partial list; coin pages still work
-        }
       } catch (e) {
         if (!cancelled) setError(e instanceof Error ? e.message : "Failed")
       } finally {
@@ -47,7 +45,7 @@ export default function WatchlistPage() {
     return () => {
       cancelled = true
     }
-  }, [ready, watchlist])
+  }, [ready, watchlist, currency])
 
   if (!ready) return <p className="text-sm text-muted">Loading…</p>
 
@@ -98,7 +96,9 @@ export default function WatchlistPage() {
                 </span>
               </Link>
               <div className="text-right shrink-0">
-                <div className="font-mono text-sm tabular-nums">{formatUsd(c.current_price)}</div>
+                <div className="font-mono text-sm tabular-nums">
+                  {formatMoney(c.current_price, currency)}
+                </div>
                 <ChangeBadge value={c.price_change_percentage_24h} className="text-xs" />
               </div>
               <button

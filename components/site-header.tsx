@@ -4,6 +4,7 @@ import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { Activity, Briefcase, Star, Info } from "lucide-react"
 import { cn } from "@/lib/utils"
+import { CurrencyToggle } from "@/components/currency-toggle"
 
 const links = [
   { href: "/", label: "Markets", icon: Activity },
@@ -17,7 +18,7 @@ export function SiteHeader() {
 
   return (
     <header className="sticky top-0 z-40 border-b border-border/80 bg-[color-mix(in_srgb,var(--bg)_88%,transparent)] backdrop-blur-md">
-      <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-3 sm:px-6">
+      <div className="mx-auto flex max-w-6xl items-center justify-between gap-3 px-4 py-3 sm:px-6">
         <Link href="/" className="flex items-center gap-2.5 shrink-0">
           <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-accent/15 text-accent ring-1 ring-accent/30 font-bold text-sm">
             K
@@ -38,18 +39,20 @@ export function SiteHeader() {
                 key={href}
                 href={href}
                 className={cn(
-                  "inline-flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-xs sm:text-sm font-medium transition-colors",
+                  "inline-flex items-center gap-1.5 rounded-lg px-2 py-1.5 text-xs sm:text-sm font-medium transition-colors",
                   active
                     ? "bg-accent/15 text-accent"
                     : "text-muted hover:text-foreground hover:bg-white/5"
                 )}
               >
                 <Icon className="h-3.5 w-3.5 shrink-0" />
-                <span className="hidden xs:inline sm:inline">{label}</span>
+                <span>{label}</span>
               </Link>
             )
           })}
         </nav>
+
+        <CurrencyToggle className="shrink-0" />
       </div>
     </header>
   )

@@ -6,11 +6,13 @@ import Link from "next/link"
 import { useParams } from "next/navigation"
 import { ArrowLeft, Star } from "lucide-react"
 import type { CoinDetail } from "@/lib/types"
-import { formatUsd } from "@/lib/utils"
+import { formatMoney } from "@/lib/utils"
 import { ChangeBadge } from "@/components/change-badge"
 import { StatCard } from "@/components/stat-card"
 import { AddHoldingForm } from "@/components/add-holding-form"
+import { PriceChart } from "@/components/price-chart"
 import { usePortfolio } from "@/lib/portfolio"
+import { useCurrency } from "@/lib/currency"
 
 export default function CoinPage() {
   const params = useParams()
@@ -19,6 +21,7 @@ export default function CoinPage() {
   const [error, setError] = useState("")
   const [loading, setLoading] = useState(true)
   const { toggleWatchlist, isWatched } = usePortfolio()
+  const { currency } = useCurrency()
 
   useEffect(() => {
     if (!id) return
@@ -32,7 +35,8 @@ export default function CoinPage() {
         if (!res.ok) throw new Error(data.error || "Failed to load coin")
         if (!cancelled) setCoin(data as CoinDetail)
       } catch (e) {
-        if (!cancelled) setError(e instanceof Error ? e.message : "Failed to load")
+        if (!cancelled)
+          setError(e instanceof Error ? e.message : "Failed to load")
       } finally {
         if (!cancelled) setLoading(false)
       }
@@ -54,7 +58,10 @@ export default function CoinPage() {
   if (error || !coin) {
     return (
       <div className="space-y-4">
-        <Link href="/" className="inline-flex items-center gap-1 text-sm text-muted hover:text-accent">
+        <Link
+          href="/"
+          className="inline-flex items-center gap-1 text-sm text-muted hover:text-accent"
+        >
           <ArrowLeft className="h-4 w-4" /> Markets
         </Link>
         <div className="rounded-xl border border-danger/40 bg-danger/10 px-4 py-3 text-sm text-danger">
@@ -65,13 +72,31 @@ export default function CoinPage() {
   }
 
   const md = coin.market_data
-  const price = md.current_price.usd
+  const priceUsd = md.current_price.usd
+  const price =
+    currency === "cad" && md.current_price.cad != null
+      ? md.current_price.cad
+      : priceUsd
+  // When CAD missing on detail, UI still shows USD price via chart in CAD
+  const displayPrice =
+    currency === "cad" && md.current_price.cad == null ? priceUsd : price
   const watched = isWatched(coin.id)
   const desc = coin.description?.en?.replace(/<[^>]+>/g, "").slice(0, 480)
 
+  function pick(
+    obj: { usd: number; cad?: number } | undefined
+  ): number | null {
+    if (!obj) return null
+    if (currency === "cad" && obj.cad != null) return obj.cad
+    return obj.usd
+  }
+
   return (
     <div className="space-y-6">
-      <Link href="/" className="inline-flex items-center gap-1 text-sm text-muted hover:text-accent">
+      <Link
+        href="/"
+        className="inline-flex items-center gap-1 text-sm text-muted hover:text-accent"
+      >
         <ArrowLeft className="h-4 w-4" /> Markets
       </Link>
 
@@ -88,10 +113,13 @@ export default function CoinPage() {
           <div>
             <h1 className="text-2xl sm:text-3xl font-semibold tracking-tight">
               {coin.name}{" "}
-              <span className="text-base font-normal uppercase text-muted">{coin.symbol}</span>
+              <span className="text-base font-normal uppercase text-muted">
+                {coin.symbol}
+              </span>
             </h1>
             <p className="text-sm text-muted">
-              Rank #{coin.market_cap_rank ?? "—"} · {formatUsd(price)}
+              Rank #{coin.market_cap_rank ?? "—"} ·{" "}
+              {formatMoney(displayPrice, currency === "cad" && md.current_price.cad == null ? "usd" : currency)}
               <span className="ml-2">
                 <ChangeBadge value={md.price_change_percentage_24h} />
               </span>
@@ -112,11 +140,25 @@ export default function CoinPage() {
         </button>
       </div>
 
+      <PriceChart coinId={coin.id} currency={currency} />
+
       <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-        <StatCard label="Market cap" value={formatUsd(md.market_cap.usd, true)} />
-        <StatCard label="Volume 24h" value={formatUsd(md.total_volume.usd, true)} />
-        <StatCard label="24h high" value={formatUsd(md.high_24h.usd)} />
-        <StatCard label="24h low" value={formatUsd(md.low_24h.usd)} />
+        <StatCard
+          label="Market cap"
+          value={formatMoney(pick(md.market_cap), currency, true)}
+        />
+        <StatCard
+          label="Volume 24h"
+          value={formatMoney(pick(md.total_volume), currency, true)}
+        />
+        <StatCard
+          label="24h high"
+          value={formatMoney(pick(md.high_24h), currency)}
+        />
+        <StatCard
+          label="24h low"
+          value={formatMoney(pick(md.low_24h), currency)}
+        />
       </div>
 
       <div className="grid gap-3 sm:grid-cols-2">
@@ -131,7 +173,7 @@ export default function CoinPage() {
         />
         <StatCard
           label="ATH / ATL"
-          value={`${formatUsd(md.ath.usd)} / ${formatUsd(md.atl.usd)}`}
+          value={`${formatMoney(pick(md.ath), currency)} / ${formatMoney(pick(md.atl), currency)}`}
         />
       </div>
 
@@ -139,7 +181,7 @@ export default function CoinPage() {
         id={coin.id}
         symbol={coin.symbol}
         name={coin.name}
-        currentPrice={price}
+        currentPriceUsd={priceUsd}
       />
 
       {desc && (

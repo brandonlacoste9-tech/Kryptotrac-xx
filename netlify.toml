@@ -26,3 +26,5 @@
 
 # Secrets: set in Netlify UI or CLI — never commit
 #   netlify env:set COINGECKO_API_KEY "your-key"
+#   netlify env:set NEXT_PUBLIC_SITE_URL "https://kryptotrac.netlify.app"
+# Custom domain: Domain management → add kryptotrac.com → then update NEXT_PUBLIC_SITE_URL

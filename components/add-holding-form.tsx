@@ -2,23 +2,33 @@
 
 import { useState } from "react"
 import { usePortfolio } from "@/lib/portfolio"
+import { useCurrency } from "@/lib/currency"
+import { formatMoney, toUsd } from "@/lib/utils"
 
 export function AddHoldingForm({
   id,
   symbol,
   name,
-  currentPrice,
+  currentPriceUsd,
 }: {
   id: string
   symbol: string
   name: string
-  currentPrice?: number
+  currentPriceUsd?: number
 }) {
   const { addHolding, getHolding } = usePortfolio()
+  const { currency, usdToCad } = useCurrency()
   const existing = getHolding(id)
   const [amount, setAmount] = useState("")
   const [cost, setCost] = useState("")
   const [msg, setMsg] = useState("")
+
+  const displayPrice =
+    currentPriceUsd != null
+      ? currency === "cad"
+        ? currentPriceUsd * usdToCad
+        : currentPriceUsd
+      : undefined
 
   function onSubmit(e: React.FormEvent) {
     e.preventDefault()
@@ -34,9 +44,9 @@ export function AddHoldingForm({
         setMsg("Invalid cost basis")
         return
       }
-      costBasisUsd = c
-    } else if (currentPrice != null) {
-      costBasisUsd = amt * currentPrice
+      costBasisUsd = toUsd(c, currency, usdToCad)
+    } else if (currentPriceUsd != null) {
+      costBasisUsd = amt * currentPriceUsd
     }
 
     addHolding({ id, symbol, name, amount: amt, costBasisUsd })
@@ -51,7 +61,9 @@ export function AddHoldingForm({
       className="rounded-xl border border-border bg-card p-4 space-y-3"
     >
       <h3 className="text-sm font-semibold">
-        {existing ? `Add more ${symbol.toUpperCase()}` : `Add ${symbol.toUpperCase()} to portfolio`}
+        {existing
+          ? `Add more ${symbol.toUpperCase()}`
+          : `Add ${symbol.toUpperCase()} to portfolio`}
       </h3>
       {existing && (
         <p className="text-xs text-muted">
@@ -73,14 +85,18 @@ export function AddHoldingForm({
           />
         </label>
         <label className="block text-xs text-muted">
-          Cost basis USD (optional)
+          Cost basis {currency.toUpperCase()} (optional)
           <input
             type="number"
             step="any"
             min="0"
             value={cost}
             onChange={(e) => setCost(e.target.value)}
-            placeholder={currentPrice != null ? `≈ market ($${currentPrice.toFixed(2)})` : "Total paid"}
+            placeholder={
+              displayPrice != null
+                ? `≈ market (${formatMoney(displayPrice, currency)})`
+                : "Total paid"
+            }
             className="mt-1 w-full rounded-lg border border-border bg-background px-3 py-2 text-sm text-foreground outline-none focus:ring-2 focus:ring-accent/40"
           />
         </label>
