@@ -1,4 +1,11 @@
-const BASE = "https://api.coingecko.com/api/v3"
+/**
+ * CoinGecko Demo keys (CG-…) use api.coingecko.com + x-cg-demo-api-key.
+ * Pro keys use pro-api.coingecko.com + x-cg-pro-api-key (set COINGECKO_PRO=true).
+ */
+const isPro = process.env.COINGECKO_PRO === "true"
+const BASE = isPro
+  ? "https://pro-api.coingecko.com/api/v3"
+  : "https://api.coingecko.com/api/v3"
 
 type CacheEntry = { at: number; data: unknown }
 const cache = new Map<string, CacheEntry>()
@@ -8,8 +15,8 @@ function headers(): HeadersInit {
   const h: HeadersInit = { Accept: "application/json" }
   const key = process.env.COINGECKO_API_KEY
   if (key) {
-    // Demo/Pro header names — CoinGecko accepts x-cg-demo-api-key or x-cg-pro-api-key
-    h["x-cg-demo-api-key"] = key
+    if (isPro) h["x-cg-pro-api-key"] = key
+    else h["x-cg-demo-api-key"] = key
   }
   return h
 }
