@@ -6,7 +6,9 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "netlify:dev": "npx netlify-cli dev",
+    "netlify:deploy": "npx netlify-cli deploy --build --prod"
   },
   "dependencies": {
     "clsx": "^2.1.1",
@@ -17,6 +19,7 @@
     "tailwind-merge": "^3.3.0"
   },
   "devDependencies": {
+    "@netlify/plugin-nextjs": "^5.15.12",
     "@tailwindcss/postcss": "^4.1.8",
     "@types/node": "^22.15.21",
     "@types/react": "^19.1.5",

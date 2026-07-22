@@ -1,0 +1,28 @@
+# KryptoTrac — Netlify + Next.js (App Router)
+# https://docs.netlify.com/frameworks/next-js/overview/
+
+[build]
+  command = "npm run build"
+  publish = ".next"
+
+[build.environment]
+  NODE_VERSION = "22"
+  NEXT_TELEMETRY_DISABLED = "1"
+
+# Official Next.js runtime for Netlify (API routes, SSR, ISR)
+[[plugins]]
+  package = "@netlify/plugin-nextjs"
+
+# Security headers (do not block CoinGecko images — loaded via next/image)
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Frame-Options = "DENY"
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+
+# ads.txt at site root (public/ is already included by Next)
+# Ensure /ads.txt is available for AdSense later
+
+# Secrets: set in Netlify UI or CLI — never commit
+#   netlify env:set COINGECKO_API_KEY "your-key"
