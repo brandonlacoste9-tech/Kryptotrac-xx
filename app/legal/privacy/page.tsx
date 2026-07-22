@@ -21,51 +21,80 @@ export default function PrivacyPage() {
       <section className="space-y-2 text-sm text-muted leading-relaxed">
         <h2 className="text-foreground font-semibold text-base">What we store</h2>
         <p>
-          Portfolio holdings and watchlists are saved in your browser&apos;s{" "}
-          <code className="text-accent text-xs">localStorage</code> only. They are not sent to our
-          servers.
+          Portfolio holdings, watchlists, price alerts, and currency preference
+          are saved in your browser&apos;s{" "}
+          <code className="text-accent text-xs">localStorage</code> only. They
+          are not sent to our servers.
         </p>
       </section>
 
       <section className="space-y-2 text-sm text-muted leading-relaxed">
         <h2 className="text-foreground font-semibold text-base">Market data</h2>
         <p>
-          Price and market information is requested from CoinGecko through our API routes so the app
-          can display live numbers. Those requests include the coin IDs needed to value your
-          portfolio.
+          Price and market information is requested from CoinGecko through our
+          API routes so the app can display live numbers and evaluate alerts.
+        </p>
+      </section>
+
+      <section className="space-y-2 text-sm text-muted leading-relaxed">
+        <h2 className="text-foreground font-semibold text-base">
+          Notifications
+        </h2>
+        <p>
+          If you enable browser notifications for price alerts, your browser may
+          show system notifications. Alert rules stay on your device.
         </p>
       </section>
 
       <section className="space-y-2 text-sm text-muted leading-relaxed">
         <h2 className="text-foreground font-semibold text-base">Hosting & logs</h2>
         <p>
-          The site may be hosted on Vercel or similar platforms, which can log standard technical
-          data (IP, user agent, pages) for security and reliability.
+          The site is hosted on Netlify (or similar), which can log standard
+          technical data (IP, user agent, pages) for security and reliability.
         </p>
       </section>
 
       <section className="space-y-2 text-sm text-muted leading-relaxed">
-        <h2 className="text-foreground font-semibold text-base">Advertising</h2>
+        <h2 className="text-foreground font-semibold text-base">
+          Advertising (Google AdSense)
+        </h2>
         <p>
-          If Google AdSense or similar ads are enabled later, third parties may use cookies or
-          identifiers for ad measurement and personalization. You can manage personalized ads at{" "}
-          <a
-            href="https://adssettings.google.com"
-            className="text-accent hover:underline"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            adssettings.google.com
-          </a>
-          .
+          KryptoTrac may display ads via Google AdSense (publisher{" "}
+          <code className="text-accent text-xs">ca-pub-4276130467303652</code>
+          ). Google and partners may use cookies or identifiers for ad
+          measurement and personalization.
         </p>
+        <ul className="list-disc pl-5 space-y-1">
+          <li>
+            Manage personalized ads at{" "}
+            <a
+              href="https://adssettings.google.com"
+              className="text-accent hover:underline"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              adssettings.google.com
+            </a>
+          </li>
+          <li>
+            Google ads technologies:{" "}
+            <a
+              href="https://policies.google.com/technologies/ads"
+              className="text-accent hover:underline"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              policies.google.com/technologies/ads
+            </a>
+          </li>
+        </ul>
       </section>
 
       <section className="space-y-2 text-sm text-muted leading-relaxed">
         <h2 className="text-foreground font-semibold text-base">Contact</h2>
         <p>
-          Questions about this policy: use the contact channel on your KryptoTrac deployment or
-          repository.
+          Questions about this policy: use the contact channel on your KryptoTrac
+          deployment or repository.
         </p>
       </section>
     </article>

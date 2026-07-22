@@ -15,10 +15,11 @@ export default function AboutPage() {
         positions on a server.
       </p>
       <ul className="list-disc pl-5 text-sm text-muted space-y-2">
-        <li>Markets: top 100, sparklines, gainers/losers, trending, global stats</li>
-        <li>Search any coin on CoinGecko (beyond the top list)</li>
-        <li>Portfolio: cost basis, allocation chart, export/import backup</li>
-        <li>USD &amp; CAD display · multi-range price charts</li>
+        <li>Markets: top 100, categories (DeFi/L2/meme…), gainers/losers, trending</li>
+        <li>Search any coin · compare up to 4 side-by-side</li>
+        <li>Portfolio: cost basis, allocation, export/import backup</li>
+        <li>Price alerts (browser notifications while the tab is open)</li>
+        <li>USD &amp; CAD · multi-range charts · optional AdSense</li>
         <li>Installable PWA · data stays in your browser</li>
       </ul>
       <p className="text-sm text-muted">

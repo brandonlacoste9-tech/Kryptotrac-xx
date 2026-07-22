@@ -15,6 +15,8 @@ import { MarketMovers } from "@/components/market-movers"
 import { TrendingStrip } from "@/components/trending-strip"
 import { CoinSearch } from "@/components/coin-search"
 import { ErrorBanner } from "@/components/error-banner"
+import { CategoryFilter } from "@/components/category-filter"
+import { AdBanner } from "@/components/ad-unit"
 
 type SortKey = "rank" | "price" | "change" | "mcap" | "volume" | "name"
 type SortDir = "asc" | "desc"
@@ -29,6 +31,7 @@ export default function MarketsPage() {
   const [updatedAt, setUpdatedAt] = useState<Date | null>(null)
   const [sortKey, setSortKey] = useState<SortKey>("rank")
   const [sortDir, setSortDir] = useState<SortDir>("asc")
+  const [category, setCategory] = useState("")
   const { toggleWatchlist, isWatched, addHolding } = usePortfolio()
   const { currency } = useCurrency()
 
@@ -36,19 +39,23 @@ export default function MarketsPage() {
     if (!silent) setLoading(true)
     setError("")
     try {
-      const res = await fetch(
-        `/api/markets?per_page=100&sparkline=true&vs=${currency}`
-      )
+      const url = category
+        ? `/api/categories?category=${encodeURIComponent(category)}&vs=${currency}&per_page=100`
+        : `/api/markets?per_page=100&sparkline=true&vs=${currency}`
+      const res = await fetch(url)
       const data = await res.json()
       if (!res.ok) throw new Error(data.error || "Failed to load markets")
-      setCoins(data as MarketCoin[])
+      const list = category
+        ? ((data.coins as MarketCoin[]) || [])
+        : (data as MarketCoin[])
+      setCoins(list)
       setUpdatedAt(new Date())
     } catch (e) {
       setError(e instanceof Error ? e.message : "Failed to load")
     } finally {
       setLoading(false)
     }
-  }, [currency])
+  }, [currency, category])
 
   useEffect(() => {
     load()
@@ -182,44 +189,56 @@ export default function MarketsPage() {
 
       <GlobalStats currency={currency} />
       <TrendingStrip />
-      {coins.length > 0 && <MarketMovers coins={coins} currency={currency} />}
+      {coins.length > 0 && !category && (
+        <MarketMovers coins={coins} currency={currency} />
+      )}
+      <AdBanner />
 
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-        <div>
-          <h2 className="text-xl sm:text-2xl font-semibold tracking-tight">
-            Markets
-          </h2>
-          <p className="mt-1 text-sm text-muted">
-            Top 100 by market cap · filter table or search all coins
-            {updatedAt && (
-              <span className="ml-2 text-xs">
-                · updated {updatedAt.toLocaleTimeString()}
-                <span className="text-muted/70"> · auto {REFRESH_MS / 1000}s</span>
-              </span>
-            )}
-          </p>
+      <div className="flex flex-col gap-4">
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+          <div>
+            <h2 className="text-xl sm:text-2xl font-semibold tracking-tight">
+              Markets
+            </h2>
+            <p className="mt-1 text-sm text-muted">
+              {category ? "Category filter" : "Top 100 by market cap"} · search
+              all coins or filter table
+              {updatedAt && (
+                <span className="ml-2 text-xs">
+                  · updated {updatedAt.toLocaleTimeString()}
+                  <span className="text-muted/70">
+                    {" "}
+                    · auto {REFRESH_MS / 1000}s
+                  </span>
+                </span>
+              )}
+            </p>
+          </div>
+          <div className="flex flex-wrap items-center gap-2">
+            <button
+              type="button"
+              onClick={() => load()}
+              disabled={loading}
+              className="inline-flex items-center gap-1.5 rounded-lg border border-border bg-card px-3 py-2 text-xs font-medium hover:border-accent/40 disabled:opacity-50"
+            >
+              <RefreshCw
+                className={cn("h-3.5 w-3.5", loading && "animate-spin")}
+              />
+              Refresh
+            </button>
+            <CoinSearch />
+            <label className="relative w-full sm:w-52">
+              <input
+                value={q}
+                onChange={(e) => setQ(e.target.value)}
+                placeholder="Filter table…"
+                className="w-full rounded-xl border border-border bg-card py-2.5 px-3 text-sm outline-none focus:ring-2 focus:ring-accent/40"
+                aria-label="Filter market table"
+              />
+            </label>
+          </div>
         </div>
-        <div className="flex flex-wrap items-center gap-2">
-          <button
-            type="button"
-            onClick={() => load()}
-            disabled={loading}
-            className="inline-flex items-center gap-1.5 rounded-lg border border-border bg-card px-3 py-2 text-xs font-medium hover:border-accent/40 disabled:opacity-50"
-          >
-            <RefreshCw className={cn("h-3.5 w-3.5", loading && "animate-spin")} />
-            Refresh
-          </button>
-          <CoinSearch />
-          <label className="relative w-full sm:w-52">
-            <input
-              value={q}
-              onChange={(e) => setQ(e.target.value)}
-              placeholder="Filter table…"
-              className="w-full rounded-xl border border-border bg-card py-2.5 px-3 text-sm outline-none focus:ring-2 focus:ring-accent/40"
-              aria-label="Filter market table"
-            />
-          </label>
-        </div>
+        <CategoryFilter value={category} onChange={setCategory} />
       </div>
 
       {error && (

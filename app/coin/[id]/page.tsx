@@ -11,6 +11,8 @@ import { ChangeBadge } from "@/components/change-badge"
 import { StatCard } from "@/components/stat-card"
 import { AddHoldingForm } from "@/components/add-holding-form"
 import { PriceChart } from "@/components/price-chart"
+import { AlertForm } from "@/components/alert-form"
+import { AdBanner } from "@/components/ad-unit"
 import { usePortfolio } from "@/lib/portfolio"
 import { useCurrency } from "@/lib/currency"
 
@@ -177,12 +179,37 @@ export default function CoinPage() {
         />
       </div>
 
-      <AddHoldingForm
-        id={coin.id}
-        symbol={coin.symbol}
-        name={coin.name}
-        currentPriceUsd={priceUsd}
-      />
+      <div className="grid gap-4 lg:grid-cols-2">
+        <AddHoldingForm
+          id={coin.id}
+          symbol={coin.symbol}
+          name={coin.name}
+          currentPriceUsd={priceUsd}
+        />
+        <AlertForm
+          coinId={coin.id}
+          symbol={coin.symbol}
+          name={coin.name}
+          currentPrice={displayPrice}
+        />
+      </div>
+
+      <div className="flex flex-wrap gap-2 text-xs">
+        <Link
+          href={`/compare?ids=${coin.id},bitcoin`}
+          className="rounded-lg border border-border px-3 py-1.5 hover:border-accent/40"
+        >
+          Compare vs BTC
+        </Link>
+        <Link
+          href={`/compare?ids=${coin.id},ethereum`}
+          className="rounded-lg border border-border px-3 py-1.5 hover:border-accent/40"
+        >
+          Compare vs ETH
+        </Link>
+      </div>
+
+      <AdBanner />
 
       {desc && (
         <section className="rounded-xl border border-border bg-card/50 p-5">

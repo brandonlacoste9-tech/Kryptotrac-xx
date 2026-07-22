@@ -2,7 +2,14 @@
 
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { Activity, Briefcase, Star, Info } from "lucide-react"
+import {
+  Activity,
+  Briefcase,
+  Star,
+  Info,
+  Bell,
+  GitCompare,
+} from "lucide-react"
 import { cn } from "@/lib/utils"
 import { CurrencyToggle } from "@/components/currency-toggle"
 
@@ -10,6 +17,8 @@ const links = [
   { href: "/", label: "Markets", icon: Activity },
   { href: "/portfolio", label: "Portfolio", icon: Briefcase },
   { href: "/watchlist", label: "Watchlist", icon: Star },
+  { href: "/compare", label: "Compare", icon: GitCompare },
+  { href: "/alerts", label: "Alerts", icon: Bell },
   { href: "/about", label: "About", icon: Info },
 ]
 

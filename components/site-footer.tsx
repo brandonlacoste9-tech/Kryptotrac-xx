@@ -26,11 +26,14 @@ export function SiteFooter() {
           <Link href="/legal/privacy" className="hover:text-accent">
             Privacy
           </Link>
+          <Link href="/compare" className="hover:text-accent">
+            Compare
+          </Link>
+          <Link href="/alerts" className="hover:text-accent">
+            Alerts
+          </Link>
           <Link href="/about" className="hover:text-accent">
             About
-          </Link>
-          <Link href="/portfolio" className="hover:text-accent">
-            Portfolio
           </Link>
         </div>
       </div>

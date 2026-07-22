@@ -1,9 +1,13 @@
 import type { Metadata, Viewport } from "next"
 import { PortfolioProvider } from "@/lib/portfolio"
 import { CurrencyProvider } from "@/lib/currency"
+import { AlertsProvider } from "@/lib/alerts"
 import { SiteHeader } from "@/components/site-header"
 import { SiteFooter } from "@/components/site-footer"
 import { PwaRegister } from "@/components/pwa-register"
+import { AlertsWatcher } from "@/components/alerts-watcher"
+import { AdSenseScript } from "@/components/adsense-script"
+import { ADSENSE_ENABLED, ADSENSE_PUBLISHER_ID } from "@/lib/adsense"
 import { siteUrl } from "@/lib/utils"
 import "./globals.css"
 
@@ -16,7 +20,7 @@ export const metadata: Metadata = {
     template: "%s · KryptoTrac",
   },
   description:
-    "Track your crypto holdings with live CoinGecko prices. Portfolio, markets, and watchlist — private in your browser. USD & CAD.",
+    "Track your crypto holdings with live CoinGecko prices. Portfolio, markets, alerts, compare, USD & CAD — private in your browser.",
   keywords: [
     "crypto",
     "portfolio",
@@ -50,6 +54,9 @@ export const metadata: Metadata = {
     statusBarStyle: "black-translucent",
     title: "KryptoTrac",
   },
+  ...(ADSENSE_ENABLED
+    ? { other: { "google-adsense-account": ADSENSE_PUBLISHER_ID } }
+    : {}),
 }
 
 export const viewport: Viewport = {
@@ -64,12 +71,16 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body className="min-h-dvh flex flex-col antialiased">
         <CurrencyProvider>
           <PortfolioProvider>
-            <SiteHeader />
-            <main className="flex-1 mx-auto w-full max-w-6xl px-4 py-6 sm:px-6 sm:py-8">
-              {children}
-            </main>
-            <SiteFooter />
-            <PwaRegister />
+            <AlertsProvider>
+              <SiteHeader />
+              <main className="flex-1 mx-auto w-full max-w-6xl px-4 py-6 sm:px-6 sm:py-8">
+                {children}
+              </main>
+              <SiteFooter />
+              <PwaRegister />
+              <AlertsWatcher />
+              <AdSenseScript />
+            </AlertsProvider>
           </PortfolioProvider>
         </CurrencyProvider>
       </body>
