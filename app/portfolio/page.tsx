@@ -18,6 +18,7 @@ import { ChangeBadge } from "@/components/change-badge"
 import { StatCard } from "@/components/stat-card"
 import { AllocationChart } from "@/components/allocation-chart"
 import { PortfolioBackup } from "@/components/portfolio-backup"
+import { ErrorBanner } from "@/components/error-banner"
 
 const REFRESH_MS = 75_000
 
@@ -172,9 +173,11 @@ export default function PortfolioPage() {
       {slices.length > 0 && <AllocationChart slices={slices} />}
 
       {error && (
-        <div className="rounded-xl border border-danger/40 bg-danger/10 px-4 py-3 text-sm text-danger">
-          {error}
-        </div>
+        <ErrorBanner
+          message={error}
+          onRetry={() => load()}
+          hint="Rate limits may apply — wait and retry."
+        />
       )}
 
       {holdings.length === 0 ? (

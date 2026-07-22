@@ -3,13 +3,18 @@
 import { useCallback, useEffect, useMemo, useState } from "react"
 import Image from "next/image"
 import Link from "next/link"
-import { ArrowDownUp, RefreshCw, Search, Star } from "lucide-react"
+import { ArrowDownUp, RefreshCw, Star } from "lucide-react"
 import type { MarketCoin } from "@/lib/types"
 import { cn, formatMoney } from "@/lib/utils"
 import { ChangeBadge } from "@/components/change-badge"
 import { Sparkline } from "@/components/sparkline"
 import { usePortfolio } from "@/lib/portfolio"
 import { useCurrency } from "@/lib/currency"
+import { GlobalStats } from "@/components/global-stats"
+import { MarketMovers } from "@/components/market-movers"
+import { TrendingStrip } from "@/components/trending-strip"
+import { CoinSearch } from "@/components/coin-search"
+import { ErrorBanner } from "@/components/error-banner"
 
 type SortKey = "rank" | "price" | "change" | "mcap" | "volume" | "name"
 type SortDir = "asc" | "desc"
@@ -175,13 +180,17 @@ export default function MarketsPage() {
         </div>
       </section>
 
+      <GlobalStats currency={currency} />
+      <TrendingStrip />
+      {coins.length > 0 && <MarketMovers coins={coins} currency={currency} />}
+
       <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
         <div>
           <h2 className="text-xl sm:text-2xl font-semibold tracking-tight">
             Markets
           </h2>
           <p className="mt-1 text-sm text-muted">
-            Top 100 by market cap
+            Top 100 by market cap · filter table or search all coins
             {updatedAt && (
               <span className="ml-2 text-xs">
                 · updated {updatedAt.toLocaleTimeString()}
@@ -200,25 +209,25 @@ export default function MarketsPage() {
             <RefreshCw className={cn("h-3.5 w-3.5", loading && "animate-spin")} />
             Refresh
           </button>
-          <label className="relative w-full sm:w-64">
-            <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted" />
+          <CoinSearch />
+          <label className="relative w-full sm:w-52">
             <input
               value={q}
               onChange={(e) => setQ(e.target.value)}
-              placeholder="Search name or symbol…"
-              className="w-full rounded-xl border border-border bg-card py-2.5 pl-10 pr-3 text-sm outline-none focus:ring-2 focus:ring-accent/40"
+              placeholder="Filter table…"
+              className="w-full rounded-xl border border-border bg-card py-2.5 px-3 text-sm outline-none focus:ring-2 focus:ring-accent/40"
+              aria-label="Filter market table"
             />
           </label>
         </div>
       </div>
 
       {error && (
-        <div className="rounded-xl border border-danger/40 bg-danger/10 px-4 py-3 text-sm text-danger">
-          {error}
-          <p className="mt-1 text-xs opacity-80">
-            Free API rate limits may apply. Wait a minute and refresh.
-          </p>
-        </div>
+        <ErrorBanner
+          message={error}
+          onRetry={() => load()}
+          hint="CoinGecko rate limits may apply. Wait a minute and retry."
+        />
       )}
 
       {loading && coins.length === 0 ? (

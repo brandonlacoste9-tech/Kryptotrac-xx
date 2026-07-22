@@ -1,8 +1,9 @@
-import type { Metadata } from "next"
+import type { Metadata, Viewport } from "next"
 import { PortfolioProvider } from "@/lib/portfolio"
 import { CurrencyProvider } from "@/lib/currency"
 import { SiteHeader } from "@/components/site-header"
 import { SiteFooter } from "@/components/site-footer"
+import { PwaRegister } from "@/components/pwa-register"
 import { siteUrl } from "@/lib/utils"
 import "./globals.css"
 
@@ -43,6 +44,18 @@ export const metadata: Metadata = {
   icons: {
     icon: [{ url: "/favicon.svg", type: "image/svg+xml" }],
   },
+  manifest: "/manifest.webmanifest",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "black-translucent",
+    title: "KryptoTrac",
+  },
+}
+
+export const viewport: Viewport = {
+  themeColor: "#070b12",
+  width: "device-width",
+  initialScale: 1,
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
@@ -56,6 +69,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               {children}
             </main>
             <SiteFooter />
+            <PwaRegister />
           </PortfolioProvider>
         </CurrencyProvider>
       </body>

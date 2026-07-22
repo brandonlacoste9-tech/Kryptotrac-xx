@@ -15,9 +15,11 @@ export default function AboutPage() {
         positions on a server.
       </p>
       <ul className="list-disc pl-5 text-sm text-muted space-y-2">
-        <li>Markets: top coins by market cap with 24h change and sparklines</li>
-        <li>Portfolio: amounts, optional cost basis, allocation, estimated P&amp;L</li>
-        <li>Watchlist: star coins to follow</li>
+        <li>Markets: top 100, sparklines, gainers/losers, trending, global stats</li>
+        <li>Search any coin on CoinGecko (beyond the top list)</li>
+        <li>Portfolio: cost basis, allocation chart, export/import backup</li>
+        <li>USD &amp; CAD display · multi-range price charts</li>
+        <li>Installable PWA · data stays in your browser</li>
       </ul>
       <p className="text-sm text-muted">
         This is not financial advice. Crypto markets are volatile. Always verify prices and do your
