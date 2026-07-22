@@ -19,6 +19,12 @@ import { StatCard } from "@/components/stat-card"
 import { AllocationChart } from "@/components/allocation-chart"
 import { PortfolioBackup } from "@/components/portfolio-backup"
 import { ErrorBanner } from "@/components/error-banner"
+import { PortfolioHistoryChart } from "@/components/portfolio-history-chart"
+import {
+  loadHistory,
+  recordHistoryValue,
+  type HistoryPoint,
+} from "@/lib/portfolio-history"
 
 const REFRESH_MS = 75_000
 
@@ -30,6 +36,7 @@ export default function PortfolioPage() {
   const [error, setError] = useState("")
   const [loading, setLoading] = useState(false)
   const [updatedAt, setUpdatedAt] = useState<Date | null>(null)
+  const [history, setHistory] = useState<HistoryPoint[]>([])
 
   const ids = holdings.map((h) => h.id).join(",")
 
@@ -52,6 +59,10 @@ export default function PortfolioPage() {
       setLoading(false)
     }
   }, [ids])
+
+  useEffect(() => {
+    setHistory(loadHistory())
+  }, [])
 
   useEffect(() => {
     load()
@@ -78,6 +89,25 @@ export default function PortfolioPage() {
   }, [holdings, prices, currency, usdToCad])
 
   const totalValue = rows.reduce((s, r) => s + (r.value ?? 0), 0)
+
+  // Record USD total for local history (currency-independent)
+  useEffect(() => {
+    if (!ready || holdings.length === 0) return
+    let totalUsd = 0
+    let ok = true
+    for (const h of holdings) {
+      const p = prices[h.id]?.usd
+      if (p == null) {
+        ok = false
+        break
+      }
+      totalUsd += h.amount * p
+    }
+    if (ok && totalUsd > 0) {
+      setHistory(recordHistoryValue(totalUsd))
+    }
+  }, [prices, holdings, ready])
+
   const totalCostUsd = holdings.reduce((s, h) => s + (h.costBasisUsd ?? 0), 0)
   const totalCost = fromUsd(
     totalCostUsd > 0 ? totalCostUsd : null,
@@ -171,6 +201,11 @@ export default function PortfolioPage() {
       </div>
 
       {slices.length > 0 && <AllocationChart slices={slices} />}
+      <PortfolioHistoryChart
+        points={history}
+        currency={currency}
+        usdToCad={usdToCad}
+      />
 
       {error && (
         <ErrorBanner

@@ -17,6 +17,12 @@ import { CoinSearch } from "@/components/coin-search"
 import { ErrorBanner } from "@/components/error-banner"
 import { CategoryFilter } from "@/components/category-filter"
 import { AdBanner } from "@/components/ad-unit"
+import { MarketHeatmap } from "@/components/market-heatmap"
+import {
+  loadCompareIds,
+  toggleCompareId,
+} from "@/lib/compare-selection"
+import { GitCompare } from "lucide-react"
 
 type SortKey = "rank" | "price" | "change" | "mcap" | "volume" | "name"
 type SortDir = "asc" | "desc"
@@ -32,8 +38,13 @@ export default function MarketsPage() {
   const [sortKey, setSortKey] = useState<SortKey>("rank")
   const [sortDir, setSortDir] = useState<SortDir>("asc")
   const [category, setCategory] = useState("")
+  const [compareIds, setCompareIds] = useState<string[]>([])
   const { toggleWatchlist, isWatched, addHolding } = usePortfolio()
   const { currency } = useCurrency()
+
+  useEffect(() => {
+    setCompareIds(loadCompareIds())
+  }, [])
 
   const load = useCallback(async (silent = false) => {
     if (!silent) setLoading(true)
@@ -192,6 +203,40 @@ export default function MarketsPage() {
       {coins.length > 0 && !category && (
         <MarketMovers coins={coins} currency={currency} />
       )}
+      {coins.length > 0 && !category && (
+        <MarketHeatmap coins={coins} currency={currency} />
+      )}
+      {compareIds.length > 0 && (
+        <div className="flex flex-wrap items-center gap-2 rounded-xl border border-accent/30 bg-accent/5 px-3 py-2 text-xs">
+          <GitCompare className="h-3.5 w-3.5 text-accent" />
+          <span className="text-muted">Compare tray:</span>
+          {compareIds.map((id) => (
+            <span key={id} className="font-mono text-accent">
+              {id}
+            </span>
+          ))}
+          <Link
+            href={`/compare?ids=${encodeURIComponent(compareIds.join(","))}`}
+            className="ml-auto rounded-lg bg-accent px-3 py-1 font-semibold text-black"
+          >
+            Open compare ({compareIds.length})
+          </Link>
+          <button
+            type="button"
+            className="text-muted hover:text-danger"
+            onClick={() => {
+              setCompareIds([])
+              try {
+                localStorage.removeItem("kryptotrac-compare-ids-v1")
+              } catch {
+                /* ignore */
+              }
+            }}
+          >
+            Clear
+          </button>
+        </div>
+      )}
       <AdBanner />
 
       <div className="flex flex-col gap-4">
@@ -341,20 +386,38 @@ export default function MarketsPage() {
                       </div>
                     </td>
                     <td className="px-3 py-3 text-right">
-                      <button
-                        type="button"
-                        onClick={() => toggleWatchlist(c.id)}
-                        className="rounded-md p-1.5 text-muted hover:bg-white/5 hover:text-warning"
-                        aria-label={
-                          watched ? "Remove from watchlist" : "Add to watchlist"
-                        }
-                      >
-                        <Star
-                          className="h-4 w-4"
-                          fill={watched ? "currentColor" : "none"}
-                          style={watched ? { color: "var(--warning)" } : undefined}
-                        />
-                      </button>
+                      <div className="inline-flex items-center gap-0.5">
+                        <button
+                          type="button"
+                          onClick={() => setCompareIds(toggleCompareId(c.id))}
+                          className={cn(
+                            "rounded-md p-1.5 text-muted hover:bg-white/5 hover:text-accent",
+                            compareIds.includes(c.id) && "text-accent"
+                          )}
+                          aria-label="Toggle compare"
+                          title="Add to compare"
+                        >
+                          <GitCompare className="h-4 w-4" />
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => toggleWatchlist(c.id)}
+                          className="rounded-md p-1.5 text-muted hover:bg-white/5 hover:text-warning"
+                          aria-label={
+                            watched
+                              ? "Remove from watchlist"
+                              : "Add to watchlist"
+                          }
+                        >
+                          <Star
+                            className="h-4 w-4"
+                            fill={watched ? "currentColor" : "none"}
+                            style={
+                              watched ? { color: "var(--warning)" } : undefined
+                            }
+                          />
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 )

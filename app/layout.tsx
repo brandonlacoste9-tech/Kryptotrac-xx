@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next"
 import { PortfolioProvider } from "@/lib/portfolio"
 import { CurrencyProvider } from "@/lib/currency"
 import { AlertsProvider } from "@/lib/alerts"
+import { ThemeProvider } from "@/lib/theme"
 import { SiteHeader } from "@/components/site-header"
 import { SiteFooter } from "@/components/site-footer"
 import { PwaRegister } from "@/components/pwa-register"
@@ -54,35 +55,61 @@ export const metadata: Metadata = {
     statusBarStyle: "black-translucent",
     title: "KryptoTrac",
   },
+  robots: {
+    index: true,
+    follow: true,
+  },
   ...(ADSENSE_ENABLED
     ? { other: { "google-adsense-account": ADSENSE_PUBLISHER_ID } }
     : {}),
 }
 
 export const viewport: Viewport = {
-  themeColor: "#070b12",
+  themeColor: [
+    { media: "(prefers-color-scheme: dark)", color: "#070b12" },
+    { media: "(prefers-color-scheme: light)", color: "#f4f7fb" },
+  ],
   width: "device-width",
   initialScale: 1,
 }
 
+const themeBoot = `
+try {
+  var t = localStorage.getItem('kryptotrac-theme-v1');
+  if (t === 'light' || t === 'dark') {
+    document.documentElement.setAttribute('data-theme', t);
+    document.documentElement.style.colorScheme = t;
+  } else {
+    document.documentElement.setAttribute('data-theme', 'dark');
+  }
+} catch (e) {
+  document.documentElement.setAttribute('data-theme', 'dark');
+}
+`
+
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: themeBoot }} />
+      </head>
       <body className="min-h-dvh flex flex-col antialiased">
-        <CurrencyProvider>
-          <PortfolioProvider>
-            <AlertsProvider>
-              <SiteHeader />
-              <main className="flex-1 mx-auto w-full max-w-6xl px-4 py-6 sm:px-6 sm:py-8">
-                {children}
-              </main>
-              <SiteFooter />
-              <PwaRegister />
-              <AlertsWatcher />
-              <AdSenseScript />
-            </AlertsProvider>
-          </PortfolioProvider>
-        </CurrencyProvider>
+        <ThemeProvider>
+          <CurrencyProvider>
+            <PortfolioProvider>
+              <AlertsProvider>
+                <SiteHeader />
+                <main className="flex-1 mx-auto w-full max-w-6xl px-4 py-6 sm:px-6 sm:py-8">
+                  {children}
+                </main>
+                <SiteFooter />
+                <PwaRegister />
+                <AlertsWatcher />
+                <AdSenseScript />
+              </AlertsProvider>
+            </PortfolioProvider>
+          </CurrencyProvider>
+        </ThemeProvider>
       </body>
     </html>
   )
